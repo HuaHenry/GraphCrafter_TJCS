@@ -17,6 +17,7 @@
               <div class="user-basic">
                 <div class="user-nickname">
                   <div class="user-name">三块给你买麻吉<!----></div>
+                  <button @click="toEdit" class="edit-button">编辑</button>
                 </div>
                 <div class="user-content">
                   <span class="user-redId">小红书号：275592512</span><span class="user-IP"> IP属地：广东</span>
@@ -75,9 +76,14 @@
 import { useRouter } from "vue-router";
 const router = useRouter();
 
+const toEdit = () => {
+      router.push({ path: "/editprofile" });
+    };
+
 const toAgree = () => {
   router.push({ path: "/agree" });
 };
+
 </script>
 <style lang="less" scoped>
 .user-page {

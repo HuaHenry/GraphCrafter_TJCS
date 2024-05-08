@@ -1,454 +1,813 @@
 <template>
-  <div class="profile-editor-container">
-    <!-- 退出按钮 -->
+  <div
+    class="note-detail-mask"
+    style="transition: background-color 0.4s ease 0s"
+  >
+    <div class="note-container">
+      <div class="media-container">
+        <el-carousel height="90vh">
+          <el-carousel-item v-for="item in 4" :key="item">
+            <el-image
+              style="width: 100%; height: 100%"
+              src="https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg"
+              fit="cover"
+            />
+          </el-carousel-item>
+        </el-carousel>
+      </div>
+
+      <div class="interaction-container">
+        <div class="author-container">
+          <div class="author-me">
+            <div class="info">
+              <img
+                class="avatar-item"
+                style="width: 40px; height: 40px"
+                src="https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg"
+              />
+              <span class="name">这是名字</span>
+            </div>
+            <div class="follow-btn">
+              <el-button type="danger" size="large" round>关注</el-button>
+            </div>
+          </div>
+
+          <div class="note-scroller">
+            <div class="note-content">
+              <div class="title">这是什么动漫</div>
+              <div class="desc">
+                <span>这是什么描述信息 <br /></span>
+                <a class="tag tag-search">#海贼王</a>
+                <a class="tag tag-search">#海贼王</a>
+                <a class="tag tag-search">#海贼王</a>
+              </div>
+              <div class="bottom-container">
+                <span class="date">2023-10-21</span>
+              </div>
+            </div>
+            <div class="divider interaction-divider"></div>
+
+            <!-- 评论 -->
+
+            <div class="comments-el">
+              <div class="comments-container">
+                <div class="total">共63条评论</div>
+                <div class="list-container">
+                  <div class="parent-comment">
+                    <div class="comment-item">
+                      <div class="comment-inner-container">
+                        <div class="avatar">
+                          <img
+                            class="avatar-item"
+                            src="https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg"
+                          />
+                        </div>
+                        <div class="right">
+                          <div class="author-wrapper">
+                            <div class="author"><a class="name">用户已注销</a></div>
+                          </div>
+                          <div class="content">内容</div>
+
+                          <div class="info">
+                            <div class="date"><span>昨天 16:49</span></div>
+                            <div class="interactions">
+                              <div class="like">
+                                <span class="like-wrapper">
+                                  <Star style="width: 1em; height: 1em" />
+                                  <span class="count">247</span>
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="reply-container">
+                      <div class="list-container">
+                        <div class="comment-item">
+                          <div class="comment-inner-container">
+                            <div class="avatar">
+                              <img
+                                class="avatar-item"
+                                src="https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg"
+                              />
+                            </div>
+                            <div class="right">
+                              <div class="author-wrapper">
+                                <div class="author"><a class="name">用户已注销</a></div>
+                              </div>
+                              <div class="content">内容</div>
+
+                              <div class="info">
+                                <div class="date"><span>昨天 16:49</span></div>
+                                <div class="interactions">
+                                  <div class="like">
+                                    <span class="like-wrapper">
+                                      <Star style="width: 1em; height: 1em" />
+                                      <span class="count">247</span>
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="comment-item">
+                          <div class="comment-inner-container">
+                            <div class="avatar">
+                              <img
+                                class="avatar-item"
+                                src="https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg"
+                              />
+                            </div>
+                            <div class="right">
+                              <div class="author-wrapper">
+                                <div class="author"><a class="name">用户已注销</a></div>
+                              </div>
+                              <div class="content">内容</div>
+
+                              <div class="info">
+                                <div class="date"><span>昨天 16:49</span></div>
+                                <div class="interactions">
+                                  <div class="like">
+                                    <span class="like-wrapper">
+                                      <Star style="width: 1em; height: 1em" />
+                                      <span class="count">247</span>
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="comment-item">
+                          <div class="comment-inner-container">
+                            <div class="avatar">
+                              <img
+                                class="avatar-item"
+                                src="https://fuss10.elemecdn.com/0/6f/e35ff375812e6b0020b6b4e8f9583jpeg.jpeg"
+                              />
+                            </div>
+                            <div class="right">
+                              <div class="author-wrapper">
+                                <div class="author"><a class="name">用户已注销</a></div>
+                              </div>
+                              <div class="content">内容</div>
+
+                              <div class="info">
+                                <div class="date"><span>昨天 16:49</span></div>
+                                <div class="interactions">
+                                  <div class="like">
+                                    <span class="like-wrapper">
+                                      <Star style="width: 1em; height: 1em" />
+                                      <span class="count">247</span>
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="show-more">展开更多的回复</div>
+                    </div>
+                  </div>
+                  <div class="parent-comment">
+                    <div class="comment-item">
+                      <div class="comment-inner-container">
+                        <div class="avatar">
+                          <img
+                            class="avatar-item"
+                            src="https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg"
+                          />
+                        </div>
+                        <div class="right">
+                          <div class="author-wrapper">
+                            <div class="author"><a class="name">用户已注销</a></div>
+                          </div>
+                          <div class="content">内容</div>
+
+                          <div class="info">
+                            <div class="date"><span>昨天 16:49</span></div>
+                            <div class="interactions">
+                              <div class="like">
+                                <span class="like-wrapper">
+                                  <span class="count">247</span>
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="reply-container">
+                      <div class="list-container">
+                        <div class="comment-item">
+                          <div class="comment-inner-container">
+                            <div class="avatar">
+                              <img
+                                class="avatar-item"
+                                src="https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg"
+                              />
+                            </div>
+                            <div class="right">
+                              <div class="author-wrapper">
+                                <div class="author"><a class="name">用户已注销</a></div>
+                              </div>
+                              <div class="content">内容</div>
+
+                              <div class="info">
+                                <div class="date"><span>昨天 16:49</span></div>
+                                <div class="interactions">
+                                  <div class="like">
+                                    <span class="like-wrapper">
+                                      <span class="count">247</span>
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="comment-item">
+                          <div class="comment-inner-container">
+                            <div class="avatar">
+                              <img
+                                class="avatar-item"
+                                src="https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg"
+                              />
+                            </div>
+                            <div class="right">
+                              <div class="author-wrapper">
+                                <div class="author"><a class="name">用户已注销</a></div>
+                              </div>
+                              <div class="content">内容</div>
+
+                              <div class="info">
+                                <div class="date"><span>昨天 16:49</span></div>
+                                <div class="interactions">
+                                  <div class="like">
+                                    <span class="like-wrapper">
+                                      <span class="count">247</span>
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="comment-item">
+                          <div class="comment-inner-container">
+                            <div class="avatar">
+                              <img
+                                class="avatar-item"
+                                src="https://fuss10.elemecdn.com/0/6f/e35ff375812e6b0020b6b4e8f9583jpeg.jpeg"
+                              />
+                            </div>
+                            <div class="right">
+                              <div class="author-wrapper">
+                                <div class="author"><a class="name">用户已注销</a></div>
+                              </div>
+                              <div class="content">内容</div>
+
+                              <div class="info">
+                                <div class="date"><span>昨天 16:49</span></div>
+                                <div class="interactions">
+                                  <div class="like">
+                                    <span class="like-wrapper">
+                                      <span class="count">247</span>
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="show-more">展开更多的回复</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!--  -->
+          </div>
+
+          <div class="interactions-footer">
+            <div class="buttons">
+              <div class="left">
+                <span class="like-wrapper"
+                  ><span class="like-lottie"> <Star style="width: 0.8em; height: 0.8em; color: #333" /> </span
+                  ><span class="count">46</span></span
+                >
+                <span class="collect-wrapper">
+                  <span class="like-lottie"> <PictureRounded style="width: 0.8em; height: 0.8em; color: #333" /> </span
+                  ><span class="count">21</span></span
+                >
+                <span class="chat-wrapper">
+                  <span class="like-lottie"> <ChatRound style="width: 0.8em; height: 0.8em; color: #333" /> </span
+                  ><span class="count">22</span></span
+                >
+              </div>
+              <div class="share-wrapper"></div>
+            </div>
+            <div class="comment-wrapper active comment-comp">
+              <div class="input-wrapper">
+                <input class="comment-input" type="text" placeholder="回复内容" />
+                <div class="input-buttons">
+                  <Close style="width: 1.2em; height: 1.2em" />
+                </div>
+              </div>
+              <button class="submit">发送</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="close-cricle">
-      <div class="close close-mask-white" @click="exitPage">
+      <div class="close close-mask-white"  @click="goBack">
         <Close style="width: 1.2em; height: 1.2em; color: rgba(51, 51, 51, 0.8)" />
       </div>
     </div>
-
-    <div class="profile-editor">
-      <!-- 头像区域 -->
-      <div class="avatar-container" @click="triggerFileInput">
-        <img :src="avatar" alt="头像" class="avatar" />
-        <div class="avatar-overlay">
-          <Camera style="width: 1.5em; height: 1.5em" />
-          <span>修改我的头像</span>
-        </div>
-        <!-- 隐藏的文件上传 -->
-        <input type="file" accept="image/*" @change="uploadAvatar" class="hidden-input" ref="fileInput" />
-      </div>
-
-      <!-- 用户名 -->
-      <div class="profile-field">
-        <label>用户名</label>
-        <div class="field-content" v-if="!editingUsername">
-          <span>{{ username }}</span>
-          <Edit style="margin-left: 8px; cursor: pointer; color: #13386c; width: 1em; height: 1em;" @click="startEdit('username')" />
-        </div>
-        <div class="field-content" v-else>
-          <el-input
-            type="text"
-            v-model="username"
-            placeholder="输入您的用户名"
-            maxlength="20"
-          ></el-input>
-          <div class="profile-actions">
-            <el-button type="primary" @click="saveProfile('username')">保存</el-button>
-            <el-button @click="cancelEdit('username')">取消</el-button>
-          </div>
-        </div>
-      </div>
-
-      <!-- 性别 -->
-      <div class="profile-field">
-        <label>性别</label>
-        <div class="field-content" v-if="!editingGender">
-          <span>{{ gender }}</span>
-          <Edit style="margin-left: 8px; cursor: pointer; color: #13386c; width: 1em; height: 1em;" @click="startEdit('gender')" />
-        </div>
-        <div class="field-content" v-else>
-          <el-radio-group v-model="gender">
-            <el-radio label="男">男</el-radio>
-            <el-radio label="女">女</el-radio>
-          </el-radio-group>
-          <div class="profile-actions">
-            <el-button type="primary" @click="saveProfile('gender')">保存</el-button>
-            <el-button @click="cancelEdit('gender')">取消</el-button>
-          </div>
-        </div>
-      </div>
-
-       <!-- 年龄 -->
-       <div class="profile-field">
-        <label>年龄</label>
-        <div class="field-content" v-if="!editingAge">
-          <span>{{ age }}</span>
-          <Edit style="margin-left: 8px; cursor: pointer; color: #13386c; width: 1em; height: 1em;" @click="startEdit('age')" />
-        </div>
-        <div class="field-content" v-else>
-          <el-input
-            type="text"
-            v-model="age"
-            placeholder="输入您的年龄"
-          ></el-input>
-          <div class="profile-actions">
-            <el-button type="primary" @click="saveProfile('age')">保存</el-button>
-            <el-button @click="cancelEdit('age')">取消</el-button>
-          </div>
-        </div>
-      </div>
-
-
-
-      <!-- 邮箱 -->
-      <div class="profile-field">
-        <label>邮箱</label>
-        <div class="field-content" v-if="!editingEmail">
-          <span>{{ email }}</span>
-          <Edit style="margin-left: 8px; cursor: pointer; color: #13386c; width: 1em; height: 1em;" @click="startEdit('email')" />
-        </div>
-        <div class="field-content" v-else>
-          <el-input
-            type="text"
-            v-model="email"
-            placeholder="输入您的邮箱地址"
-            maxlength="50"
-          ></el-input>
-          <div class="profile-actions">
-            <el-button type="primary" @click="saveProfile('email')">保存</el-button>
-            <el-button @click="cancelEdit('email')">取消</el-button>
-          </div>
-        </div>
-      </div>
-
-      <!-- 简介 -->
-      <div class="profile-field">
-        <label>简介</label>
-        <div class="field-content" v-if="!editingBio">
-          <span>{{ bio }}</span>
-          <Edit style="margin-left: 8px; cursor: pointer; color: #13386c; width: 1em; height: 1em;" @click="startEdit('bio')" />
-        </div>
-        <div class="field-content" v-else>
-          <el-input
-            type="text"
-            v-model="bio"
-            placeholder="填写兴趣爱好、生活方式等个人简介"
-            maxlength="50"
-            show-word-limit
-          ></el-input>
-          <div class="profile-actions">
-            <el-button type="primary" @click="saveProfile('bio')">保存</el-button>
-            <el-button @click="cancelEdit('bio')">取消</el-button>
-          </div>
-        </div>
-      </div>
-    </div>
-
- <!-- 头像编辑弹窗 -->
- <el-dialog title="预览头像" v-model="isAvatarEditorOpen" width="30%" :custom-class="'rounded-dialog'">
-      <div class="avatar-editor">
-        <img :src="uploadedAvatar || avatar" class="avatar-preview" alt="预览头像" />
-        <div class="avatar-actions">
-          <el-button type="primary" @click="saveAvatar">保存</el-button>
-          <el-button @click="cancelAvatarEdit">取消</el-button>
-        </div>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue';
-import axios from 'axios';
-import { ElMessage } from 'element-plus';
-import { Close, Camera, Edit } from '@element-plus/icons-vue';
+import { Close, Star, PictureRounded, ChatRound } from "@element-plus/icons-vue";
 import { useRouter } from 'vue-router';
-
 const router = useRouter();
 
-const userId = 1;
-
-// 初始化数据
-const initialAvatar = '/static/avatars/default.png'; // 初始头像路径
-const initialUsername = '';
-const initialGender = '';
-const initialEmail = '';
-const initialBio = '';
-const initialAge = '';
-
-const avatar = ref(initialAvatar);
-const uploadedAvatar = ref('');
-const username = ref(initialUsername);
-const gender = ref(initialGender);
-const age = ref(initialAge);
-const email = ref(initialEmail);
-const bio = ref(initialBio);
-
-const isAvatarEditorOpen = ref(false);
-const editingUsername = ref(false);
-const editingGender = ref(false);
-const editingEmail = ref(false);
-const editingBio = ref(false);
-const editingAge = ref(false);
-const fileInput = ref(null);
-
-// 预先存储的变量，用于保存编辑前的值
-const originalUsername = ref('');
-const originalGender = ref('');
-const originalEmail = ref('');
-const originalBio = ref('');
-const originalAge = ref('');
-
-
-
-const loadUserProfile = async () => {
-  try {
-    const response = await axios.get(`/api/user/${userId}`);
-    const data = response.data;
-    username.value = data.name;
-    email.value = data.email;
-    avatar.value = data.photo;
-    gender.value = data.gender ? '男' : '女';
-    bio.value = data.bio;
-    age.value = data.age;
-  } catch (error) {
-    console.error('Error loading user profile:', error);
-  }
-};
-
-// 加载用户数据
-onMounted(loadUserProfile);
-
-const triggerFileInput = () => {
-  fileInput.value.click();
-};
-
-const uploadAvatar = (event) => {
-  const target = event.target as HTMLInputElement;
-  const file = target.files ? target.files[0] : null;
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      // 只将图片预览结果存储到 uploadedAvatar 中
-      uploadedAvatar.value = e.target?.result as string;
-      isAvatarEditorOpen.value = true; // 打开预览编辑器
-    };
-    reader.readAsDataURL(file);
-  }
-};
-
-const saveAvatar = async () => {
-  const formData = new FormData();
-  formData.append('file', fileInput.value.files[0]);
-
-  try {
-    const response = await axios.post('/api/upload-avatar', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
-    avatar.value = response.data.photo; // 从服务器获取更新后的头像路径
-    ElMessage({ message: '头像已保存', type: 'success' });
-  } catch (error) {
-    console.error('Error saving avatar:', error);
-  }
-
-  isAvatarEditorOpen.value = false; // 关闭编辑器
-};
-
-
-// 关闭头像编辑器并取消修改
-const cancelAvatarEdit = () => {
-  isAvatarEditorOpen.value = false;
-
-};
-
-// 开始编辑字段
-const startEdit = (field: string) => {
-  if (field === 'username') {
-    originalUsername.value = username.value;
-    editingUsername.value = true;
-  } else if (field === 'gender') {
-    originalGender.value = gender.value;
-    editingGender.value = true;
-  } else if (field === 'email') {
-    originalBio.value = bio.value;
-    editingEmail.value = true;
-  } else if (field === 'bio') {
-    originalBio.value = bio.value;
-    editingBio.value = true;
-  } else if (field === 'age') {
-    originalAge.value = age.value;
-    editingAge.value = true;
-  }
-};
-
-
-// 更新用户数据
-const saveProfile = async (field: string) => {
-  try {
-    const updatedData: Record<string, any> = {
-      id: userId, // 包含用户 ID
-      name: username.value,
-      email: email.value,
-      photo: avatar.value,
-      bio: bio.value,
-      sex: gender.value === '男', // 转换性别
-      age: age.value, // 转换性别
-    };
-    if (field === 'username') updatedData.name = username.value;
-    if (field === 'gender') updatedData.gender = gender.value === '男';
-    if (field === 'email') updatedData.email = email.value;
-    if (field === 'bio') updatedData.bio = bio.value;
-    if (field === 'age') updatedData.age = age.value;
-    console.log(updatedData)
-
-    await axios.post('/api/update-profile', updatedData); // 使用 POST 方法
-    ElMessage({ message: `资料(${field})已保存`, type: 'success' });
-  } catch (error) {
-    console.error('Error updating profile:', error);
-  }
-
-  // 关闭编辑状态
-  if (field === 'username') editingUsername.value = false;
-  if (field === 'gender') editingGender.value = false;
-  if (field === 'email') editingEmail.value = false;
-  if (field === 'bio') editingBio.value = false;
-  if (field === 'age') editingAge.value = false;
-};
-
-
-
-
-// 取消编辑并恢复到原始值
-const cancelEdit = (field: string) => {
-  if (field === 'username') {
-    username.value = originalUsername.value;
-    editingUsername.value = false;
-  } else if (field === 'gender') {
-    gender.value = originalGender.value;
-    editingGender.value = false;
-  } else if (field === 'email') {
-    email.value = originalEmail.value;
-    editingEmail.value = false;
-  } else if (field === 'bio') {
-    bio.value = originalBio.value;
-    editingBio.value = false;
-  } else if (field === 'age') {
-    age.value = originalAge.value;
-    editingAge.value = false;
-  }
-};
-
-const exitPage = () => {
+const goBack = () => {
   router.go(-1);
-};
+}
 </script>
 
-
-
-<style scoped>
-.profile-editor-container {
-  background-color: white;
-  border-radius: 20px;
-  box-shadow: 0 8px 64px 0 rgba(0, 0, 0, 0.04), 0 1px 4px 0 rgba(0, 0, 0, 0.02);
-  padding: 32px;
-  max-width: 600px;
-  margin: auto;
-  margin-top: 50px;
-  position: relative;
-}
-
-.profile-editor {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.profile-field {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.field-content {
-  min-height: 50px; /* 为每个字段预留固定的高度 */
-}
-
-.profile-actions {
-  display: flex;
-  gap: 10px;
-}
-
-.avatar-container {
-  position: relative;
-  width: 120px;
-  height: 120px;
-  cursor: pointer;
-  margin-bottom: 24px; /* 为头像与用户名预留空间 */
-}
-
-.avatar {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.avatar-overlay {
-  position: absolute;
-  top: 0;
+<style lang="less" scoped>
+.note-detail-mask {
+  position: fixed;
   left: 0;
-  right: 0;
-  bottom: 0;
-  border-radius: 50%;
+  top: 0;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background-color: rgba(0, 0, 0, 0.4);
-  color: white;
-  opacity: 0;
-  transition: opacity 0.3s;
+  width: 100vw;
+  height: 100vh;
+  z-index: 20;
+  overflow: auto;
+
+  .close-cricle {
+    left: 1.3vw;
+    top: 1.3vw;
+    position: fixed;
+    display: flex;
+    z-index: 100;
+    cursor: pointer;
+
+    .close-mask-white {
+      box-shadow:
+        0 2px 8px 0 rgba(0, 0, 0, 0.04),
+        0 1px 2px 0 rgba(0, 0, 0, 0.02);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    .close {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 100%;
+      width: 40px;
+      height: 40px;
+      border-radius: 40px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+  }
+
+  .note-container {
+    width: 86%;
+
+    height: 90%;
+    transition:
+      transform 0.4s ease 0s,
+      width 0.4s ease 0s;
+    transform: translate(104px, 32px) scale(1);
+    overflow: visible;
+
+    display: flex;
+    box-shadow:
+      0 8px 64px 0 rgba(0, 0, 0, 0.04),
+      0 1px 4px 0 rgba(0, 0, 0, 0.02);
+    border-radius: 20px;
+    background: #895454;
+    transform-origin: left top;
+
+    .media-container {
+      width: 68%;
+      height: auto;
+
+      position: relative;
+      background: rgba(0, 0, 0, 0.03);
+      flex-shrink: 0;
+      flex-grow: 0;
+      -webkit-user-select: none;
+      user-select: none;
+      overflow: hidden;
+      border-radius: 20px 0 0 20px;
+      transform: translateZ(0);
+      height: 100%;
+      object-fit: contain;
+      min-width: 440px;
+    }
+
+    .interaction-container {
+      width: 32%;
+      flex-shrink: 0;
+      border-radius: 0 20px 20px 0;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      height: 100%;
+      background-color: #fff;
+      overflow: hidden;
+      border-left: 1px solid rgba(0, 0, 0, 0.08);
+
+      .author-me {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        padding: 24px;
+        border-bottom: 1px solid transparent;
+
+        .info {
+          display: flex;
+          align-items: center;
+
+          .avatar-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: 100%;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            object-fit: cover;
+          }
+
+          .name {
+            padding-left: 12px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+            color: rgba(51, 51, 51, 0.8);
+          }
+        }
+      }
+
+      .note-scroller::-webkit-scrollbar {
+        display: none;
+      }
+
+      .note-scroller {
+        transition: scroll 0.4s;
+        overflow-y: scroll;
+        flex-grow: 1;
+        height: 80vh;
+
+        .note-content {
+          padding: 0 24px 24px;
+          color: var(--color-primary-label);
+
+          .title {
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 18px;
+            line-height: 140%;
+          }
+
+          .desc {
+            margin: 0;
+            font-weight: 400;
+            font-size: 16px;
+            line-height: 150%;
+            color: #333;
+            white-space: pre-wrap;
+            overflow-wrap: break-word;
+
+            .tag-search {
+              cursor: pointer;
+            }
+
+            .tag {
+              margin-right: 2px;
+              color: #13386c;
+            }
+          }
+
+          .bottom-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+
+            .date {
+              font-size: 14px;
+              line-height: 120%;
+              color: rgba(51, 51, 51, 0.6);
+            }
+          }
+        }
+
+        .interaction-divider {
+          margin: 0 24px;
+        }
+        .divider {
+          margin: 4px 8px;
+          list-style: none;
+          height: 0;
+          border: solid rgba(0, 0, 0, 0.08);
+          border-width: 1px 0 0;
+        }
+
+        .comments-el {
+          position: relative;
+
+          .comments-container {
+            padding: 16px;
+
+            .total {
+              font-size: 14px;
+              color: rgba(51, 51, 51, 0.6);
+              margin-left: 8px;
+              margin-bottom: 12px;
+            }
+
+            .list-container {
+              position: relative;
+
+              .parent-comment {
+                margin-bottom: 16px;
+
+                .comment-item {
+                  position: relative;
+                  display: flex;
+                  padding: 8px;
+
+                  .comment-inner-container {
+                    position: relative;
+                    display: flex;
+                    z-index: 1;
+                    width: 100%;
+                    flex-shrink: 0;
+
+                    .avatar {
+                      flex: 0 0 auto;
+
+                      .avatar-item {
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        cursor: pointer;
+                        border-radius: 100%;
+                        border: 1px solid rgba(0, 0, 0, 0.08);
+                        object-fit: cover;
+                        width: 40px;
+                        height: 40px;
+                      }
+                    }
+
+                    .right {
+                      margin-left: 12px;
+                      display: flex;
+                      flex-direction: column;
+                      font-size: 14px;
+                      flex-grow: 1;
+
+                      .author-wrapper {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+
+                        .author {
+                          display: flex;
+                          align-items: center;
+                          .name {
+                            color: rgba(51, 51, 51, 0.6);
+                            line-height: 18px;
+                          }
+                        }
+                      }
+
+                      .content {
+                        margin-top: 4px;
+                        line-height: 140%;
+                        color: #333;
+                      }
+
+                      .info {
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: space-between;
+                        font-size: 12px;
+                        line-height: 16px;
+                        color: rgba(51, 51, 51, 0.6);
+
+                        .date {
+                          margin: 8px 0;
+                        }
+                        .interactions {
+                          display: flex;
+                          margin-left: -2px;
+
+                          .like-wrapper {
+                            padding: 0 4px;
+                            color: rgba(51, 51, 51, 0.8);
+                            font-weight: 500;
+
+                            position: relative;
+                            cursor: pointer;
+                            display: flex;
+                            align-items: center;
+
+                            .like-lottie {
+                              width: 16px;
+                              height: 16px;
+                              left: 4px;
+                            }
+
+                            .count {
+                              margin-left: 2px;
+                              font-weight: 500;
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+
+                .reply-container {
+                  margin-left: 52px;
+
+                  .show-more {
+                    margin-left: 44px;
+                    height: 32px;
+                    line-height: 32px;
+                    color: #13386c;
+                    cursor: pointer;
+                    font-weight: 500;
+                    font-size: 14px;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      .interactions-footer {
+        position: absolute;
+        bottom: 0px;
+        background: #fff;
+        flex-shrink: 0;
+        padding: 12px 24px 24px;
+        height: 130px;
+        border-top: 1px solid rgba(0, 0, 0, 0.08);
+        flex-basis: 130px;
+        z-index: 1;
+
+        .buttons {
+          display: flex;
+          justify-content: space-between;
+
+          .count {
+            margin-left: 6px;
+            margin-right: 12px;
+            font-weight: 500;
+            font-size: 12px;
+          }
+
+          .left {
+            display: flex;
+            .like-wrapper {
+              position: relative;
+              cursor: pointer;
+              display: flex;
+              justify-content: left;
+              color: rgba(51, 51, 51, 0.6);
+              margin-right: 5px;
+              align-items: center;
+              .like-lottie {
+                transform: scale(1.7);
+              }
+            }
+
+            .collect-wrapper {
+              position: relative;
+              cursor: pointer;
+              display: flex;
+              color: rgba(51, 51, 51, 0.6);
+              margin-right: 5px;
+              align-items: center;
+              .like-lottie {
+                transform: scale(1.7);
+              }
+            }
+
+            .chat-wrapper {
+              cursor: pointer;
+              color: rgba(51, 51, 51, 0.6);
+              display: flex;
+              align-items: center;
+              .like-lottie {
+                transform: scale(1.7);
+              }
+            }
+          }
+        }
+
+        .comment-wrapper {
+          &.active {
+            .input-wrapper {
+              flex-shrink: 1;
+            }
+          }
+        }
+
+        .comment-wrapper {
+          display: flex;
+          font-size: 16px;
+          overflow: hidden;
+
+          .input-wrapper {
+            display: flex;
+            position: relative;
+            width: 100%;
+            flex-shrink: 0;
+            transition: flex 0.3s;
+
+            .comment-input:placeholder-shown {
+              background-image: none;
+              padding: 12px 92px 12px 36px;
+              background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAMAAABg3Am1AAAANlBMVEUAAAA0NDQyMjIzMzM2NjY2NjYyMjI0NDQ1NTU1NTUzMzM1NTU1NTUzMzM1NTUzMzM1NTU1NTVl84gVAAAAEnRSTlMAmUyGEzlgc2AmfRx9aToKQzCSoXt+AAAAhElEQVRIx+3Uuw6DMAyF4XOcBOdCafv+L9vQkQFyJBak/JOHT7K8GLM7epuHusRhHwP/mejJ77i32CpZh33aD+lDFDzgZFE8+tgUv5BB9NxEb9NPL3i46JvoUUhXPBKZFQ/rTPHI3ZXt8xr12KX055LoAVtXz9kKHprxNMMxXqRvmAn9ACQ7A/tTXYAxAAAAAElFTkSuQmCC);
+              background-repeat: no-repeat;
+              background-size: 16px 16px;
+              background-position: 16px 12px;
+              color: rgba(51, 51, 51, 0.3);
+            }
+
+            .comment-input {
+              padding: 12px 92px 12px 16px;
+              width: 100%;
+              height: 40px;
+              line-height: 16px;
+              background: rgba(0, 0, 0, 0.03);
+              caret-color: rgba(51, 51, 51, 0.3);
+              border-radius: 22px;
+              border: none;
+              outline: none;
+              resize: none;
+              color: #333;
+            }
+
+            .input-buttons {
+              position: absolute;
+              right: 0;
+              top: 0;
+              height: 40px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              width: 92px;
+              color: rgba(51, 51, 51, 0.3);
+            }
+          }
+
+          .submit {
+            margin-left: 8px;
+            width: 60px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            flex-shrink: 0;
+            background: #3d8af5;
+            border-radius: 44px;
+            font-size: 16px;
+          }
+        }
+
+        .comment-comp {
+          margin-top: 20px;
+        }
+      }
+    }
+  }
 }
-
-.avatar-container:hover .avatar-overlay {
-  opacity: 1;
-}
-
-.hidden-input {
-  display: none;
-}
-
-.avatar-editor {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-  border-radius: 20px; /* 添加圆角 */
-  background-color: #fff; /* 确保弹窗背景为白色 */
-  padding: 20px; /* 添加一些内边距以提供空间 */
-  box-shadow: 0 8px 64px 0 rgba(0, 0, 0, 0.04), 0 1px 4px 0 rgba(0, 0, 0, 0.02);
-}
-
-
-.avatar-preview {
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.avatar-actions {
-  display: flex;
-  gap: 10px;
-}
-
-.close-cricle {
-  position: absolute;
-  top: -15px;
-  left: -15px;
-  z-index: 100;
-  cursor: pointer;
-}
-
-.close-mask-white {
-  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.02);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-}
-
-.close {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 100%;
-  width: 40px;
-  height: 40px;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.rounded-dialog {
-  border-radius:40px; /* 设置弹窗的整体圆角 */
-}
-
 </style>

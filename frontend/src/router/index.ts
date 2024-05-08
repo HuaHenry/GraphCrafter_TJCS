@@ -85,6 +85,11 @@ export const routes = [
         ],
       },
       {
+        path: "/editprofile",
+        component: () => import("@/pages/user/editprofile.vue"),
+        name: "editprofile", // 用于 keep-alive, 必须与SFC自动推导或者显示声明的组件name一致
+      },
+      {
         path: "/push",
         component: () => import("@/pages/push/index.vue"),
         name: "push", // 用于 keep-alive, 必须与SFC自动推导或者显示声明的组件name一致
