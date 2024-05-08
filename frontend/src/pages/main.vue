@@ -59,6 +59,28 @@
         </div>
       </div>
 
+       <!-- 年龄 -->
+       <div class="profile-field">
+        <label>年龄</label>
+        <div class="field-content" v-if="!editingAge">
+          <span>{{ age }}</span>
+          <Edit style="margin-left: 8px; cursor: pointer; color: #13386c; width: 1em; height: 1em;" @click="startEdit('age')" />
+        </div>
+        <div class="field-content" v-else>
+          <el-input
+            type="text"
+            v-model="age"
+            placeholder="输入您的年龄"
+          ></el-input>
+          <div class="profile-actions">
+            <el-button type="primary" @click="saveProfile('age')">保存</el-button>
+            <el-button @click="cancelEdit('age')">取消</el-button>
+          </div>
+        </div>
+      </div>
+
+
+
       <!-- 邮箱 -->
       <div class="profile-field">
         <label>邮箱</label>
@@ -129,15 +151,17 @@ const userId = 1;
 
 // 初始化数据
 const initialAvatar = '/static/avatars/default.png'; // 初始头像路径
-const initialUsername = '用户昵称';
-const initialGender = '女';
-const initialEmail = 'user@example.com';
-const initialBio = 'Be water, my friend.';
+const initialUsername = '';
+const initialGender = '';
+const initialEmail = '';
+const initialBio = '';
+const initialAge = '';
 
 const avatar = ref(initialAvatar);
 const uploadedAvatar = ref('');
 const username = ref(initialUsername);
 const gender = ref(initialGender);
+const age = ref(initialAge);
 const email = ref(initialEmail);
 const bio = ref(initialBio);
 
@@ -146,7 +170,17 @@ const editingUsername = ref(false);
 const editingGender = ref(false);
 const editingEmail = ref(false);
 const editingBio = ref(false);
+const editingAge = ref(false);
 const fileInput = ref(null);
+
+// 预先存储的变量，用于保存编辑前的值
+const originalUsername = ref('');
+const originalGender = ref('');
+const originalEmail = ref('');
+const originalBio = ref('');
+const originalAge = ref('');
+
+
 
 const loadUserProfile = async () => {
   try {
@@ -157,6 +191,7 @@ const loadUserProfile = async () => {
     avatar.value = data.photo;
     gender.value = data.gender ? '男' : '女';
     bio.value = data.bio;
+    age.value = data.age;
   } catch (error) {
     console.error('Error loading user profile:', error);
   }
@@ -210,15 +245,23 @@ const cancelAvatarEdit = () => {
 // 开始编辑字段
 const startEdit = (field: string) => {
   if (field === 'username') {
+    originalUsername.value = username.value;
     editingUsername.value = true;
   } else if (field === 'gender') {
+    originalGender.value = gender.value;
     editingGender.value = true;
   } else if (field === 'email') {
+    originalBio.value = bio.value;
     editingEmail.value = true;
   } else if (field === 'bio') {
+    originalBio.value = bio.value;
     editingBio.value = true;
+  } else if (field === 'age') {
+    originalAge.value = age.value;
+    editingAge.value = true;
   }
 };
+
 
 // 更新用户数据
 const saveProfile = async (field: string) => {
@@ -230,15 +273,14 @@ const saveProfile = async (field: string) => {
       photo: avatar.value,
       bio: bio.value,
       sex: gender.value === '男', // 转换性别
+      age: age.value, // 转换性别
     };
     if (field === 'username') updatedData.name = username.value;
     if (field === 'gender') updatedData.gender = gender.value === '男';
     if (field === 'email') updatedData.email = email.value;
     if (field === 'bio') updatedData.bio = bio.value;
+    if (field === 'age') updatedData.age = age.value;
     console.log(updatedData)
-
-
-    
 
     await axios.post('/api/update-profile', updatedData); // 使用 POST 方法
     ElMessage({ message: `资料(${field})已保存`, type: 'success' });
@@ -251,25 +293,29 @@ const saveProfile = async (field: string) => {
   if (field === 'gender') editingGender.value = false;
   if (field === 'email') editingEmail.value = false;
   if (field === 'bio') editingBio.value = false;
+  if (field === 'age') editingAge.value = false;
 };
 
 
 
 
-
+// 取消编辑并恢复到原始值
 const cancelEdit = (field: string) => {
   if (field === 'username') {
-    username.value = initialUsername;
+    username.value = originalUsername.value;
     editingUsername.value = false;
   } else if (field === 'gender') {
-    gender.value = initialGender;
+    gender.value = originalGender.value;
     editingGender.value = false;
   } else if (field === 'email') {
-    email.value = initialEmail;
+    email.value = originalEmail.value;
     editingEmail.value = false;
   } else if (field === 'bio') {
-    bio.value = initialBio;
+    bio.value = originalBio.value;
     editingBio.value = false;
+  } else if (field === 'age') {
+    age.value = originalAge.value;
+    editingAge.value = false;
   }
 };
 
