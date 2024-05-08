@@ -9,3 +9,5 @@ declare module 'vue-waterfall-plugin-next';
 declare module "element-plus";
 declare module "element-plus/icons-vue";
 declare module "axios";
+
+declare module "ali-oss";

@@ -149,6 +149,7 @@
           </div>
         </div>
     </el-dialog>
+    
 
   </div>
 </template>
@@ -159,9 +160,18 @@
   import { ElMessage } from 'element-plus';
   import { Close, Camera, Edit } from '@element-plus/icons-vue';
   import { useRouter } from 'vue-router';
-  
+
+  import OSS from 'ali-oss';
   const router = useRouter();
   
+
+  const client = new OSS({
+  region: "oss-cn-beijing",
+  accessKeyId: "LTAI5tR1c1uhFRfWxjq8BWT4",
+  accessKeySecret: "BdN5OIEdet7IO6KWOq7TJiivHOsC5B",
+  bucket: "graphcrafter",
+  });
+
   const userId = 1;
   
   // 初始化数据
@@ -234,22 +244,40 @@
   };
   
   const saveAvatar = async () => {
-    const formData = new FormData();
-    formData.append('file', fileInput.value.files[0]);
-  
-    try {
-      const response = await axios.post('/api/upload-avatar', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      avatar.value = response.data.photo; // 从服务器获取更新后的头像路径
-      ElMessage({ message: '头像已保存', type: 'success' });
-    } catch (error) {
-      console.error('Error saving avatar:', error);
+    const file = fileInput.value.files[0];
+    if (!file) {
+      console.error('No file selected for upload');
+      return;
     }
-  
+
+    try {
+      const filePath = `avatars/${userId}-${file.name}`; // Unique path for the avatar
+      const options = { headers: { 'Content-Type': file.type } };
+
+      // Perform upload to OSS
+      const result = await client.put(filePath, file, options);
+      console.log('Upload result:', result);
+
+      // Retrieve URL
+      const avatarUrl = `http://graphcrafter.oss-cn-beijing.aliyuncs.com/${filePath}`;
+      avatar.value = avatarUrl;
+
+      // Update the avatar URL in the backend
+      await axios.post('/api/update-avatar', {
+        user_id: userId,
+        photo: avatarUrl
+      });
+
+      ElMessage({ message: '头像已保存', type: 'success' });
+    } catch (e) {
+      console.error('Error saving avatar:', e);
+      ElMessage({ message: '上传头像时出现问题，请稍后重试', type: 'error' });
+    }
+
     isAvatarEditorOpen.value = false; // 关闭编辑器
-  };
-  
+};
+
+
   
   // 关闭头像编辑器并取消修改
   const cancelAvatarEdit = () => {
@@ -401,7 +429,7 @@
 .avatar {
   width: 100%;
   height: 100%;
-  border-radius: 10%;
+  border-radius: 50%;
   object-fit: cover;
 }
 
@@ -411,7 +439,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  border-radius: 10%;
+  border-radius: 50%;
   display: flex;
   flex-direction: column;
   align-items: center;

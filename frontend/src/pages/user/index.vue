@@ -5,7 +5,7 @@
         <div class="avatar">
           <div class="avatar-wrapper">
             <img
-              src="https://sns-avatar-qc.xhscdn.com/avatar/5fb295387373d50001ddf25f.jpg?imageView2/2/w/540/format/webp|imageMogr2/strip2"
+              :src="avatar"
               class="user-image"
               style="border: 1px solid rgba(0, 0, 0, 0.08)"
             />
@@ -16,21 +16,20 @@
             <div class="basic-info">
               <div class="user-basic">
                 <div class="user-nickname">
-                  <div class="user-name">三块给你买麻吉<!----></div>
+                  <!-- 使用动态数据的用户名 -->
+                  <div class="user-name">{{ username }}</div>
                   <button @click="toEdit" class="edit-button">编辑</button>
                 </div>
                 <div class="user-content">
-                  <span class="user-redId">小红书号：275592512</span><span class="user-IP"> IP属地：广东</span>
+                  <span class="user-redId">小红书号：275592512</span>
+                  <span class="user-IP">IP属地：广东</span>
                 </div>
               </div>
             </div>
-            <div class="user-desc">
-              永远爱蜡笔小新，哆啦A梦（只是哆啦A梦），柯南，银魂（后悔没有早点入坑），火影，小埋！。
-            </div>
+            <!-- 使用动态数据的简介 -->
+            <div class="user-desc">{{ description }}</div>
             <div class="user-tags">
-              <div class="tag-item">
-                <div>射手座</div>
-              </div>
+              <div class="tag-item"><div>射手座</div></div>
               <div class="tag-item"><div>广东广州</div></div>
               <div class="tag-item"><div>程序员</div></div>
             </div>
@@ -41,30 +40,20 @@
                 <div><span class="count">2445</span><span class="shows">获赞与收藏</span></div>
               </div>
             </div>
-            <!---->
           </div>
-          <div class="follow"><!----></div>
         </div>
       </div>
     </div>
-    <div class="reds-sticky-box user-page-sticky" style="--1ee3a37c: all 0.4s cubic-bezier(0.2, 0, 0.25, 1) 0s">
-      <div class="reds-sticky" style="">
-        <div class="tertiary center reds-tabs-list" style="padding: 0px 12px">
-          <div class="reds-tab-item active" style="padding: 0px 16px; margin-right: 0px; font-size: 16px">
-            <!----><!----><span>笔记</span>
-          </div>
-          <div class="reds-tab-item" style="padding: 0px 16px; margin-right: 0px; font-size: 16px">
-            <!----><!----><span>收藏</span>
-          </div>
-          <div class="reds-tab-item" style="padding: 0px 16px; margin-right: 0px; font-size: 16px">
-            <!----><!----><span @click="toAgree">点赞</span>
-          </div>
-          <!---->
-          <div class="active-tag" style="width: 64px; left: 627px"></div>
+    <div class="reds-sticky-box user-page-sticky">
+      <div class="reds-sticky">
+        <div class="reds-tabs-list">
+          <div class="reds-tab-item active"><span>笔记</span></div>
+          <div class="reds-tab-item"><span>收藏</span></div>
+          <div class="reds-tab-item"><span @click="toAgree">点赞</span></div>
         </div>
       </div>
     </div>
-    <div class="feeds-tab-container" style="--1ee3a37c: all 0.4s cubic-bezier(0.2, 0, 0.25, 1) 0s">
+    <div class="feeds-tab-container">
       <router-view />
     </div>
   </div>
@@ -74,7 +63,15 @@
 <script lang="ts" setup>
 // import { Star } from "@element-plus/icons-vue";
 import { useRouter } from "vue-router";
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
 const router = useRouter();
+const userId = 1;
+
+const avatar = ref('/static/avatars/default.png');
+const username = ref('');
+const description = ref('');
+
 
 const toEdit = () => {
       router.push({ path: "/editprofile" });
@@ -83,6 +80,23 @@ const toEdit = () => {
 const toAgree = () => {
   router.push({ path: "/agree" });
 };
+
+// 加载用户资料
+const loadUserProfile = async () => {
+  try {
+    const response = await axios.get(`/api/user/${userId}`);
+    const data = response.data;
+    avatar.value = data.photo || '/static/avatars/default.png';
+    username.value = data.name || '未知用户';
+    description.value = data.bio || '未填写简介';
+  } catch (error) {
+    console.error('Error loading user profile:', error);
+  }
+};
+
+// 组件加载时调用
+onMounted(loadUserProfile);
+
 
 </script>
 <style lang="less" scoped>
@@ -115,7 +129,7 @@ const toAgree = () => {
           }
         }
       }
-
+  
       .info-part {
         position: relative;
         width: 100%;
@@ -142,6 +156,18 @@ const toAgree = () => {
                   color: #333;
                 }
               }
+              .edit-button {
+                  margin-left: 16px;
+                  padding: 8px 12px;
+                  font-size: 14px;
+                  background-color: #b3acc6;
+                  border: none;
+                  color: #fff;
+                  border-radius: 6px;
+                  cursor: pointer;
+                  transition: all 0.2s;
+                }
+
               .user-content {
                 width: 100%;
                 font-size: 12px;

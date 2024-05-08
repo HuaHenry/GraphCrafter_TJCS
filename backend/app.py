@@ -160,11 +160,29 @@ def update_profile():
     user.photo = data.get('photo', user.photo)
     user.email = data.get('email', user.email)
     user.sex = data.get('sex', user.sex)
+    user.age = data.get('age', user.age)
+    print(user.age)
     user.description = data.get('bio', user.description)
 
     db.session.commit()
     return jsonify({'message': 'Profile updated successfully'})
 
+# 更新用户头像 URL
+@app.route('/api/update-avatar', methods=['POST'])
+def update_avatar():
+    data = request.json
+    user_id = data.get('user_id')
+    avatar_url = data.get('photo')
+
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+    # 更新用户的头像 URL
+    user.photo = avatar_url
+    db.session.commit()
+
+    return jsonify({'message': 'Avatar updated successfully'})
 
 
 if __name__ == '__main__':

@@ -11,6 +11,7 @@
     "lint:prettier": "prettier --write \"**/*.{js,ts,json,css,less,scss,vue,html,md}\""
   },
   "dependencies": {
+    "ali-oss": "^6.20.0",
     "axios": "^1.5.1",
     "element-plus": "^2.7.2",
     "lwaterfall": "^1.0.6",
