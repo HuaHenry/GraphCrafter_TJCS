@@ -1,8 +1,9 @@
 import sys,os
 from flask import Flask, jsonify, request, render_template, url_for, send_from_directory
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 from flask_sqlalchemy import SQLAlchemy  # 导入扩展类
 import os
+from sqlalchemy import func
 
 WIN = sys.platform.startswith('win')
 if WIN:  # 如果是 Windows 系统，使用三个斜线
@@ -126,6 +127,46 @@ def get_user_profile(user_id):
             'bio': user.description
         })
     return jsonify({'error': 'User not found'}), 404
+
+# 获取用户收藏
+@cross_origin()
+@app.route('/api/collection', methods=['GET'])
+def get_collection():
+    # user = db.session.query(Post.picture1,Post.title,User.name,User.photo,func.count(Like.id).label('like')).filter(Post.id==Collect.post_id and Collect.user_id==1 and Post.author_id==User.id and Like.post_id==Post.id).all()
+    collections=db.session.query(
+        Post.picture1,
+        Post.title,
+        User.name,
+        User.photo,
+        func.count(Like.id).label('like')
+    ).join(Collect, Post.id == Collect.post_id).join(User, Post.author_id == User.id).outerjoin(Like, Post.id == Like.post_id).filter(Collect.user_id == 1).group_by(Post.picture1, Post.title, User.name, User.photo).all()
+    pictures=[]
+    titles=[]
+    authors=[]
+    avatars=[]
+    likes=[]
+    for collection in collections:
+        pictures.append(collection[0])
+        titles.append(collection[1])
+        authors.append(collection[2])
+        avatars.append(collection[3])
+        likes.append(collection[4])
+    response_json = jsonify({
+        'pictures': pictures,
+        'titles': titles,
+        'authors': authors,
+        'avatars': avatars,
+        'likes': likes
+    })
+    print({
+        'pictures': pictures,
+        'titles': titles,
+        'authors': authors,
+        'avatars': avatars,
+        'likes': likes
+    })
+    return response_json
+    # return jsonify({'error': 'collect not found'}), 404
 
 # 上传头像
 @app.route('/api/upload-avatar', methods=['POST'])
