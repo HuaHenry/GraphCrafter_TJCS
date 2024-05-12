@@ -16,9 +16,9 @@
         <div v-if="message.user.id===$props.user.id" class="chat-bubble left">
           <!-- 消息 -->
           <span class="chat-bubble-right">
-     		  <div class="chat-text" @contextmenu.prevent="showContextMenu">{{message.content}}</div>
+     		  <div class="chat-text" @contextmenu.prevent="showContextMenu($event, index)">{{message.content}}</div>
           <!--删除-->
-          <div v-if="showMenu" class="context-menu" :style="{ top: menuY + 'px', left: menuX + 'px' }" @click="deleteMessage(index)">
+          <div v-if="showMenu" class="context-menu" :style="{ top: menuY + 'px', left: menuX + 'px' }" @click="deleteMessage">
             删除
           </div>
           </span>
@@ -33,9 +33,9 @@
           <!-- 消息 -->
           <span class="triangle-top-left" :class="{ 'change-border': isLeftBubbleHover }"></span>
           <span class="chat-bubble-left" @mouseover="changeLeftArrowColor(true)" @mouseout="changeLeftArrowColor(false)">
-          <div class="chat-text" @contextmenu.prevent="showContextMenu">{{message.content}}</div>
+          <div class="chat-text" @contextmenu.prevent="showContextMenu($event, index)">{{message.content}}</div>
             <!--删除-->
-          <div v-if="showMenu" class="context-menu" :style="{ top: menuY + 'px', left: menuX + 'px' }" @click="deleteMessage(index)">
+          <div v-if="showMenu" class="context-menu" :style="{ top: menuY + 'px', left: menuX + 'px' }" @click="deleteMessage">
             删除
           </div>
      	    </span>
@@ -68,19 +68,21 @@ export default {
   },
   data(){
     return{
-      showMenu: false,
+      showMenu: true,
       menuX: 0,
       menuY: 0,
+      selectMessageIndex:0,
       isLeftBubbleHover: false,
     }
   },
   emits: ['close'],
   methods: {
-    showContextMenu(event) {
+    showContextMenu(event,index) {
       event.preventDefault();
       this.menuX = event.pageX;
       this.menuY = event.pageY;
       this.showMenu = true;
+      this.selectMessageIndex = index;
 
       // 点击其他地方时隐藏菜单
       document.addEventListener('click', this.hideContextMenuOnce);
@@ -93,7 +95,8 @@ export default {
         document.removeEventListener('click', this.hideContextMenuOnce);
       }
     },
-    deleteMessage(index) {
+    deleteMessage() {
+      let index = this.selectMessageIndex;
       //从数据库中删掉消息
       axios.post('/api/delete_message', { message_id:this.socketState.messages[index].id })
           .then(response => {
