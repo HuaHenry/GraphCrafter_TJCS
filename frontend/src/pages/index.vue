@@ -7,7 +7,7 @@
          </a>
         <div class="tool-box"></div>
         <div class="input-box">
-          <input type="text" class="search-input" placeholder="搜索小红书" />
+          <input type="text" class="search-input" placeholder="搜索" />
           <div class="input-button">
             <div class="close-icon"><Close style="width: 1em; height: 1em; margin-right: 8px" /></div>
             <div class="search-icon"><Search style="width: 1em; height: 1em; margin-right: 8px" /></div>
@@ -19,7 +19,7 @@
     <div class="main">
       <div class="side-bar">
         <ul class="channel-list">
-          <li class="active-channel">
+          <li>
             <a class="link-wrapper"
               ><House style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel" @click="toDashboard()"
                 >发现</span
@@ -31,10 +31,8 @@
               动态</span
             >
           </li>
-          <li>
-            <Bell style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel" @click="toMessage()">
-              消息</span
-            >
+          <li class="active-channel"><Bell style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel" @click="toMessage()">
+              消息</span>
           </li>
           <li>
             <CirclePlus style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel" @click="toPush()">
@@ -50,7 +48,7 @@
 
         <div class="information-container">
           <div class="information-pad">
-            <div class="container">
+            <div class="container" style="visibility: hidden;">
               <div>
                 <div>
                   <div class="group-wrapper">

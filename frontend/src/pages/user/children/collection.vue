@@ -30,7 +30,7 @@ import "vue-waterfall-plugin-next/dist/style.css";
 // import { ref } from "vue";
 
 import { ref, onMounted } from "vue";
-
+import axios from 'axios';
 
 const list = ref([
   // { src: "https://tse1-mm.cn.bing.net/th/id/OIP-C.Zte3ljd4g6kqrWWyg-8fhAHaEo?w=264&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7" },
@@ -60,8 +60,8 @@ const list = ref([
 const fetchData = async () => {
   try {
     // Simulated asynchronous database query
-    const data = await fetch('http://127.0.0.1:5000/api/collection'); // Replace URL with your endpoint
-    const result = await data.json();
+    const data = await axios.get("/api/collection");
+    const result = data.data;
     // 解构出各个属性数组
     const { authors, avatars, likes, pictures, titles } = result;
     // 遍历数组，构建每个对象并添加到数组中

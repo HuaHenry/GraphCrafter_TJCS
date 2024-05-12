@@ -70,18 +70,18 @@ export const routes = [
         path: "/user",
         component: () => import("@/pages/user/index.vue"),
         name: "user", // 用于 keep-alive, 必须与SFC自动推导或者显示声明的组件name一致
-        redirect: "/note",
+        redirect: "/collection",
         children: [
           {
             path: "/note",
             component: () => import("@/pages/user/children/note.vue"),
             name: "note", // 用于 keep-alive, 必须与SFC自动推导或者显示声明的组件name一致
           },
-          {
-            path: "/agree",
-            component: () => import("@/pages/user/children/agree.vue"),
-            name: "agree", // 用于 keep-alive, 必须与SFC自动推导或者显示声明的组件name一致
-          },
+          // {
+          //   path: "/agree",
+          //   component: () => import("@/pages/user/children/agree.vue"),
+          //   name: "agree", // 用于 keep-alive, 必须与SFC自动推导或者显示声明的组件name一致
+          // },
           {
             path: "/collection",
             component: () => import("@/pages/user/children/collection.vue"),

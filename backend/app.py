@@ -10,6 +10,10 @@ from sqlalchemy.orm import relationship
 from flask_socketio import SocketIO, emit, join_room
 from datetime import datetime
 
+# 防止通信报错 by zyp
+import locale
+locale.setlocale(locale.LC_CTYPE,"chinese")
+
 WIN = sys.platform.startswith('win')
 if WIN:  # 如果是 Windows 系统，使用三个斜线
     prefix = 'sqlite:///'
@@ -165,6 +169,54 @@ def get_collection():
         User.photo,
         func.count(Like.id).label('like')
     ).join(Collect, Post.id == Collect.post_id).join(User, Post.author_id == User.id).outerjoin(Like, Post.id == Like.post_id).filter(Collect.user_id == 1).group_by(Post.picture1, Post.title, User.name, User.photo).all()
+    pictures=[]
+    titles=[]
+    authors=[]
+    avatars=[]
+    likes=[]
+    for collection in collections:
+        pictures.append(collection[0])
+        titles.append(collection[1])
+        authors.append(collection[2])
+        avatars.append(collection[3])
+        likes.append(collection[4])
+    response_json = jsonify({
+        'pictures': pictures,
+        'titles': titles,
+        'authors': authors,
+        'avatars': avatars,
+        'likes': likes
+    })
+    print({
+        'pictures': pictures,
+        'titles': titles,
+        'authors': authors,
+        'avatars': avatars,
+        'likes': likes
+    })
+    return response_json
+    # return jsonify({'error': 'collect not found'}), 404
+
+# 获取用户收藏
+@cross_origin()
+@app.route('/api/note', methods=['GET'])
+def get_note():
+    # user = db.session.query(Post.picture1,Post.title,User.name,User.photo,func.count(Like.id).label('like')).filter(Post.id==Collect.post_id and Collect.user_id==1 and Post.author_id==User.id and Like.post_id==Post.id).all()
+    # collections=db.session.query(
+    #     Post.picture1,
+    #     Post.title,
+    #     User.name,
+    #     User.photo,
+    #     func.count(Like.id).label('like')
+    # ).join(Collect, Post.id == Collect.post_id).join(User, Post.author_id == User.id).outerjoin(Like, Post.id == Like.post_id).filter(Collect.user_id == 1).group_by(Post.picture1, Post.title, User.name, User.photo).all()
+# 构建查询
+    collections = db.session.query(
+    Post.picture1,
+    Post.title,
+    User.name,
+    User.photo,
+    func.count(Like.id).label('like')
+    ).join(User, Post.author_id == User.id).filter(User.id == 1).outerjoin(Like, Post.id == Like.post_id).group_by(Post.picture1, Post.title, User.name, User.photo).all()
     pictures=[]
     titles=[]
     authors=[]
