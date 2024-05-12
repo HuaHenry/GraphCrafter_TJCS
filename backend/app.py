@@ -257,12 +257,29 @@ def transUserData(user):
             'avatar': user.photo,
             }
 
+@app.route('/api/fake-login/<int:user_id>', methods=['GET'])
+def get_user_info(user_id):
+    if user_id:
+        user = User.query.filter_by(id=user_id).first()
+        if user:
+            # If user found, construct response
+            response = {
+                'name': user.name,
+                'avatar': user.photo
+            }
+            return jsonify(response), 200
+        else:
+            return jsonify({'error': 'User not found'}), 404
+    else:
+        return jsonify({'error': 'Userid parameter is required'}), 400
+
 # 转换时间格式
 def formatDateTime(time):
     return time.strftime("%Y年%m月%d日 %H:%M:%S").replace("年0", "年").replace("月0", "月").replace("日0", "日")
 # 获取历史消息
 @app.route('/api/chat/<int:user_id>', methods=['GET'])
 def get_chats(user_id):
+    print("get chats user:",user_id)
     stuff_id = 0
     chats = Chat.query.filter((Chat.receiver == user_id) | ((Chat.sender == user_id) & (Chat.receiver != stuff_id))).all()
     data = []

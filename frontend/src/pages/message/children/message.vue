@@ -35,7 +35,7 @@
 
   <!--模拟登录，确定用户-->
   <div style="margin-top:80px" >
-    <input v-model="user.name">
+    <input id="user-id-input">|
     <button @click="checkLogin" style="border: 1px solid #888888;padding: 10px">确认</button>
   </div>
 
@@ -66,14 +66,19 @@ export default{
   },
   methods: {
     async checkLogin(): Promise<void> {
+      this.user.id = document.getElementById("user-id-input").value;
+      const response = await axios.get(`/api/fake-login/${this.user.id}`);
+      this.user.name = response.data.name;
+      this.user.avatar = response.data.avatar;
       this.login = true;
       await this.fetchChatList();
     },
 
     async fetchChatList(): Promise<void> {
       try {
-        // const response = await axios.get(`/api/chat/${this.user.id}`);
-        const response = await axios.get(`/api/chat/1`);
+        console.log("user")
+        const response = await axios.get(`/api/chat/${this.user.id}`);
+        // const response = await axios.get(`/api/chat/1`);
         this.chatList = response.data;
         console.log(this.chatList);
         if (this.user.name === this.chatList[0].sender.name) {
