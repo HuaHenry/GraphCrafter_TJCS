@@ -263,7 +263,8 @@ def formatDateTime(time):
 # 获取历史消息
 @app.route('/api/chat/<int:user_id>', methods=['GET'])
 def get_chats(user_id):
-    chats = Chat.query.filter((Chat.sender == user_id) | (Chat.receiver == user_id)).all()
+    stuff_id = 0
+    chats = Chat.query.filter((Chat.receiver == user_id) | ((Chat.sender == user_id) & (Chat.receiver != stuff_id))).all()
     data = []
     for chat in chats:
         messages = Message.query.filter_by(chat_id=chat.id).order_by(Message.id).all()
@@ -340,6 +341,37 @@ def delete_message():
             return 'Message not found', 404
     else:
         return 'No message ID provided', 400
+
+# 查询反馈
+@app.route('/api/feedback/<int:user_id>', methods=['GET'])
+def get_feedback(user_id):
+    stuff_id=0# 客服id
+    chats = Chat.query.filter((Chat.sender == user_id) & (Chat.receiver == stuff_id)).all()
+    data = []
+    for chat in chats:
+        messages = Message.query.filter_by(chat_id=chat.id).order_by(Message.id).all()
+        chat_data = {
+            'id': chat.id,
+            'sender': transUserData(User.query.get(chat.sender)),
+            'receiver': transUserData(User.query.get(chat.receiver)),
+            'unread_sender': chat.unread_sender,
+            'unread_receiver': chat.unread_receiver,
+            'last_time': formatDateTime(chat.last_time),
+            'messages': []
+        }
+        for message in messages:
+            user = User.query.get(message.user_id)
+            message_data = {
+                'id': message.id,
+                'type': message.type,
+                'time': formatDateTime(message.time),
+                'content': message.content,
+                'user': transUserData(user)
+            }
+            chat_data['messages'].append(message_data)
+        data.append(chat_data)
+
+    return jsonify(data)
 
 @socketio.on('connect')
 def handle_connect():

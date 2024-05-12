@@ -2,7 +2,9 @@
   <div class="container">
     <div class="top">
       <header class="mask-paper">
-        <a style="display: flex">烟火</a>
+        <a style="display: flex">
+          <img src="https://graphcrafter.oss-cn-beijing.aliyuncs.com/Ramune.png" style="width:70%;position: relative; top:10px; left:30px"/>
+         </a>
         <div class="tool-box"></div>
         <div class="input-box">
           <input type="text" class="search-input" placeholder="搜索小红书" />

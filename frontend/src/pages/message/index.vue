@@ -3,22 +3,27 @@
     <div class style="height: 72px">
       <div class="reds-sticky">
         <div class="reds-tabs-list">
-          <div class="reds-tab-item active tab-item">
-            <div class="badge-container">
+          <div class="reds-tab-item">
+            <div :class="{ 'reds-tab-item': true, 'active': activeTab === 'messageTab' }" @click="toMessage()">
               <span>我的消息</span>
             </div>
           </div>
-          <div class="reds-tab-item tab-item">
+          <div :class="{ 'reds-tab-item': true, 'active': activeTab === 'feedbackTab' }">
+            <div class="badge-container" @click="toFeedback()">
+              <span>我的反馈</span>
+            </div>
+          </div>
+          <div :class="{ 'reds-tab-item': true, 'active': activeTab === 'commentTab' }">
             <div class="badge-container" @click="toComment()">
               <span>评论和@</span>
             </div>
           </div>
-          <div class="reds-tab-item tab-item">
+          <div :class="{ 'reds-tab-item': true, 'active': activeTab === 'agreeTab' }">
             <div class="badge-container" @click="toAgree()">
               <span>赞和收藏</span>
             </div>
           </div>
-          <div class="reds-tab-item tab-item">
+          <div :class="{ 'reds-tab-item': true, 'active': activeTab === 'followerTab' }">
             <div class="badge-container" @click="toFollower()">
               <span>新增关注</span>
             </div>
@@ -35,15 +40,26 @@
 <script lang="ts" setup>
 import { useRouter } from "vue-router";
 const router = useRouter();
+let activeTab = "messageTab";
 
+const toMessage = () => {
+  activeTab = "messageTab";
+  router.push({ path: "/message" });
+};
 const toComment = () => {
+  activeTab = "commentTab";
   router.push({ path: "/comment" });
 };
-
+const toFeedback = () => {
+  activeTab = "feedbackTab";
+  router.push({ path: "/feedback" });
+};
 const toAgree = () => {
+  activeTab = "agreeTab";
   router.push({ path: "/agreeCollection" });
 };
 const toFollower = () => {
+  activeTab = "followerTab";
   router.push({ path: "/follower" });
 };
 </script>

@@ -40,6 +40,11 @@ export const routes = [
             name: "message", // 用于 keep-alive, 必须与SFC自动推导或者显示声明的组件name一致
           },
           {
+            path: "/feedback",
+            component: () => import("@/pages/message/children/feedback.vue"),
+            name: "feedback",
+          },
+          {
             path: "/agreeCollection",
             component: () => import("@/pages/message/children/agree-collection.vue"),
             name: "agreeCollection", // 用于 keep-alive, 必须与SFC自动推导或者显示声明的组件name一致
