@@ -323,18 +323,19 @@ def receive_messages():
         chat.last_time = message_datetime
         db.session.commit()
 
-    return jsonify({'message': 'Messages received and saved successfully'}), 200
+    return jsonify({'message_id': next_message_id}), 200
 
 # 删去消息
 @app.route('/api/delete_message', methods=['POST'])
 def delete_message():
     message_id = request.json.get('message_id')
+    print("msg id:",message_id)
     if message_id:
         message = Message.query.get(message_id)
         if message:
             db.session.delete(message)
             db.session.commit()
-            return 'Message deleted successfully', 200
+            return 'Delete successfully', 200
         else:
             return 'Message not found', 404
     else:

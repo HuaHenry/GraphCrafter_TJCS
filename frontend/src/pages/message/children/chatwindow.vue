@@ -95,7 +95,6 @@ export default {
     },
     deleteMessage(index) {
       //从数据库中删掉消息
-      console.log(this.socketState.messages[index]);
       axios.post('/api/delete_message', { message_id:this.socketState.messages[index].id })
           .then(response => {
             console.log('Message deleted successfully');
@@ -134,27 +133,30 @@ export default {
       socket.emit("join", { chat_id: socketState.chat_id });
     });
 
-    function sendMessage(e: Event): void {
+    async function sendMessage(e: Event): void {
       e.preventDefault();
       if (text.value === "") return;
       let msg: Message = {
         type: "text",
-        id: socketState.messages[-1].id+1,
+        id: 0,
         user: props.user,
         content: text.value,
         time: formatDateTime(new Date()),
       };
       let new_data ={ chat_id: props.chat.id, message: msg };
-      // 实时通信
-      socket.emit("message", new_data);
+
       // 后端存储
-      axios.post('/api/save_message', new_data)
+      let msg_id=0;
+      await axios.post('/api/save_message', new_data)
           .then(function(response) {
-            console.log(response.data);
+            msg_id = response.data['message_id'];
           })
           .catch(function(error) {
             console.error('Error:', error);
           });
+      // 实时通信
+      new_data.message.id = msg_id;
+      socket.emit("message", new_data);
       if (content.value) {
         (content.value as HTMLElement).scrollTop = (content.value as HTMLElement).scrollHeight;
       }
