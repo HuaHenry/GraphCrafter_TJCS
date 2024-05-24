@@ -6,14 +6,13 @@
     <div class="note-container">
       <div class="media-container">
         <el-carousel height="90vh">
-          <el-carousel-item v-for="item in ImageList" :key="item">
+          <!-- <el-carousel-item v-for="item in ImageList" :key="item"> -->
             <el-image
-              :src="item"
+              :src="items.pictures"
               style="width: 100%; height: 100%"
               fit="cover"
             />
-            <!-- <img :src="item" alt=""  style="width: 100%"/> -->
-          </el-carousel-item>
+          <!-- </el-carousel-item> -->
         </el-carousel>
       </div>
       <!-- <template #items="{items}"> -->
@@ -27,100 +26,39 @@
                   :src="items.avatar"
                   src="https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg"
                 /> -->
-                <img
+                <!-- <img
                   class="avatar-item"
                   style="width: 40px; height: 40px"
                   :src="items.avatar"
-                />
-                <span class="name">{{ items.author }}</span>
+                /> -->
+                <span class="name">标签：【{{ items.labels }}】</span>
               </div>
-              <div class="follow-btn">
+              <!-- <div class="follow-btn">
                 <el-button type="danger" size="large" round>关注</el-button>
-              </div>
+              </div> -->
             </div>
 
             <div class="note-scroller">
               <div class="note-content">
-                <div class="title">{{ items.title }}</div>
+                <!-- <div class="title">{{ items.title }}</div>
                 <div class="desc">
-                  <span>{{ items.body }} <br /></span>
+                  <span>{{ items.body }} <br /></span> -->
                   <!-- <a class="tag tag-search">#海贼王</a>
                   <a class="tag tag-search">#海贼王</a>
                   <a class="tag tag-search">#海贼王</a> -->
                 </div>
                 <div class="bottom-container">
-                  <span class="date">{{ items.date }}</span>
+                  <span class="date">日期：{{ items.dates }}</span>
                 </div>
               </div>
               <div class="divider interaction-divider"></div>
 
-              <!-- 评论 -->
 
-              <div class="comments-el">
-                <div class="comments-container">
-                  <div class="total">共{{ items.comments_num }}条评论</div>
-                  <div class="list-container">
-                    <div v-for="comment in comments" :key="comments.id" class="parent-comment">
-                      <div class="comment-item">
-                        <div class="comment-inner-container">
-                          <div class="avatar">
-                            <img class="avatar-item" :src="comment.avatar" />
-                          </div>
-                          <div class="right">
-                            <div class="author-wrapper">
-                              <div class="author"><a class="name">{{ comment.author }}</a></div>
-                            </div>
-                            <div class="content">{{ comment.content }}</div>
-                            <div class="info">
-                              <div class="date"><span>{{ comment.date }}</span></div>                              
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
 
-              <!--  -->
-              </div>
-            </div>
+
             <div class="interactions-footer">
-              <div class="buttons">
-                <div class="left">
-                  <span class="like-wrapper"  @click="toggleLike">
-                    <span class="like-lottie">                      
-                      <svg v-if="isLiked" xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16" style="width: 0.8em; height: 0.8em; color: #333">
-                        <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
-                      </svg>
-                      <svg v-else xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-heart" viewBox="0 0 16 16" style="width: 0.8em; height: 0.8em; color: #333">
-                        <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z"/>
-                      </svg>
-                      </span
-                    ><span class="count">{{ items.likes_num }}</span></span
-                  >
-                  <span class="collect-wrapper"  @click="toggleCollect">
-                    <span class="like-lottie"> 
-                      <StarFilled v-if="isCollected" style="width: 1em; height: 1em; color: #333" /> 
-                      <Star v-else style="width: 0.8em; height: 0.8em; color: #333" /> 
-                      <!-- <PictureRounded style="width: 0.8em; height: 0.8em; color: #333" />  -->
-                    </span>
-                    <span class="count">{{ items.collects_num }}</span></span
-                  >
-                  <span class="chat-wrapper">
-                    <span class="like-lottie"> <ChatRound style="width: 0.8em; height: 0.8em; color: #333" /> </span
-                    ><span class="count">{{ items.comments_num }}</span></span
-                  >
-                </div>
-                <div class="share-wrapper"></div>
-              </div>
               <div class="comment-wrapper active comment-comp">
-                <div class="input-wrapper">
-                  <input class="comment-input" v-model="com_content" type="text" placeholder="回复内容" />
-                  <div class="input-buttons">
-                    <Close style="width: 1.2em; height: 1.2em" />
-                  </div>
-                </div>
-                <button class="submit" @click="submitComment">发送</button>
+                <button class="submit" @click="submitDel">删除</button>
               </div>
             </div>
           </div>
@@ -149,38 +87,28 @@ const route = useRoute();
 const userId = 1;
 
 // const ImageList=ref([]);
-const ImageList=ref([]);
+// const ImageList=ref([]);
 const items=ref({});
-const comments=ref([]);
-const com_content=ref('');
+// const comments=ref([]);
+// const com_content=ref('');
 const isLiked=ref();
 const isCollected=ref();
 
 const fetchPost = async () => {
   try {
     // this.$route.params.id
-    const post_id = route.query.id;
+    const post_id = route.query.post_id;
     console.log(post_id);
-    const response = await axios.get(`/api/post_content/${post_id}`);
+    const response = await axios.get(`/api/get_draft/${post_id}`);
     // const data = await fetch('http://127.0.0.1:5000/api/post_content/${post_id}'); 
     const result = response.data;
     // 解构出各个属性数组
-    const { pictures,date,title,body,author,avatar,likes_num,comments_num,collects_num } = result;
-    // 遍历数组，构建每个对象并添加到数组中
-    for (let i = 0; i < pictures.length; i++) {
-      ImageList.value.push(pictures[i]);
-    }
-    // ImageList.value= pictures;
+    const { pictures,dates,labels,ids } = result;
     items.value = {
-      pictures: pictures, // 使用对应索引的图片 URL 作为 src 属性
-      date : date,
-      title: title, // 使用对应索引的标题属性
-      body: body,
-      author: author, // 使用对应索引的作者属性
-      avatar: avatar, // 使用对应索引的头像属性
-      likes_num: likes_num, // 使用对应索引的点赞数属性
-      comments_num: comments_num, // 使用对应索引的评论数属性
-      collects_num: collects_num
+      pictures: pictures, 
+      dates : dates,
+      labels: labels, 
+      ids: ids,
     };
 
   }catch(error){
@@ -188,145 +116,21 @@ const fetchPost = async () => {
   }
 }
 
-const fetchComments = async () => {
-  try {
-    const post_id = route.query.id;
+const submitDel = async () => {
+  try{
+    const post_id = route.query.post_id;
     console.log(post_id);
-    const response = await axios.get(`/api/post_comments/${post_id}`);
+    const response = await axios.get(`/api/del_draft/${post_id}`);
     const result = response.data;
-    // 解构出各个属性数组
-    const { ids,dates,contents,authors,avatars } = result;
-    // 遍历数组，构建每个对象并添加到数组中
-    for (let i = 0; i < contents.length; i++) {
-      const item = {
-        id: ids[i],
-        date: dates[i],
-        content: contents[i],
-        author: authors[i],
-        avatar: avatars[i]
-      };
-      comments.value.push(item);
-    }
+    router.push({ path: "/drafts" });
   }catch(error){
     console.error('Error fetching data:', error);
   }
 }
-
-const submitComment = async () => {
-  try {
-    const post_id = route.query.id;
-    console.log(post_id);
-    const response = await axios.post('/api/submit_comment', {
-      content: com_content.value,
-      postId: post_id,
-      userId: userId
-      // date: date.toLocaleString()
-    });
-    const processed_data = response.data;
-    const { ids,dates,contents,authors,avatars } = processed_data;
-    const item = {
-        id: ids,
-        date: dates,
-        content: contents,
-        author: authors,
-        avatar: avatars
-      };
-    comments.value.unshift(item);
-    // const { ids,dates,contents,authors,avatars } = processed_data;
-    com_content.value = '';
-    ElMessage({ message: '评论发布成功！', type: 'success' });
-    
-    
-  }catch(error){
-    console.error('Error sending comment:', error);
-  }
-}
-
-const getStatus = async () => {
-  try{
-    const post_id = route.query.id;
-    console.log(post_id);
-    const response = await axios.get(`/api/get_status/${post_id}/${userId}`);
-    const result = response.data;
-    const like=result.isLiked;
-    const collect=result.isCollected;
-    console.log(like);
-    if (like=='1') isLiked.value=true;
-    else isLiked.value=false;
-    console.log(isLiked.value);
-    // isLiked.value = like;
-    if (collect=='1') isCollected.value=true;
-    else isCollected.value=false;
-  }catch(error){
-    console.error('Error fetching data:', error);
-  }
-}
-
-const toggleLike = async () => {
-  try{
-    isLiked.value = !isLiked.value;
-    const post_id = route.query.id;
-    console.log(post_id);
-    if (isLiked.value) {
-      // 如果现在是已经点赞的状态，那么发送一个请求到后端来添加点赞
-      await axios.post('/api/add_like', {
-        postId: post_id,
-        userId: userId,
-        add: 1
-      });
-      items.value.likes_num++;
-      ElMessage({ message: '点赞成功！', type: 'success' });
-    } else {
-      // 如果现在是未点赞的状态，那么发送一个请求到后端来删除点赞
-      await axios.post('/api/add_like', {
-        postId: post_id,
-        userId: userId,
-        add: 0
-      });
-      items.value.likes_num--;
-      ElMessage({ message: '取消点赞成功！', type: 'success' });
-    }
-  }catch(error){
-  console.error('Error adding like:', error);
-  }
-}
-
-const toggleCollect = async () => {
-  try{
-    isCollected.value = !isCollected.value;
-    const post_id = route.query.id;
-    console.log(post_id);
-    if (isCollected.value) {
-      // 如果现在是已经点赞的状态，那么发送一个请求到后端来添加点赞
-      await axios.post('/api/add_collect', {
-        postId: post_id,
-        userId: userId,
-        add: 1
-      });
-      items.value.collects_num++;
-      ElMessage({ message: '收藏成功！', type: 'success' });
-    } else {
-      // 如果现在是未点赞的状态，那么发送一个请求到后端来删除点赞
-      await axios.post('/api/add_collect', {
-        postId: post_id,
-        userId: userId,
-        add: 0
-      });
-      items.value.collects_num--;
-      ElMessage({ message: '取消收藏成功！', type: 'success' });
-    }
-  }catch(error){
-  console.error('Error adding like:', error);
-  }
-}
-
-
-
 
 onMounted(() => {
-  getStatus();
+  // getStatus();
   fetchPost(); // Call fetchData function when the component is mounted
-  fetchComments();
   
 });
 

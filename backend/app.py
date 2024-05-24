@@ -4,7 +4,7 @@ from flask import Flask, jsonify, request, render_template, url_for, send_from_d
 from flask_cors import CORS, cross_origin
 
 from flask_sqlalchemy import SQLAlchemy  # 导入扩展类
-from sqlalchemy import func
+from sqlalchemy import func, cast, String, desc
 from sqlalchemy.orm import relationship
 
 from flask_socketio import SocketIO, emit, join_room
@@ -114,6 +114,14 @@ class Chat(db.Model):  # 会话
     last_time = db.Column(db.DateTime)  # 最后一条消息的时间
     messages = relationship("Message", backref="chat") # 包含的消息 一对多
 
+class Draft(db.Model):  # 草稿箱
+    __tablename__ = 'Draft'
+    id = db.Column(db.Integer, primary_key=True)  # 主键
+    date = db.Column(db.DateTime)     # 日期
+    user_id = db.Column(db.Integer)      # 用户id
+    picture = db.Column(db.String(60))     # 图片
+    label = db.Column(db.Text)  # 标签
+
 # app = Flask(__name__)
 app.config.from_object(__name__)
 
@@ -167,32 +175,29 @@ def get_collection():
         Post.title,
         User.name,
         User.photo,
-        func.count(Like.id).label('like')
+        func.count(Like.id).label('like'),
+        Post.id
     ).join(Collect, Post.id == Collect.post_id).join(User, Post.author_id == User.id).outerjoin(Like, Post.id == Like.post_id).filter(Collect.user_id == 1).group_by(Post.picture1, Post.title, User.name, User.photo).all()
     pictures=[]
     titles=[]
     authors=[]
     avatars=[]
     likes=[]
+    ids=[]
     for collection in collections:
         pictures.append(collection[0])
         titles.append(collection[1])
         authors.append(collection[2])
         avatars.append(collection[3])
         likes.append(collection[4])
+        ids.append(collection[5])
     response_json = jsonify({
         'pictures': pictures,
         'titles': titles,
         'authors': authors,
         'avatars': avatars,
-        'likes': likes
-    })
-    print({
-        'pictures': pictures,
-        'titles': titles,
-        'authors': authors,
-        'avatars': avatars,
-        'likes': likes
+        'likes': likes,
+        'ids':ids
     })
     return response_json
     # return jsonify({'error': 'collect not found'}), 404
@@ -215,35 +220,96 @@ def get_note():
     Post.title,
     User.name,
     User.photo,
-    func.count(Like.id).label('like')
+    func.count(Like.id).label('like'),
+    Post.id
     ).join(User, Post.author_id == User.id).filter(User.id == 1).outerjoin(Like, Post.id == Like.post_id).group_by(Post.picture1, Post.title, User.name, User.photo).all()
     pictures=[]
     titles=[]
     authors=[]
     avatars=[]
     likes=[]
+    ids=[]
     for collection in collections:
         pictures.append(collection[0])
         titles.append(collection[1])
         authors.append(collection[2])
         avatars.append(collection[3])
         likes.append(collection[4])
+        ids.append(collection[5])
     response_json = jsonify({
         'pictures': pictures,
         'titles': titles,
         'authors': authors,
         'avatars': avatars,
-        'likes': likes
-    })
-    print({
-        'pictures': pictures,
-        'titles': titles,
-        'authors': authors,
-        'avatars': avatars,
-        'likes': likes
+        'likes': likes,
+        'ids':ids
     })
     return response_json
     # return jsonify({'error': 'collect not found'}), 404
+
+# 获取草稿箱
+@cross_origin()
+@app.route('/api/drafts', methods=['GET'])
+def get_drafts():
+    # user = db.session.query(Post.picture1,Post.title,User.name,User.photo,func.count(Like.id).label('like')).filter(Post.id==Collect.post_id and Collect.user_id==1 and Post.author_id==User.id and Like.post_id==Post.id).all()
+    drafts=db.session.query(
+        Draft.picture,
+        cast(Draft.date,String),
+        Draft.label,
+        Draft.id
+    ).join(User, Draft.user_id == User.id).filter(User.id == 1).all()
+    pictures=[]
+    dates=[]
+    labels=[]
+    ids=[]
+    for draft in drafts:
+        pictures.append(draft[0])
+        dates.append(draft[1])
+        labels.append(draft[2])
+        ids.append(draft[3])
+    response_json = jsonify({
+        'pictures': pictures,
+        'dates': dates,
+        'labels': labels,
+        'ids':ids
+    })
+    return response_json
+    # return jsonify({'error': 'collect not found'}), 404
+
+# 获取草稿箱
+@cross_origin()
+@app.route('/api/get_draft/<int:post_id>', methods=['GET'])
+def get_draft(post_id):
+    # user = db.session.query(Post.picture1,Post.title,User.name,User.photo,func.count(Like.id).label('like')).filter(Post.id==Collect.post_id and Collect.user_id==1 and Post.author_id==User.id and Like.post_id==Post.id).all()
+    draft=db.session.query(
+        Draft.picture,
+        cast(Draft.date,String),
+        Draft.label,
+        Draft.id
+    ).join(User, Draft.user_id == User.id).filter(User.id == 1, Draft.id==post_id).first()
+    response_json = jsonify({
+        'pictures': draft[0],
+        'dates': draft[1],
+        'labels': draft[2],
+        'ids':draft[3]
+    })
+    print({
+        'pictures': draft[0],
+        'dates': draft[1],
+        'labels': draft[2],
+        'ids':draft[3]
+    })
+    return response_json
+    # return jsonify({'error': 'collect not found'}), 404
+
+# 草稿箱删除
+@cross_origin()
+@app.route('/api/del_draft/<int:post_id>', methods=['GET'])
+def del_draft(post_id):
+    draft_to_del=Draft.query.get(post_id)
+    db.session.delete(draft_to_del)
+    db.session.commit()
+    return jsonify({'message': 'Delete successfully'})
 
 # 上传头像
 @app.route('/api/upload-avatar', methods=['POST'])
@@ -441,6 +507,285 @@ def get_feedback(user_id):
         data.append(chat_data)
 
     return jsonify(data)
+
+# 添加收藏
+@app.route('/api/add_collect', methods=['GET','POST'])
+def add_collect():
+    post_id = request.json.get('postId')  # 获取文章 ID
+    user_id = request.json.get('userId')  # 获取用户 ID
+    isAdd = request.json.get('add')
+    from datetime import datetime, timezone
+    date = datetime.now()
+    if isAdd and post_id and user_id:
+        new_Collect = Collect(date=date,user_id=user_id,post_id=post_id)
+        db.session.add(new_Collect)
+        db.session.commit()
+        return  jsonify({'message': '收藏成功'})
+    elif not isAdd and post_id and user_id:
+        Collect.query.filter(Collect.post_id==post_id and Collect.user_id==user_id).delete()
+        db.session.commit()
+        return  jsonify({'message': '取消收藏成功'})
+    else:
+        return jsonify({'message': '评论内容或文章 ID 不能为空'}), 400
+
+# 添加点赞
+@app.route('/api/add_like', methods=['GET','POST'])
+def add_like():
+    post_id = request.json.get('postId')  # 获取文章 ID
+    user_id = request.json.get('userId')  # 获取用户 ID
+    isAdd = request.json.get('add')
+    from datetime import datetime, timezone
+    date = datetime.now()
+    if isAdd and post_id and user_id:
+        new_Like = Like(date=date,author_id=user_id,post_id=post_id)
+        db.session.add(new_Like)
+        db.session.commit()
+        return  jsonify({'message': '点赞成功'})
+    elif not isAdd and post_id and user_id:
+        Like.query.filter(Like.post_id==post_id and Like.author_id==user_id).delete()
+        db.session.commit()
+        return  jsonify({'message': '取消点赞成功'})
+    else:
+        return jsonify({'message': '评论内容或文章 ID 不能为空'}), 400
+
+# 获取点赞和收藏的状态
+@app.route('/api/get_status/<int:post_id>/<int:userId>', methods=['GET'])
+def get_status(post_id,userId):
+    # post_id = request.json.get('postId')  # 获取文章 ID
+    # user_id = request.json.get('userId')  # 获取用户 ID
+    print('post:{},user:{}'.format(post_id,userId))
+    isLiked = db.session.query(
+                    Like.id
+                    ).filter(Like.post_id==post_id and Like.author_id==userId) \
+                    .first()
+    isCollected = db.session.query(
+                    Collect.id
+                    ).filter(Collect.post_id==post_id and Collect.user_id==userId) \
+                    .first()
+    if isLiked:
+        isLiked='1'
+    else:
+        isLiked='0'
+    if isCollected: 
+        isCollected='1'
+    else:   
+        isCollected='0'
+    response_json = jsonify({
+        'isLiked': isLiked,
+        'isCollected': isCollected
+    })
+    print({
+        'isLiked': isLiked,
+        'isCollected': isCollected
+    })
+    return response_json
+
+# 提交评论
+@app.route('/api/submit_comment', methods=['GET','POST'])
+def add_comment():
+    content = request.json.get('content')
+    post_id = request.json.get('postId')  # 获取文章 ID
+    user_id = request.json.get('userId')  # 获取用户 ID
+    post_id = int(post_id)
+    from datetime import datetime, timezone
+    date = datetime.now()
+    # date = date.strftime('%Y-%m-%d %H:%M:%S')
+    print(content)
+    # from datetime import datetime
+    # date = datetime.strptime(date, "%Y/%m/%d, %H:%M:%S")
+    if content and post_id:
+        new_comment = Comment(content=content, 
+                              author_id=user_id,
+                              post_id=post_id,
+                              date=date)
+        db.session.add(new_comment)
+        db.session.commit()
+        newComment=db.session.query(
+                    Comment.id,
+                    # Comment.date,
+                    cast(Comment.date, String),
+                    Comment.content,
+                    User.name,
+                    User.photo
+                    ).join(User, Comment.author_id == User.id) \
+                        .outerjoin(Post, Comment.post_id == Post.id) \
+                        .filter(Post.id==post_id) \
+                        .order_by(desc(Comment.id)) \
+                        .first()
+        response_json = jsonify({
+            'ids'  : newComment[0],
+            'dates': newComment[1],
+            'contents': newComment[2],
+            'authors': newComment[3],  
+            'avatars': newComment[4]
+            })
+        print({
+            'ids'  : newComment[0],
+            'dates': newComment[1],
+            'contents': newComment[2],
+            'authors': newComment[3],  
+            'avatars': newComment[4]
+            })
+        return response_json
+    else:
+        return jsonify({'message': '评论内容或文章 ID 不能为空'}), 400
+
+# 获取帖子评论
+@app.route('/api/post_comments/<int:post_id>', methods=['GET'])
+def get_postComment(post_id):
+    # 首先是文章信息，包括内容、作者等
+    print(post_id)
+    comments=db.session.query(
+        Comment.id,
+        # Comment.date,
+        cast(Comment.date, String),
+        Comment.content,
+        User.name,
+        User.photo
+    ).join(User, Comment.author_id == User.id) \
+        .outerjoin(Post, Comment.post_id == Post.id) \
+        .filter(Post.id==post_id) \
+        .order_by(desc(Comment.id)) \
+        .all() 
+    ids=[]
+    dates=[]
+    contents=[]
+    authors=[]
+    avatars=[]
+    for comment in comments:
+        ids.append(comment[0])
+        dates.append(comment[1])
+        contents.append(comment[2])
+        authors.append(comment[3])
+        avatars.append(comment[4])
+    response_json = jsonify({
+        'ids'  : ids,
+        'dates': dates,
+        'contents': contents,
+        'authors': authors,  
+        'avatars': avatars
+    })
+    print({
+        'ids'  : ids,
+        'dates': dates,
+        'contents': contents,
+        'authors': authors,  
+        'avatars': avatars
+    })
+    return response_json
+
+# 获取帖子详情
+@app.route('/api/post_content/<int:post_id>', methods=['GET'])
+def get_postContent(post_id):
+    # 首先是文章信息，包括内容、作者等
+    print(post_id)
+    contents=db.session.query(
+        Post.picture1,
+        Post.picture2,
+        Post.picture3,
+        Post.picture4,
+        Post.picture5,
+        # Post.date,
+        cast(Post.date, String),
+        Post.title,
+        Post.body,
+        User.name,
+        User.photo,
+        func.count(Like.id.distinct()).label('like'),
+        func.count(Comment.id.distinct()).label('comment'),
+        func.count(Collect.id.distinct()).label('collect'),
+        Post.id
+    ).join(User, Post.author_id == User.id) \
+        .outerjoin(Like, Post.id == Like.post_id) \
+        .outerjoin(Comment, Post.id == Comment.post_id) \
+        .outerjoin(Collect, Post.id == Collect.post_id) \
+        .filter(Post.id==post_id) \
+        .order_by(desc(Post.id)) \
+        .all() 
+    content=contents[0]
+    pictures=[]
+    print(content)
+    # titles=[]
+    # authors=[]
+    # avatars=[]
+    # likes=[]
+    for i in range(5):
+        # print(("this is id {}").format(i))
+        if content[i]:
+            pictures.append(content[i])
+    # print(pictures)
+    response_json = jsonify({
+        'pictures': pictures,
+        'date': content[5],
+        'title': content[6],
+        'body': content[7],
+        'author': content[8],
+        'avatar': content[9],
+        'likes_num': content[10],
+        'comments_num': content[11],
+        'collects_num': content[12]
+    })
+    print({
+        'pictures': pictures,
+        'date': content[5],
+        'title': content[6],
+        'body': content[7],
+        'author': content[8],
+        'avatar': content[9],
+        'likes_num': content[10],
+        'comments_num': content[11],
+        'collects_num': content[12]
+    })
+    return response_json
+
+# 广场页获取帖子
+# @cross_origin()
+@app.route('/api/posts', methods=['GET'])
+def get_posts():
+    posts=db.session.query(
+        Post.id,
+        Post.picture1,
+        Post.title,
+        User.name,
+        User.photo,
+        func.count(Like.id).label('like')
+    ).join(User, Post.author_id == User.id) \
+        .outerjoin(Like, Post.id == Like.post_id) \
+        .group_by(Post.picture1, 
+                  Post.title, 
+                  User.name, 
+                  User.photo) \
+        .all()
+    ids=[] 
+    pictures=[]
+    titles=[]
+    authors=[]
+    avatars=[]
+    likes=[]
+    for post in posts:
+        ids.append(post[0])
+        pictures.append(post[1])
+        titles.append(post[2])
+        authors.append(post[3])
+        avatars.append(post[4])
+        likes.append(post[5])
+    response_json = jsonify({
+        'ids': ids,
+        'pictures': pictures,
+        'titles': titles,
+        'authors': authors,
+        'avatars': avatars,
+        'likes': likes
+    })
+    # print({
+    #     'ids': ids,
+    #     'pictures': pictures,
+    #     'titles': titles,
+    #     'authors': authors,
+    #     'avatars': avatars,
+    #     'likes': likes
+    # })
+    return response_json
 
 @socketio.on('connect')
 def handle_connect():

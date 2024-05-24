@@ -1,6 +1,6 @@
 <template>
   <div class="feeds-page">
-    <div class="channel-container">
+    <!-- <div class="channel-container">
       <div class="scroll-container channel-scroll-container">
         <div class="content-container">
           <div class="channel active">推荐</div>
@@ -17,29 +17,32 @@
           <div class="channel">健身</div>
         </div>
       </div>
-    </div>
+    </div> -->
     <div class="loading-container"></div>
     <div class="feeds-container">
-      <Waterfall :list="list" :width="240" :hasAroundGutter="false" style="max-width: 1260px">
-        <template #item="{ url}">
-          <div class="card">
-            <LazyImg :url="url" style="border-radius: 8px" @click="toMain" />
-            <div class="footer">
-              <a class="title"><span>这是具体内容</span></a>
-              <div class="author-wrapper">
-                <a class="author">
-                  <img class="author-avatar" :src="url" />
-                  <span class="name">这是名字</span>
-                </a>
-                <span class="like-wrapper like-active">
-                  <Search style="width: 1em; height: 1em" />
-                  <span class="count">12</span>
-                </span>
-              </div>
+      <Waterfall :list="list" :width="220" :hasAroundGutter="false" style="max-width: 1260px">
+      <template #item="{item}">
+        <div class="card">
+          <LazyImg :url="item.pictures" style="border-radius: 8px"  @click="toMain(item.ids)" />
+          <div class="footer">
+            <a class="title"><span>{{ item.titles }}</span></a>
+            <div class="author-wrapper">
+              <a class="author">
+                <img class="author-avatar" :src="item.avatars" />
+                <span class="name">{{ item.authors }}</span>
+              </a>
+              <span class="like-wrapper like-active">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-heart" viewBox="0 0 16 16" style="width: 1em; height: 1em">
+                  <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z"/>
+                </svg>
+                <!-- <Search  /> -->
+                <span class="count">{{ item.likes }}</span>
+              </span>
             </div>
           </div>
-        </template>
-      </Waterfall>
+        </div>
+      </template>
+    </Waterfall>
     </div>
     <div class="feeds-loading"></div>
   </div>
@@ -50,37 +53,45 @@ import { LazyImg, Waterfall } from "vue-waterfall-plugin-next";
 import "vue-waterfall-plugin-next/dist/style.css";
 import { useRouter } from "vue-router";
 
-import { ref } from "vue";
+import { ref , onMounted } from "vue";
 
 const router = useRouter();
 
-const list = ref([
-  { src: "https://tse1-mm.cn.bing.net/th/id/OIP-C.Zte3ljd4g6kqrWWyg-8fhAHaEo?w=264&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7" },
-  { src: "https://tse1-mm.cn.bing.net/th/id/OIP-C.cGc4c8dVlqnfV3uwcS1IogHaE8?w=260&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7" },
-  { src: "https://tse1-mm.cn.bing.net/th/id/OIP-C.Zte3ljd4g6kqrWWyg-8fhAHaEo?w=264&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7" },
-  { src: "https://tse4-mm.cn.bing.net/th/id/OIP-C.N0USLldg_iKDGVKT12vB4AHaEK?w=292&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7" },
-  { src: "https://tse1-mm.cn.bing.net/th/id/OIP-C.jzcWzXf_uts2sgE2WChuCQHaEo?w=263&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7" },
-  { src: "https://tse1-mm.cn.bing.net/th/id/OIP-C.Zte3ljd4g6kqrWWyg-8fhAHaEo?w=264&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7" },
-  { src: "https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg" },
-  { src: "https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg" },
-  { src: "https://fuss10.elemecdn.com/d/e6/c4d93a3805b3ce3f323f7974e6f78jpeg.jpeg" },
-  { src: "https://fuss10.elemecdn.com/0/6f/e35ff375812e6b0020b6b4e8f9583jpeg.jpeg" },
-  { src: "https://fuss10.elemecdn.com/9/bb/e27858e973f5d7d3904835f46abbdjpeg.jpeg" },
-  { src: "https://fuss10.elemecdn.com/3/28/bbf893f792f03a54408b3b7a7ebf0jpeg.jpeg" },
-  { src: "https://fuss10.elemecdn.com/2/11/6535bcfb26e4c79b48ddde44f4b6fjpeg.jpeg" },
-  { src: "https://tse4-mm.cn.bing.net/th/id/OIP-C.N0USLldg_iKDGVKT12vB4AHaEK?w=292&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7" },
-  { src: "https://tse1-mm.cn.bing.net/th/id/OIP-C.jzcWzXf_uts2sgE2WChuCQHaEo?w=263&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7" },
-  { src: "https://tse3-mm.cn.bing.net/th/id/OIP-C.YzEeJqgWky6RQMatrMd6-gHaHa?w=170&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7" },
-  { src: "https://tse3-mm.cn.bing.net/th/id/OIP-C.YzEeJqgWky6RQMatrMd6-gHaHa?w=170&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7" },
-  { src: "https://tse1-mm.cn.bing.net/th/id/OIP-C.Zte3ljd4g6kqrWWyg-8fhAHaEo?w=264&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7" },
-  { src: "https://tse4-mm.cn.bing.net/th/id/OIP-C.N0USLldg_iKDGVKT12vB4AHaEK?w=292&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7" },
-  { src: "https://tse1-mm.cn.bing.net/th/id/OIP-C.jzcWzXf_uts2sgE2WChuCQHaEo?w=263&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7" },
-  { src: "https://tse1-mm.cn.bing.net/th/id/OIP-C.Zte3ljd4g6kqrWWyg-8fhAHaEo?w=264&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7" },
-  { src: "https://tse1-mm.cn.bing.net/th/id/OIP-C.cGc4c8dVlqnfV3uwcS1IogHaE8?w=260&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7" },
-]);
+const list = ref([]);
 
-const toMain = () => {
-  router.push({ path: "/main" });
+const fetchData = async () => {
+  try {
+    // Simulated asynchronous database query
+    const data = await fetch('http://127.0.0.1:9090/api/posts'); // Replace URL with your endpoint
+    const result = await data.json();
+    // 解构出各个属性数组
+    const { ids,authors, avatars, likes, pictures, titles } = result;
+    // 遍历数组，构建每个对象并添加到数组中
+    for (let i = 0; i < titles.length; i++) {
+      const item = {
+        ids:ids[i],
+        pictures: pictures[i], // 使用对应索引的图片 URL 作为 src 属性
+        titles: titles[i], // 使用对应索引的标题属性
+        authors: authors[i], // 使用对应索引的作者属性
+        avatars: avatars[i], // 使用对应索引的头像属性
+        likes: likes[i] // 使用对应索引的点赞数属性
+      };
+      list.value.push(item);
+    }
+    // console.log(result);
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
+};
+onMounted(() => {
+  fetchData(); // Call fetchData function when the component is mounted
+});
+
+// const toMain = (id: number) => {
+//   router.push({ path: "/main" });
+// };
+const toMain = (id: number) => {
+  router.push({ path: "/main", query: { id: id } });
 };
 </script>
 <style lang="less" scoped>

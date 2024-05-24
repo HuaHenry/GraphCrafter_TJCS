@@ -53,9 +53,9 @@
           <div class="reds-tab-item" :class="{ active: activeTab === 'note' }" style="padding: 0px 16px; margin-right: 0px; font-size: 16px">
             <!----><!----><span @click="toNote">笔记</span>
           </div>
-          <!-- <div class="reds-tab-item" :class="{ active: activeTab === 'agree' }" style="padding: 0px 16px; margin-right: 0px; font-size: 16px">
-            <span @click="toAgree">点赞</span>
-          </div> -->
+          <div class="reds-tab-item" :class="{ active: activeTab === 'drafts' }" style="padding: 0px 16px; margin-right: 0px; font-size: 16px">
+            <span @click="toDrafts">草稿箱</span>
+          </div>
           <!---->
           <div class="active-tag" style="width: 64px; left: 627px"></div>
         </div>
@@ -92,13 +92,13 @@ const toCollection = () => {
 };
 
 const toEdit = () => {
-      router.push({ path: "/editprofile" });
-    };
+  router.push({ path: "/editprofile" });
+};
 
-// const toAgree = () => {
-//   router.push({ path: "/agree" });
-//   activeTab.value = 'agree';
-// };
+const toDrafts = () => {
+  router.push({ path: "/drafts" });
+  activeTab.value = 'drafts';
+};
 
 // 加载用户资料
 const loadUserProfile = async () => {

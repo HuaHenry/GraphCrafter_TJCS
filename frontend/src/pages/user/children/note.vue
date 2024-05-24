@@ -3,7 +3,7 @@
     <Waterfall :list="list" :width="220" :hasAroundGutter="false" style="max-width: 1260px">
       <template #item="{item}">
         <div class="card">
-          <LazyImg :url="item.pictures" style="border-radius: 8px" />
+          <LazyImg :url="item.pictures" style="border-radius: 8px"   @click="toMain(item.ids)"    />
           <div class="footer">
             <a class="title"><span>{{ item.titles }}</span></a>
             <div class="author-wrapper">
@@ -31,6 +31,12 @@ import "vue-waterfall-plugin-next/dist/style.css";
 
 import { ref, onMounted } from "vue";
 import axios from 'axios';
+
+import { useRouter } from "vue-router";
+const router = useRouter();
+const toMain = (id: number) => {
+  router.push({ path: "/main", query: { id: id } });
+};
 
 const list = ref([
   // { src: "https://tse1-mm.cn.bing.net/th/id/OIP-C.Zte3ljd4g6kqrWWyg-8fhAHaEo?w=264&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7" },
@@ -63,7 +69,7 @@ const fetchData = async () => {
     const data = await axios.get("/api/note");
     const result = data.data;
     // 解构出各个属性数组
-    const { authors, avatars, likes, pictures, titles } = result;
+    const { authors, avatars, likes, pictures, titles, ids } = result;
     // 遍历数组，构建每个对象并添加到数组中
     for (let i = 0; i < titles.length; i++) {
       const item = {
@@ -71,7 +77,8 @@ const fetchData = async () => {
         titles: titles[i], // 使用对应索引的标题属性
         authors: authors[i], // 使用对应索引的作者属性
         avatars: avatars[i], // 使用对应索引的头像属性
-        likes: likes[i] // 使用对应索引的点赞数属性
+        likes: likes[i], // 使用对应索引的点赞数属性
+        ids: ids[i]
       };
       list.value.push(item);
     }
