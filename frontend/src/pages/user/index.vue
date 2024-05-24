@@ -47,14 +47,14 @@
     <div class="reds-sticky-box user-page-sticky">
       <div class="reds-sticky">
         <div class="reds-tabs-list">
-          <div class="reds-tab-item" :class="{ active: activeTab === 'note' }" style="padding: 0px 16px; margin-right: 0px; font-size: 16px">
-            <!----><!----><span @click="toNote">笔记</span>
-          </div>
           <div class="reds-tab-item" :class="{ active: activeTab === 'collection' }" style="padding: 0px 16px; margin-right: 0px; font-size: 16px">
             <!----><!----><span @click="toCollection">收藏</span>
           </div>
-          <div class="reds-tab-item" :class="{ active: activeTab === 'agree' }" style="padding: 0px 16px; margin-right: 0px; font-size: 16px">
-            <!----><!----><span @click="toAgree">点赞</span>
+          <div class="reds-tab-item" :class="{ active: activeTab === 'note' }" style="padding: 0px 16px; margin-right: 0px; font-size: 16px">
+            <!----><!----><span @click="toNote">笔记</span>
+          </div>
+          <div class="reds-tab-item" :class="{ active: activeTab === 'drafts' }" style="padding: 0px 16px; margin-right: 0px; font-size: 16px">
+            <span @click="toDrafts">草稿箱</span>
           </div>
           <!---->
           <div class="active-tag" style="width: 64px; left: 627px"></div>
@@ -74,12 +74,12 @@ import { useRouter } from "vue-router";
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 const router = useRouter();
-const userId = 3;
+const userId = 1;
 
 const avatar = ref('/static/avatars/default.png');
 const username = ref('');
 const description = ref('');
-const activeTab = ref('note'); 
+const activeTab = ref('collection'); 
 
 const toNote = () => {
   router.push({ path: "/note" });
@@ -92,12 +92,12 @@ const toCollection = () => {
 };
 
 const toEdit = () => {
-      router.push({ path: "/editprofile" });
-    };
+  router.push({ path: "/editprofile" });
+};
 
-const toAgree = () => {
-  router.push({ path: "/agree" });
-  activeTab.value = 'agree';
+const toDrafts = () => {
+  router.push({ path: "/drafts" });
+  activeTab.value = 'drafts';
 };
 
 // 加载用户资料
@@ -115,8 +115,8 @@ const loadUserProfile = async () => {
 
 // 组件加载时调用
 onMounted(()=>{
-  loadUserProfile();
   toCollection();
+  loadUserProfile();
 });
 
 </script>

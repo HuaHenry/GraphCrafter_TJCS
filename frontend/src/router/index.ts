@@ -76,7 +76,7 @@ export const routes = [
         path: "/user",
         component: () => import("@/pages/user/index.vue"),
         name: "user", // 用于 keep-alive, 必须与SFC自动推导或者显示声明的组件name一致
-        redirect: "/note",
+        redirect: "/collection",
         children: [
           {
             path: "/note",
@@ -84,9 +84,9 @@ export const routes = [
             name: "note", // 用于 keep-alive, 必须与SFC自动推导或者显示声明的组件name一致
           },
           {
-            path: "/agree",
+            path: "/drafts",
             component: () => import("@/pages/user/children/agree.vue"),
-            name: "agree", // 用于 keep-alive, 必须与SFC自动推导或者显示声明的组件name一致
+            name: "drafts", // 用于 keep-alive, 必须与SFC自动推导或者显示声明的组件name一致
           },
           {
             path: "/collection",
@@ -111,6 +111,11 @@ export const routes = [
     name: "main",
     path: "/main",
     component: () => import("@/pages/main.vue"),
+  },
+  {
+    name: "del_draft",
+    path: "/del_draft",
+    component: () => import("@/pages/del_draft.vue"),
   },
 ];
 const router = createRouter({
