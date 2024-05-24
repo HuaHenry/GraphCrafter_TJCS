@@ -1,7 +1,7 @@
 <template>
   <div class="chat-module-container">
     <div class="chat-body-container">
-      <div class="chat-sidebar-header">我的反馈</div>
+      <div class="chat-sidebar-header">反馈消息</div>
       <!--消息侧边栏-->
       <div class="chat-sidebar-container">
         <div

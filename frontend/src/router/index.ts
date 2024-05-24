@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Login from "@/pages/login.vue";
 import Dashboard from "@/pages/dashboard/dashboard.vue";
+import Manage from "@/pages/manager/Manage.vue";
 
 export const routes = [
   {
@@ -11,6 +12,11 @@ export const routes = [
     name: "login",
     path: "/login",
     component: Login,
+  },
+  {
+    name: "manager",
+    path: "/manager",
+    component: Manage,
   },
   {
     name: "index",

@@ -35,6 +35,7 @@ class User(db.Model):  # 用户
     sex = db.Column(db.Boolean)  # 性别，1是男0是女
     senior = db.Column(db.Boolean)  # 是否为付费用户
     description = db.Column(db.String(100))  #一句话介绍自己
+    status = db.Column(db.Boolean)  # 是否正常 0正常 1被封
     
 class Post(db.Model):  # 帖子
     id = db.Column(db.Integer, primary_key=True)  # 主键
@@ -48,6 +49,7 @@ class Post(db.Model):  # 帖子
     title = db.Column(db.String(60))     # 标题
     body = db.Column(db.Text)  # 正文
     model = db.Column(db.Integer)  # 模型参数id
+    status = db.Column(db.Boolean)  # 状态，0是正常 1是被禁
 
 class Comment(db.Model):  # 评论
     id = db.Column(db.Integer, primary_key=True)  # 主键
@@ -409,6 +411,84 @@ def handle_message(data):
     chat_id = data['chat_id']
     print("chat:",chat_id)
     emit('message', {'message': data['message']}, room=chat_id)
+
+# 管理员相关函数
+# 获取所有用户
+@app.route('/api/get-all-user', methods=['GET'])
+def get_all_users():
+    users = User.query.all()
+    users_data = []
+
+    for user in users:
+        user_data = {
+            'id': user.id,
+            'name': user.name,
+            'password': user.password,
+            'avatar': user.photo,
+            'email': user.email,
+            'age': user.age,
+            'sex': user.sex,
+            'senior': user.senior,
+            'description': user.description,
+            'status':user.status
+        }
+        users_data.append(user_data)
+
+    return jsonify({'userList': users_data})
+
+
+# 获取用户和帖子总数
+@app.route('/api/get-user-post-num', methods=['GET'])
+def get_user_post_num():
+    users = User.query.all()
+    posts = Post.query.all()
+    return jsonify({'userNum':len(users),'postNum':len(posts)})
+
+# 获取所有帖子
+@app.route('/api/get-all-post', methods=['GET'])
+def get_all_posts():
+    posts = Post.query.all()
+    posts_data = []
+
+    for post in posts:
+        post_data = {
+            'id': post.id,
+            'author_id': post.author_id,
+            'date': formatDateTime(post.date),
+            'pics':[post.picture1,post.picture2,post.picture3,post.picture4,post.picture5],
+            'title': post.title,
+            'content': post.body,
+            'status':post.status
+        }
+        posts_data.append(post_data)
+
+    return jsonify({'dataList': posts_data})
+
+# 更新用户状态 禁用和正常来回切换
+@app.route('/api/update-user-status/<int:user_id>', methods=['POST'])
+def update_user_status(user_id):
+    user = User.query.get(user_id)
+    if user is None:
+        return jsonify({'error': 'User not found'}), 404
+
+    # 切换帖子状态
+    user.status = not user.status
+    db.session.commit()
+
+    return jsonify({'success': 'User status updated successfully', 'new_status': user.status})
+
+# 更新帖子状态 禁用和正常来回切换
+@app.route('/api/update-post-status/<int:post_id>', methods=['POST'])
+def update_post_status(post_id):
+    print(post_id)
+    post = Post.query.get(post_id)
+    if post is None:
+        return jsonify({'error': 'Post not found'}), 404
+
+    post.status = not post.status
+    db.session.commit()
+
+    return jsonify({'success': 'Post status updated successfully', 'new_status': post.status})
 
 if __name__ == '__main__':
     config = dict(
