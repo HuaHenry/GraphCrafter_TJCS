@@ -29,7 +29,6 @@
     "vue-stick": "^1.0.7",
     "vue-waterfall-plugin-next": "^2.2.4",
     "vue3-plock": "^0.0.2",
-    "vuetify": "^3.6.7",
     "vuex": "^4.1.0"
   },
   "devDependencies": {

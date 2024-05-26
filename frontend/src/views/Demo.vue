@@ -7,23 +7,21 @@
           ><img src="../assets/img/logo/LOGO2.gif" alt="图匠" class="logo"
         /></router-link>
       </div>
-      <!-- <div class="text-right purchase-button">
-        <button @click="handleAuth">{{ buttonText }}</button>
-      </div> -->
+
       <div class="text-right purchase-button"> 
-        <!-- <router-link 
-          :to="isLoggedIn ? '/' : '/login'" 
+        <router-link
+          :to="isLoggedIn ? '/' : '/login'"
           @click.native="handleAuth"
         >
           {{ buttonText }}
-        </router-link> -->
+        </router-link>
       </div>
     </header>
     <!--// Header -->
 
     <!-- Banner -->
     <div class="banner-wrapper">
-      <v-container fluid>
+      <div class="container">
         <div class="banner-inner">
           <div class="banner-content">
             <h1>
@@ -31,60 +29,46 @@
               edit your pictures
             </h1>
           </div>
-          <v-row>
-          <v-col
-            lg="4"
-            md="6"
-            sm="12"
-            cols="12"
-            v-for="(item, i) in menuContent"
-            :key="i"
-          >
-            <div class="demo-item">
-              <router-link :to="item.href" target="_blank">
-                <img :src="item.src" alt="Main Demo" class="image-shadow"/>
-                <span class="title-style">{{ item.title }}</span>
-              </router-link>
+          <div class="row">
+            <div class="col-lg-4 col-md-4 col-sm-6 col-12" v-for="(item, i) in menuContent" :key="i">
+              <div class="demo-item">
+                <a :href="item.href" target="_blank">
+                  <img :src="item.src" alt="Main Demo" class="image-shadow"/>
+                  <span class="title-style">{{ item.title }}</span>
+                </a>
+              </div>
             </div>
-          </v-col>
-        </v-row>
           </div>
-      </v-container>
+        </div>
+      </div>
     </div>
     <!-- End Banner -->
 
     <!-- Demos -->
     <div class="demo-wrapper bg_color--1">
-      <v-container fluid>
-        <v-row>
-          <v-col md="12" class="text-center">
-            <div class="title-wrapper">
+      <div class="container-fluid">
+        <div class="row-title" style="" >
+          <div class="col-md-12 text-center" >
+            <div class="title-wrapper" >
               <h1 class="text-center">Picture Edit Demos</h1>
               <p>
                 Choose one of demo or cutomize easily your picture following your
                 ideas
               </p>
             </div>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col
-            lg="4"
-            md="6"
-            sm="12"
-            cols="12"
-            v-for="(item, i) in demoContent"
-            :key="i"
-          >
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-lg-4 col-md-6 col-sm-12" v-for="(item, i) in demoContent" :key="i">
             <div class="demo-item">
-              <router-link :to="item.href" target="_blank">
+              <a :href="item.href" target="_blank">
                 <img :src="item.src" alt="Main Demo" class="image-shadow"/>
                 <span class="title-style">{{ item.title }}</span>
-              </router-link>
+              </a>
             </div>
-          </v-col>
-        </v-row>
-      </v-container>
+          </div>
+        </div>
+      </div>
     </div>
     <!-- End Demos -->
 
@@ -100,57 +84,56 @@
       return {
         menuContent: [
           {
-            // src:  ("../assets/img/menu/oceantown.jpg"),
-            src: "../assets/img/menu/oceantown.jpg",
+            src: new URL("@/assets/img/menu/oceantown.jpg", import.meta.url).href,
             title: "图像处理",
             href: "/main-demo",
           },
           {
-            src:  ("../assets/img/menu/flower.jpg"),
+            src:  new URL("@/assets/img/menu/flower.jpg", import.meta.url).href,
             title: "分享广场",
             href: "/main-demo",
           },
           {
-            src:  ("../assets/img/menu/person.jpg"),
+            src:  new URL("../assets/img/menu/person.jpg", import.meta.url).href,
             title: "个人中心",
             href: "/main-demo",
           },
         ],
         demoContent: [
           {
-            src:  ("../assets/img/demos/demo1.jpg"),
+            src:  new URL("../assets/img/demos/demo1.jpg", import.meta.url).href,
             title: "假日海边风景拍照配方",
             href: "/minimal-agency",
           },
           {
-            src:  ("../assets/img/demos/demo2.jpg"),
+            src:  new URL("../assets/img/demos/demo2.jpg", import.meta.url).href,
             title: "旋转的春日",
             href: "/freelancer",
           },
           {
-            src:  ("../assets/img/demos/demo3.jpg"),
+            src: new URL("../assets/img/demos/demo3.jpg", import.meta.url).href,
             title: "绿野仙踪调色",
             href: "/creative-portfolio",
           },
           {
-            src:  ("../assets/img/demos/demo4.jpg"),
+            src:  new URL("../assets/img/demos/demo4.jpg", import.meta.url).href,
             title: "假期去旅行",
             href: "/agency",
           },
           {
-            src:  ("../assets/img/demos/demo5.jpg"),
+            src:  new URL("../assets/img/demos/demo5.jpg", import.meta.url).href,
             title: "治愈通透配方",
             href: "/multiscroll-portfolio",
           },
           {
-            src:  ("../assets/img/demos/demo6.jpg"),
+            src:  new URL("../assets/img/demos/demo6.jpg", import.meta.url).href,
             title: "草原山脉配方",
             href: "/designer-portfolio",
           },
         ],
         innerPageContent: [
           {
-            src:  ("../assets/img/demos/inner-pages/about.jpg"),
+            src:  "../assets/img/demos/inner-pages/about.jpg",
             title: "About Us",
             href: "/about-us",
           },
@@ -291,6 +274,100 @@
 </script>
 
 <style lang="scss" scoped>
+.container {
+  max-width: 100%;
+  margin-right: auto;
+  margin-left: auto;
+  padding-right: 15px;
+  padding-left: 15px;
+}
+
+.banner-inner {
+  text-align: center;
+  padding: 20px;
+}
+
+.banner-content {
+  margin-bottom: 20px;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: -15px;
+  margin-left: -15px;
+}
+
+.col-lg-4,
+.col-md-4,
+.col-sm-6,
+.col-12 {
+  position: relative;
+  width: calc(100% / 3);
+  padding-right: 15px;
+  padding-left: 15px;
+}
+
+.demo-item {
+  margin-bottom: 20px;
+}
+
+img.image-shadow {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.title-style {
+  display: block;
+  margin-top: 10px;
+  font-size: 16px;
+  font-weight: bold;
+}
+.container-fluid {
+  margin-right: auto;
+  margin-left: auto;
+  padding-right: 15px;
+  padding-left: 15px;
+  .row-title{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: -15px;
+    margin-left: -15px;
+
+    .col-lg-4 {
+      flex: 0 0 33.33333%; // 设置每列占据 1/3 的宽度
+      max-width: 33.33333%;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    .title-wrapper {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .demo-item {
+      margin-bottom: 20px;
+    }
+
+    .title-style {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    .image-shadow {
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+  }
+}
   .image-shadow {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); /* X偏移量, Y偏移量, 模糊半径, 扩展半径, 颜色 */
   }
