@@ -1,0 +1,61 @@
+.hooper {
+    height: 100vh;
+    &:focus {
+        outline: none;
+    }
+    .hooper-pagination.is-vertical {
+        right: 70px;
+        @media #{$large-mobile} {
+            right: 0;
+        }
+    }
+}
+
+.hooper-pagination.is-vertical .hooper-indicator {
+    width: 24px;
+    height: 2px;
+    border-radius: 0;
+    background: transparent;
+    transition: 0.5s;
+    @media #{$large-mobile} {
+        width: 15px;   
+    }
+}
+.hooper-indicators{
+    @media #{$large-mobile} {
+        li{
+            line-height: 1;
+        }
+    }
+}
+
+
+// hoper slider animation
+.hooper-slide.is-active.is-current {
+    .content {
+        span {
+            -webkit-animation: 600ms ease-in-out 0s normal none 1 running customOne;
+            animation: 600ms ease-in-out 0s normal none 1 running customOne;
+        }
+        h2 {
+            -webkit-animation: 800ms ease-in-out 0s normal none 1 running customOne;
+            animation: 800ms ease-in-out 0s normal none 1 running customOne;
+        }
+        p {
+            -webkit-animation: 1000ms ease-in-out 0s normal none 1 running customOne;
+            animation: 1000ms ease-in-out 0s normal none 1 running customOne;
+        }
+        .rn-award-list li {
+            -webkit-animation: 1200ms ease-in-out 0s normal none 1 running customOne;
+            animation: 1200ms ease-in-out 0s normal none 1 running customOne;
+        }
+    }
+    .slipt-content-inner .section-title {
+        -webkit-animation: 800ms ease-in-out 0s normal none 1 running customOne;
+        animation: 800ms ease-in-out 0s normal none 1 running customOne;
+    }
+    .blog-wrapper .rn-blog {
+        -webkit-animation: 1000ms ease-in-out 0s normal none 1 running customOne;
+        animation: 800ms ease-in-out 0s normal none 1 running customOne;
+    }
+}

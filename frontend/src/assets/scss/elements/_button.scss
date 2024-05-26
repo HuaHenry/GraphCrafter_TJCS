@@ -1,0 +1,33 @@
+/**
+ * Button
+ */
+
+.rf-btn,.rf_btn {
+    display: inline-block;
+    padding: 0 60px;
+    height: 60px;
+    line-height: 60px;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: 500;
+    text-transform: uppercase;
+    transition: 0.3s ease-in-out;
+    color: #ffffff !important;
+    background: #f42a59;
+    border: 2px solid transparent;
+    -webkit-box-shadow: 0 5px 20px -5px rgb(0 0 0 / 5%);
+    box-shadow: 0 5px 20px -5px rgb(0 0 0 / 5%);
+
+    &:hover{
+        background: transparent;
+        border-color: #f42a59;
+        color: #f42a59!important;
+    }
+
+    @media #{$sm-layout} {
+        padding: 0 35px;
+        height: 50px;
+        line-height: 50px;
+        font-size: 15px;
+    }
+}

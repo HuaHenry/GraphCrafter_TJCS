@@ -1,11 +1,26 @@
-import type { App } from "vue";
-import { createPinia } from "pinia";
+import Vue from 'vue';
+import Vuex from 'vuex';
 
-const store = createPinia();
+Vue.use(Vuex);
 
-// 全局注册 store
-export function setupStore(app: App<Element>) {
-  app.use(store);
-}
-
-export { store };
+export default new Vuex.Store({
+  state: {
+    isLoggedIn: false
+  },
+  mutations: {
+    setLoginState(state, isLoggedIn) {
+      state.isLoggedIn = isLoggedIn;
+    }
+  },
+  actions: {
+    login({ commit }) {
+      commit('setLoginState', true);
+    },
+    logout({ commit }) {
+      commit('setLoginState', false);
+    }
+  },
+  getters: {
+    isLoggedIn: state => state.isLoggedIn
+  }
+});

@@ -1,9 +1,19 @@
 import { createRouter, createWebHistory } from "vue-router";
-import Login from "@/pages/login.vue";
+// import Login from "@/pages/login.vue";
 import Dashboard from "@/pages/dashboard/dashboard.vue";
 import Manage from "@/pages/manager/Manage.vue";
 
+
+import Demo from "@/views/Demo.vue";
+import Login from "@/components/Login.vue";
+import Register from "@/components/Register.vue";
+
 export const routes = [
+  {
+    name: "Demo",
+    path: "/Demo",
+    component: Demo,
+  },
   {
     path: "/",
     redirect: "/index",
@@ -12,6 +22,11 @@ export const routes = [
     name: "login",
     path: "/login",
     component: Login,
+  },
+  {
+    name: "Register",
+    path: "/Register",
+    component: Register,
   },
   {
     name: "manager",

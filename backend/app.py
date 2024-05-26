@@ -37,7 +37,8 @@ class User(db.Model):  # 用户
     email = db.Column(db.String(254))  # 邮箱
     age = db.Column(db.Integer)  # 年龄
     sex = db.Column(db.Boolean)  # 性别，1是男0是女
-    senior = db.Column(db.Boolean)  # 是否为付费用户
+    is_admin = db.Column(db.Boolean, default=False)
+    is_premium = db.Column(db.Boolean, default=False)
     description = db.Column(db.String(100))  #一句话介绍自己
     status = db.Column(db.Boolean)  # 是否正常 0正常 1被封
     
@@ -148,6 +149,58 @@ def fallback(fallback):       # Vue Router 的 mode 为 'hash' 时可移除该�
         return app.send_static_file(fallback)
     else:
         return app.send_static_file('index.html')
+
+
+# 登录
+@app.route('/login', methods=['POST', 'GET'])
+@cross_origin(supports_credentials=True)
+def login():
+    data = request.form
+    username = data.get('username')
+    password = data.get('password')
+    user_type = data.get('userType')
+
+    # 查询用户
+    user = User.query.filter_by(name=username, password=password).first()
+
+    if user:
+        if user_type == 'admin' and not user.is_admin:
+            return jsonify({'status': 'error', 'message': 'Unauthorized access for admin'}), 401
+        if user_type == 'premium' and not user.is_premium:
+            return jsonify({'status': 'error', 'message': 'Unauthorized access for premium user'}), 401
+        return jsonify({'status': 'success', 'message': 'Login successful'}), 200
+    else:
+        return jsonify({'status': 'error', 'message': 'Invalid username or password'}), 401
+
+@app.route('/register', methods=['POST', 'GET'])
+@cross_origin(supports_credentials=True)
+def register():
+    try:
+        if request.method == 'POST':
+            # 用户注册
+            latest_user = User.query.order_by(User.id.desc()).first()
+            id = latest_user.id + 1 if latest_user else 1
+            username = request.form['username']
+            password = request.form['password']
+            email = request.form['email']
+            user_type = request.form['userType']
+            invite_code = None
+            if user_type == "admin":
+                invite_code = request.form['inviteCode']
+            user_now = User(id=id, name=username, password=password, email=email, is_premium=(user_type == 'premium'))
+            # 用户名已占用
+            users = User.query.filter_by(name=username).all()
+            if users:
+                return "error: username already taken", 400
+            # 用户名未占用，可注册
+            db.session.add(user_now)
+            db.session.commit()
+            return 'success', 200
+        return '', 405
+    except Exception as e:
+        # 捕获异常并记录错误信息
+        app.logger.error(f"Error during registration: {e}")
+        return "Internal Server Error", 500
 
 
 # 示例用户资料
