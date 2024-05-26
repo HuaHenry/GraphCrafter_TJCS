@@ -931,6 +931,37 @@ def update_post_status(post_id):
 
     return jsonify({'success': 'Post status updated successfully', 'new_status': post.status})
 
+# 发布动态
+@app.route('/api/postnotes', methods=['GET', 'POST'])
+def postnotes():
+    dataform = request.json.get('pics')
+    title = request.json.get('title')
+    description = request.json.get('description')
+    user_id = request.json.get('userId')  # 获取用户 ID
+    # 获取dataform的实际大小
+    cnt = len(dataform)
+    # 下面这坨也许可以改进，但是能跑
+    pic1 = ''
+    pic2 = ''
+    pic3 = ''
+    pic4 = ''
+    pic5 = ''
+    if cnt>=1:
+        pic1 = dataform[0]
+    if cnt>=2:
+        pic2 = dataform[1]
+    if cnt>=3:
+        pic3 = dataform[2]
+    if cnt>=4:
+        pic4 = dataform[3]
+    if cnt>=5:
+        pic5 = dataform[4]
+    # 谁定义的数据表，表项名字那么长...pic不好么
+    post = Post(author_id=user_id, title=title, body=description, picture1=pic1, picture2=pic2, picture3=pic3, picture4=pic4, picture5=pic5)
+    db.session.add(post)
+    db.session.commit()
+    return jsonify({'message': 'Post created successfully'})
+
 if __name__ == '__main__':
     config = dict(
         host='0.0.0.0',
