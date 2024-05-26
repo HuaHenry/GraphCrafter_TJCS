@@ -1,8 +1,16 @@
 <template>
   <div class="feeds-container">
+    <div><el-select v-model="selected_label" placeholder="请选择标签" style="margin-left: 60px;margin-bottom: 20px; width: 200px;margin-top: 20px;">
+    <el-option
+      v-for="item in labels"
+      :key="item"
+      :label="item"
+      :value="item">
+    </el-option>
+  </el-select><el-button type="primary"  @click="labelSearch" style="margin-left: 20px;">搜索</el-button></div>
     <Waterfall :list="list" :width="220" :hasAroundGutter="false" style="max-width: 1260px">
       <template #item="{item}">
-        <div class="card">
+        <div class="card" :key="componentKey">
           <LazyImg :url="item.pictures" style="border-radius: 8px"  @click="toDel_draft(item.ids)"    />
           <div class="footer">
             <a class="title"><span>{{ item.labels }}</span></a>
@@ -40,6 +48,8 @@ const toDel_draft = (id: number) => {
   router.push({ path: "/del_draft", query: { post_id: id } });
 };
 
+let  componentKey=0;
+
 const list = ref([
   // { src: "https://tse1-mm.cn.bing.net/th/id/OIP-C.Zte3ljd4g6kqrWWyg-8fhAHaEo?w=264&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7" },
   // { src: "https://tse1-mm.cn.bing.net/th/id/OIP-C.cGc4c8dVlqnfV3uwcS1IogHaE8?w=260&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7" },
@@ -65,6 +75,46 @@ const list = ref([
   // { src: "https://tse1-mm.cn.bing.net/th/id/OIP-C.cGc4c8dVlqnfV3uwcS1IogHaE8?w=260&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7" },
 ]);
 
+const labels=ref();
+const selected_label=ref();
+
+const get_labels = async() => {
+  try{
+    const data = await axios.get("/api/get_labels");
+    labels.value= data.data;
+    console.log(labels.value);
+  } catch (error) {
+    console.error('Error fetching labels:', error);
+  }
+};
+
+const labelSearch = async () => {
+  try {
+    // Simulated asynchronous database query
+    console.log(selected_label);
+    const data = await axios.get(`/api/search_drafts/${selected_label.value}`);
+    const result = data.data;
+    // 解构出各个属性数组
+    list.value=[];
+    const { pictures, dates, labels, ids } = result;
+    // 遍历数组，构建每个对象并添加到数组中
+    for (let i = 0; i < pictures.length; i++) {
+      const item = {
+        pictures: pictures[i], // 使用对应索引的图片 URL 作为 src 属性
+        dates: dates[i], // 使用对应索引的标题属性
+        labels: labels[i], // 使用对应索引的作者属性
+        ids:ids[i]
+      };
+      list.value.push(item);
+    }
+    componentKey=componentKey+1;
+    // console.log(result);
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
+};
+
+
 const fetchData = async () => {
   try {
     // Simulated asynchronous database query
@@ -89,6 +139,7 @@ const fetchData = async () => {
 };
 onMounted(() => {
   fetchData(); // Call fetchData function when the component is mounted
+  get_labels();
 });
 </script>
 <style lang="less" scoped>

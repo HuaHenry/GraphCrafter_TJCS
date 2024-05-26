@@ -5,12 +5,12 @@
   >
     <div class="note-container">
       <div class="media-container">
-        <el-carousel height="90vh">
+        <el-carousel height="90vh" style="background-color: silver;">
           <!-- <el-carousel-item v-for="item in ImageList" :key="item"> -->
             <el-image
               :src="items.pictures"
               style="width: 100%; height: 100%"
-              fit="cover"
+              fit="scale-down"
             />
           <!-- </el-carousel-item> -->
         </el-carousel>
@@ -31,7 +31,7 @@
                   style="width: 40px; height: 40px"
                   :src="items.avatar"
                 /> -->
-                <span class="name">标签：【{{ items.labels }}】</span>
+                <span style="font-size: 30px;">【标签】{{ items.labels }}</span>
               </div>
               <!-- <div class="follow-btn">
                 <el-button type="danger" size="large" round>关注</el-button>
@@ -48,7 +48,7 @@
                   <a class="tag tag-search">#海贼王</a> -->
                 </div>
                 <div class="bottom-container">
-                  <span class="date">日期：{{ items.dates }}</span>
+                  <span style="font-size: 30px;">【日期】{{ items.dates }}</span>
                 </div>
               </div>
               <div class="divider interaction-divider"></div>
@@ -58,6 +58,7 @@
 
             <div class="interactions-footer">
               <div class="comment-wrapper active comment-comp">
+                <button class="down" @click="downloadImage">下载</button>
                 <button class="submit" @click="submitDel">删除</button>
               </div>
             </div>
@@ -115,6 +116,32 @@ const fetchPost = async () => {
     console.error('Error fetching data:', error);
   }
 }
+
+
+
+const downloadImage = async () => {
+  const imageUrl = items.value.pictures;
+
+  try {
+    // Fetch the image as a blob
+    const response = await fetch(imageUrl, {
+      mode: 'cors',
+    });
+    const blob = await response.blob();
+
+    // Create a link element, set its href to the object URL, and trigger a download
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `image.jpg`;
+    link.click();
+
+    // Release the object URL after the download
+    URL.revokeObjectURL(link.href);
+  } catch (error) {
+    console.error('Error downloading image:', error);
+  }
+}
+
 
 const submitDel = async () => {
   try{
@@ -580,9 +607,25 @@ const goBack = () => {
           }
 
           .submit {
-            margin-left: 8px;
-            width: 60px;
-            height: 40px;
+            margin-left: 80px;
+            width: 160px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            flex-shrink: 0;
+            background:red;
+            border-radius: 44px;
+            font-size: 16px;
+          }
+
+          .down {
+            margin-left: 40px;
+            width: 160px;
+            height: 50px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -594,6 +637,8 @@ const goBack = () => {
             border-radius: 44px;
             font-size: 16px;
           }
+
+
         }
 
         .comment-comp {

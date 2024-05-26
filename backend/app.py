@@ -304,6 +304,50 @@ def get_draft(post_id):
     return response_json
     # return jsonify({'error': 'collect not found'}), 404
 
+# 获取草稿箱标签
+@cross_origin()
+@app.route('/api/get_labels', methods=['GET'])
+def get_labels():
+    # user = db.session.query(Post.picture1,Post.title,User.name,User.photo,func.count(Like.id).label('like')).filter(Post.id==Collect.post_id and Collect.user_id==1 and Post.author_id==User.id and Like.post_id==Post.id).all()
+    drafts=db.session.query(
+        Draft.label
+    ).join(User, Draft.user_id == User.id).filter(User.id == 1).distinct()
+    labels=[]
+    for draft in drafts:
+        labels.append(draft[0])
+    return labels
+    # return jsonify({'error': 'collect not found'}), 404
+
+# 根据标签获取草稿箱
+@cross_origin()
+@app.route('/api/search_drafts/<selected_label>', methods=['GET'])
+def search_drafts(selected_label):
+    print(selected_label)
+    # user = db.session.query(Post.picture1,Post.title,User.name,User.photo,func.count(Like.id).label('like')).filter(Post.id==Collect.post_id and Collect.user_id==1 and Post.author_id==User.id and Like.post_id==Post.id).all()
+    drafts=db.session.query(
+        Draft.picture,
+        cast(Draft.date,String),
+        Draft.label,
+        Draft.id
+    ).join(User, Draft.user_id == User.id).filter(User.id == 1,Draft.label==selected_label).all()
+    pictures=[]
+    dates=[]
+    labels=[]
+    ids=[]
+    for draft in drafts:
+        pictures.append(draft[0])
+        dates.append(draft[1])
+        labels.append(draft[2])
+        ids.append(draft[3])
+    response_json = jsonify({
+        'pictures': pictures,
+        'dates': dates,
+        'labels': labels,
+        'ids':ids
+    })
+    return response_json
+    # return jsonify({'error': 'collect not found'}), 404
+
 # 草稿箱删除
 @cross_origin()
 @app.route('/api/del_draft/<int:post_id>', methods=['GET'])
