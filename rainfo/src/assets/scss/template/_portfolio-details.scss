@@ -1,0 +1,55 @@
+/* ====================
+    Portfolio Details 
+===========================*/
+
+.rf-portfolio-details {
+    .container {
+        max-width: 1450px;
+    }
+}
+
+.rp-port-details-inner {
+    .content {
+        h3 {
+            color: #010101;
+            font-size: 35px;
+            line-height: 48px;
+            font-weight: 500;
+            margin-bottom: 37px;
+        }
+        p {
+            color: #0c0c0c;
+            font-size: 18px;
+            line-height: 32px;
+            font-weight: 300;
+        }
+        .port-info {
+            .port-meta {
+                margin-top: 48px;
+                span {
+                    color: #020202;
+                    font-size: 18px;
+                    font-weight: 400;
+                }
+                p {
+                    margin: 0;
+                    color: #727276;
+                    font-size: 16px;
+                    font-weight: 300;
+                }
+            }
+        }
+    }
+}
+
+// service details
+.rf-service-details {
+    .heading-title {
+        font-weight: 500;
+    }
+    ul,
+    ol {
+        list-style: none;
+        margin-bottom: 30px;
+    }
+}

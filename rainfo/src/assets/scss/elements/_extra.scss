@@ -1,0 +1,146 @@
+/* =======================
+    Extra
+===========================*/
+
+.multiscroll-tooltip {
+    position: absolute;
+    top: 0px;
+    color: #000;
+    font-size: 14px;
+    white-space: nowrap;
+    max-width: 220px;
+    overflow: hidden;
+    display: block;
+    width: auto;
+}
+
+.multiscroll-tooltip.right {
+    right: 40px;
+}
+
+
+/*
+
+
+#multiscroll-nav ul li .multiscroll-tooltip {
+    position: absolute;
+    top: -2px;
+    color: #fff;
+    font-size: 14px;
+    white-space: nowrap;
+    max-width: 220px;
+    overflow: hidden;
+    display: block;
+    width: auto;
+    -webkit-transition: all .25s ease!important;
+    -o-transition: all .25s ease!important;
+    transition: all .25s ease!important;
+    visibility: hidden;
+    opacity: 0;
+}
+
+#fp-nav ul li .multiscroll-tooltip.right {
+    padding-right: 20px;
+    top: 8px;
+    right: 20px;
+}
+
+*/
+
+#multiscroll-nav li {
+    margin: 0;
+    padding: 0;
+    width: auto;
+    height: auto;
+}
+
+#multiscroll-nav ul li a {
+    display: block;
+    position: relative;
+    z-index: 1;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 0;
+    line-height: 0;
+    padding: 5px 0;
+    width: auto;
+    height: 20px;
+    width: 30px;
+    box-sizing: content-box;
+}
+
+#multiscroll-nav ul li a span {
+    border-radius: 50%;
+    position: absolute;
+    z-index: 1;
+    border: 0;
+    background: rgba(0, 0, 0, .15);
+    left: 50%;
+    top: 50%;
+    width: 6px;
+    height: 6px;
+    margin: -3px 0 0 -3px;
+    -webkit-transition: all .1s ease-in-out;
+    -o-transition: all .1s ease-in-out;
+    transition: all .1s ease-in-out;
+}
+
+#multiscroll-nav ul li a.active span,
+#multiscroll-nav ul li a:hover span,
+#multiscroll-nav ul li:hover a.active span {
+    background: #000;
+    -webkit-transition: all .25s ease-in-out;
+    -o-transition: all .25s ease-in-out;
+    transition: all .25s ease-in-out;
+}
+
+#multiscroll-nav ul li a svg {
+    position: absolute;
+    top: 0px;
+    left: 0;
+    -webkit-transform: rotate(-90deg);
+    -ms-transform: rotate(-90deg);
+    -o-transform: rotate(-90deg);
+    transform: rotate(-90deg);
+}
+
+#multiscroll-nav ul li a svg circle {
+    fill: transparent;
+    stroke: #000;
+    stroke-width: 1;
+    stroke-dasharray: 500;
+    stroke-dashoffset: 500;
+    -webkit-transition: stroke-dasharray 0s ease .3s, opacity .3s ease;
+    -o-transition: stroke-dasharray 0s ease .3s, opacity .3s ease;
+    transition: stroke-dasharray 0s ease .3s, opacity .3s ease;
+    opacity: 0;
+}
+
+#multiscroll-nav ul li a.active svg circle,
+#multiscroll-nav ul li a:hover svg circle {
+    -webkit-transition: stroke-dasharray .6s ease, opacity 0s ease;
+    -o-transition: stroke-dasharray .6s ease, opacity 0s ease;
+    transition: stroke-dasharray .6s ease, opacity 0s ease;
+    stroke-dasharray: 585;
+    opacity: 1;
+}
+
+.demo-preview-btn {
+    position: fixed;
+    right: 0;
+    bottom: auto;
+    top: 200px;
+    z-index: 999999;
+    transition: 0.3s;
+}
+
+.demo-preview-btn a {
+    display: inline-block;
+    padding: 10px 20px;
+    text-transform: uppercase;
+    font-size: 14px;
+    font-weight: 500;
+    color: #fff;
+    background: #000f11;
+    transform: rotate(90deg) translateY(-20px);
+}
