@@ -103,6 +103,7 @@ class Message(db.Model):  # 单条消息记录
     id = db.Column(db.Integer, primary_key=True)  # 主键
     type = db.Column(db.String(60))  # 消息的类型
     time = db.Column(db.DateTime)  # 发送时间
+    show_time = db.Column(db.Boolean) # 该条消息的时间是否显示
     content = db.Column(db.Text)  # 内容
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))  # 发送的用户id
     chat_id = db.Column(db.Integer, db.ForeignKey('chat.id'))  # 关联Chat模型的id
@@ -518,6 +519,7 @@ def get_chats(user_id):
                 'id': message.id,
                 'type': message.type,
                 'time': formatDateTime(message.time),
+                'show_time':message.show_time,
                 'content': message.content,
                 'user': transUserData(user)
             }
@@ -533,7 +535,7 @@ def receive_messages():
     print(data)
     chat_id = data.get('chat_id')
     message = data.get('message')
-
+    show_time = data.get('show_time')
     if not chat_id or not message:
         return jsonify({'error': 'Invalid data provided'}), 400
 
@@ -550,9 +552,10 @@ def receive_messages():
             id = next_message_id,
             type=message.get('type'),
             time= message_datetime,
+            show_time=show_time,
             content=content,
             user_id=message.get('user')["id"],
-            chat_id=chat.id
+            chat_id=chat.id,
         )
         db.session.add(db_message)
         # 更新时间

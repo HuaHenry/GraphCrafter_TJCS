@@ -123,7 +123,7 @@
         <router-view />
       </div>
     </div>
-    
+
   </div>
 </template>
 
@@ -143,6 +143,8 @@ import {
 } from "@element-plus/icons-vue";
 import { useRouter } from "vue-router";
 import { ref } from "vue";
+import store from "../store/index";
+
 const router = useRouter();
 
 const c = ref(true);
@@ -170,6 +172,10 @@ const close = (val: boolean) => {
   console.log(val);
   c.value = val;
 };
+
+// 保存到本地，这样不需要每次刷新都得登录
+store.commit("setLoginState",localStorage.getItem("user")?true:false);
+store.commit("setCurUserID",localStorage.getItem("user")?localStorage.getItem("user"):null);
 </script>
 
 <style lang="less" scoped>

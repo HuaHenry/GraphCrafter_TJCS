@@ -38,7 +38,6 @@
 <script lang="ts">
 import axios from 'axios';
 import ChatWindow from "./chatwindow.vue";
-import type {User} from "@/utils/socket";
 import store from "../../../store/index";
 
 export default{

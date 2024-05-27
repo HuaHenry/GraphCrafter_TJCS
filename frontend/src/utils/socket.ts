@@ -7,6 +7,7 @@ export type Message = {
   user: User;
   content: string;
   time:string;
+  show_time:boolean
 }
 
 export type User = {

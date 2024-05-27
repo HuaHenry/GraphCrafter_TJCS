@@ -63,6 +63,7 @@ export default {
           this.login();
           console.log("登录成功");
           store.commit("setCurUserID",res.data.user_id);
+          localStorage.setItem("user",res.data.user_id);
           this.$router.push("/dashboard");
         }
         else if (res.data.status === 'error') {

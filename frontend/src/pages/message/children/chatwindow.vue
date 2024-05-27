@@ -9,7 +9,7 @@
     <div ref="content" class="message-container">
       <template v-for="(message, index) in socketState.messages" :key="index">
         <!--时间-->
-        <div v-if="index === 0 || index === prevMessageLength">
+        <div v-if="message.show_time">
           <div class="system-message">{{message.time}}</div>
         </div>
         <!--自己-->
@@ -73,6 +73,7 @@ export default {
       menuY: 0,
       selectMessageIndex:0,
       isLeftBubbleHover: false,
+
     }
   },
   emits: ['close'],
@@ -118,7 +119,7 @@ export default {
     const text: Ref<string> = ref("");
     const content: Ref<HTMLElement | null> = ref(null);
     const isConnected = computed<boolean>(() => socketState.connected);
-
+    var curTimeFirstMsg=true;
     // 监测变量
     watch(isConnected, (current: boolean) => {
       if (current) {
@@ -136,7 +137,39 @@ export default {
       socket.emit("join", { chat_id: socketState.chat_id });
     });
 
+    function checkTimeDiff(){
+      const lastMessageTimeString = props.chat?.messages.length > 0 ? props.chat.messages[props.chat.messages.length - 1].time : null;
+      const now = new Date();
+      if (lastMessageTimeString) {
+        const lastMessageTimeParts = lastMessageTimeString.split(' ');
+        const dateParts = lastMessageTimeParts[0].split('-');
+        const timeParts = lastMessageTimeParts[1].split(':');
+
+        const lastMessageTime = new Date(
+            Number(dateParts[0]), // 年份
+            Number(dateParts[1]) - 1, // 月份
+            Number(dateParts[2]), // 日期
+            Number(timeParts[0]), // 小时
+            Number(timeParts[1]), // 分钟
+            Number(timeParts[2]) // 秒
+        );
+
+        if (!isNaN(lastMessageTime.getTime())) {
+          const diff = now - lastMessageTime;
+          const diffInHours = diff / (1000 * 60 * 60);
+          if (diffInHours > 0.5) {//半小时
+            return true;
+          } else {
+            return false;
+          }
+        }
+      }
+      return false;
+    }
     async function sendMessage(e: Event): void {
+      if(checkTimeDiff()===false){
+        curTimeFirstMsg = false;
+      }
       e.preventDefault();
       if (text.value === "") return;
       let msg: Message = {
@@ -145,7 +178,9 @@ export default {
         user: props.user,
         content: text.value,
         time: formatDateTime(new Date()),
+        show_time:curTimeFirstMsg,
       };
+
       let new_data ={ chat_id: props.chat.id, message: msg };
 
       // 后端存储
