@@ -62,7 +62,7 @@ const list = ref([]);
 const fetchData = async () => {
   try {
     // Simulated asynchronous database query
-    const data = await fetch('http://127.0.0.1:9090/api/posts'); // Replace URL with your endpoint
+    const data = await fetch('http://127.0.0.1:8080/api/posts'); // Replace URL with your endpoint
     const result = await data.json();
     // 解构出各个属性数组
     const { ids,authors, avatars, likes, pictures, titles } = result;

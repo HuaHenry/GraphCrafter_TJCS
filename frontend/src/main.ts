@@ -25,4 +25,4 @@ app.mount("#app");
 import axios from 'axios';
 
 // 设置后端服务器的基准 URL
-axios.defaults.baseURL = 'http://127.0.0.1:9090';
+axios.defaults.baseURL = 'http://127.0.0.1:8080';

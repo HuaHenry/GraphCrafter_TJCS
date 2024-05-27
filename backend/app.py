@@ -215,7 +215,7 @@ def get_user_profile(user_id):
             'email': user.email,
             'age': user.age,
             'sex': user.sex,
-            'senior': user.senior,
+            #'senior': user.senior,
             'bio': user.description
         })
     return jsonify({'error': 'User not found'}), 404
@@ -1018,7 +1018,7 @@ def postnotes():
 if __name__ == '__main__':
     config = dict(
         host='0.0.0.0',
-        port=9090,
+        port=8080,
         debug=True,
         allow_unsafe_werkzeug=True
     )

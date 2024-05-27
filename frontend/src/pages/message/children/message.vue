@@ -52,7 +52,7 @@ export default{
 
   data() {
     return {
-      server_url: 'localhost:9090',
+      server_url: 'localhost:8080',
       ready: false,
       login: false,
       user: {id: 1, name: '加完班打麻药', avatar: ''},

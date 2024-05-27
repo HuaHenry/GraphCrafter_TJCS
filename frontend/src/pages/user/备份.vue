@@ -43,18 +43,18 @@
         <!-- 性别 -->
         <div class="profile-field">
           <label>性别</label>
-          <div class="field-content" v-if="!editingGender">
-            <span>{{ gender }}</span>
-            <Edit style="margin-left: 8px; cursor: pointer; color: #13386c; width: 1em; height: 1em;" @click="startEdit('gender')" />
+          <div class="field-content" v-if="!editingsex">
+            <span>{{ sex }}</span>
+            <Edit style="margin-left: 8px; cursor: pointer; color: #13386c; width: 1em; height: 1em;" @click="startEdit('sex')" />
           </div>
           <div class="field-content" v-else>
-            <el-radio-group v-model="gender">
+            <el-radio-group v-model="sex">
               <el-radio label="男">男</el-radio>
               <el-radio label="女">女</el-radio>
             </el-radio-group>
             <div class="profile-actions">
-              <el-button type="primary" @click="saveProfile('gender')">保存</el-button>
-              <el-button @click="cancelEdit('gender')">取消</el-button>
+              <el-button type="primary" @click="saveProfile('sex')">保存</el-button>
+              <el-button @click="cancelEdit('sex')">取消</el-button>
             </div>
           </div>
         </div>
@@ -152,7 +152,7 @@
   // 初始化数据
   const initialAvatar = '/static/avatars/default.png'; // 初始头像路径
   const initialUsername = '';
-  const initialGender = '';
+  const initialsex = '';
   const initialEmail = '';
   const initialBio = '';
   const initialAge = '';
@@ -160,14 +160,14 @@
   const avatar = ref(initialAvatar);
   const uploadedAvatar = ref('');
   const username = ref(initialUsername);
-  const gender = ref(initialGender);
+  const sex = ref(initialsex);
   const age = ref(initialAge);
   const email = ref(initialEmail);
   const bio = ref(initialBio);
   
   const isAvatarEditorOpen = ref(false);
   const editingUsername = ref(false);
-  const editingGender = ref(false);
+  const editingsex = ref(false);
   const editingEmail = ref(false);
   const editingBio = ref(false);
   const editingAge = ref(false);
@@ -175,7 +175,7 @@
   
   // 预先存储的变量，用于保存编辑前的值
   const originalUsername = ref('');
-  const originalGender = ref('');
+  const originalsex = ref('');
   const originalEmail = ref('');
   const originalBio = ref('');
   const originalAge = ref('');
@@ -189,7 +189,7 @@
       username.value = data.name;
       email.value = data.email;
       avatar.value = data.photo;
-      gender.value = data.gender ? '男' : '女';
+      sex.value = data.sex ? '男' : '女';
       bio.value = data.bio;
       age.value = data.age;
     } catch (error) {
@@ -247,9 +247,9 @@
     if (field === 'username') {
       originalUsername.value = username.value;
       editingUsername.value = true;
-    } else if (field === 'gender') {
-      originalGender.value = gender.value;
-      editingGender.value = true;
+    } else if (field === 'sex') {
+      originalsex.value = sex.value;
+      editingsex.value = true;
     } else if (field === 'email') {
       originalBio.value = bio.value;
       editingEmail.value = true;
@@ -272,11 +272,11 @@
         email: email.value,
         photo: avatar.value,
         bio: bio.value,
-        sex: gender.value === '男', // 转换性别
+        sex: sex.value === '男', // 转换性别
         age: age.value, // 转换性别
       };
       if (field === 'username') updatedData.name = username.value;
-      if (field === 'gender') updatedData.gender = gender.value === '男';
+      if (field === 'sex') updatedData.sex = sex.value === '男';
       if (field === 'email') updatedData.email = email.value;
       if (field === 'bio') updatedData.bio = bio.value;
       if (field === 'age') updatedData.age = age.value;
@@ -290,7 +290,7 @@
   
     // 关闭编辑状态
     if (field === 'username') editingUsername.value = false;
-    if (field === 'gender') editingGender.value = false;
+    if (field === 'sex') editingsex.value = false;
     if (field === 'email') editingEmail.value = false;
     if (field === 'bio') editingBio.value = false;
     if (field === 'age') editingAge.value = false;
@@ -302,9 +302,9 @@
     if (field === 'username') {
       username.value = originalUsername.value;
       editingUsername.value = false;
-    } else if (field === 'gender') {
-      gender.value = originalGender.value;
-      editingGender.value = false;
+    } else if (field === 'sex') {
+      sex.value = originalsex.value;
+      editingsex.value = false;
     } else if (field === 'email') {
       email.value = originalEmail.value;
       editingEmail.value = false;
