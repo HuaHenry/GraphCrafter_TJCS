@@ -28,7 +28,7 @@
         <div class="profile-field">
           <div class="field-label">用户名</div>
           <div class="field-content" v-if="!editingUsername">
-            <span>{{ username }}</span>
+            <span style="font-size: 16px;">{{ username }}</span>
             <Edit style="margin-left: 8px; cursor: pointer; color: #13386c; width: 1em; height: 1em;" @click="startEdit('username')" />
           </div>
           <div class="field-content" v-else>
@@ -51,7 +51,7 @@
         <div class="profile-field">
           <div class="field-label">性别</div>
           <div class="field-content" v-if="!editingsex">
-            <span>{{ sex }}</span>
+            <span style="font-size: 16px;">{{ sex }}</span>
             <Edit style="margin-left: 8px; cursor: pointer; color: #13386c; width: 1em; height: 1em;" @click="startEdit('sex')" />
           </div>
           <div class="field-content" v-else>
@@ -72,7 +72,7 @@
         <div class="profile-field">
           <div class="field-label">年龄</div>
           <div class="field-content" v-if="!editingAge">
-            <span>{{ age }}</span>
+            <span style="font-size: 16px;">{{ age }}</span>
             <Edit style="margin-left: 8px; cursor: pointer; color: #13386c; width: 1em; height: 1em;" @click="startEdit('age')" />
           </div>
           <div class="field-content" v-else>
@@ -94,7 +94,7 @@
         <div class="profile-field">
           <div class="field-label">邮箱</div>
           <div class="field-content" v-if="!editingEmail">
-            <span>{{ email }}</span>
+            <span style="font-size: 16px;">{{ email }}</span>
             <Edit style="margin-left: 8px; cursor: pointer; color: #13386c; width: 1em; height: 1em;" @click="startEdit('email')" />
           </div>
           <div class="field-content" v-else>
@@ -117,16 +117,18 @@
         <div class="profile-field">
           <div class="field-label">简介</div>
           <div class="field-content" v-if="!editingBio">
-            <span>{{ bio }}</span>
+            <span style="font-size: 16px;">{{ bio }}</span>
             <Edit style="margin-left: 8px; cursor: pointer; color: #13386c; width: 1em; height: 1em;" @click="startEdit('bio')" />
           </div>
           <div class="field-content" v-else>
             <el-input
-              type="text"
+              type="textarea"
               v-model="bio"
               placeholder="填写兴趣爱好、生活方式等个人简介"
               maxlength="50"
+              
               show-word-limit
+              :rows="2" 
             ></el-input>
             <div class="profile-actions">
               <el-button type="primary" @click="saveProfile('bio')">保存</el-button>
@@ -225,21 +227,29 @@
   // 加载用户数据
   onMounted(loadUserProfile);
   
-  const triggerFileInput = () => {
+  const triggerFileInput = (event) => {
+    // 清空input的值
+    event.target.value = '';
     fileInput.value.click();
   };
   
   const uploadAvatar = (event) => {
+    isAvatarEditorOpen.value = true;
     const target = event.target as HTMLInputElement;
+    console.log(target)
     const file = target.files ? target.files[0] : null;
+    
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
         // 只将图片预览结果存储到 uploadedAvatar 中
         uploadedAvatar.value = e.target?.result as string;
+       
         isAvatarEditorOpen.value = true; // 打开预览编辑器
+        //console.log(isAvatarEditorOpen.value)
       };
       reader.readAsDataURL(file);
+      
     }
   };
   
@@ -282,6 +292,7 @@
   // 关闭头像编辑器并取消修改
   const cancelAvatarEdit = () => {
     isAvatarEditorOpen.value = false;
+    
   
   };
   
@@ -410,12 +421,14 @@
 }
 
 .field-content {
-  min-height: 50px; /* 为每个字段预留固定的高度 */
+  min-height: 20px; /* 为每个字段预留固定的高度 */
+  
 }
 
 .profile-actions {
   display: flex;
   gap: 10px;
+  margin-top: 10px; /* 在元素上方添加20px的外边距 */
 }
 
 .avatar-container {
@@ -512,7 +525,7 @@
 
 
 .username-placeholder {
-  height: 20px; /* 在用户名之前预留出 20px 的空白 */
+  height: 30px; /* 在用户名之前预留出 20px 的空白 */
 }
 
 
@@ -524,6 +537,7 @@
   border: none;
   border-top: 1px solid #e0e0e0;
   margin: 0;
+  margin-bottom: 10px; /* 添加底部间距 */
 }
 
 
