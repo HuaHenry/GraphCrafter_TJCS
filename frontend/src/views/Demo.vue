@@ -78,7 +78,11 @@
 <script>
   import feather from "feather-icons";
   import { mapGetters, mapActions } from 'vuex';
-
+  import "vue-slick-carousel/dist/vue-slick-carousel.css";
+  import "vue-slick-carousel/dist/vue-slick-carousel-theme.css";
+  import "hooper/dist/hooper.css";
+  import '../assets/scss/style.scss'
+  import "../assets/css/home-style.css";
   export default {
     data() {
       return {

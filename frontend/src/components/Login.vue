@@ -36,6 +36,7 @@
 import axios from 'axios';
 import qs from 'qs';
 import {mapActions } from 'vuex';
+import store from "../store/index";
 
 export default {
   data() {
@@ -58,21 +59,20 @@ export default {
                 headers: {'Content-Type':'application/x-www-form-urlencoded'}
             }
 			).then(res => {
-            if (res.status === 200 && res.data.status === "success") {
+        if (res.status === 200 && res.data.status === "success") {
           this.login();
           console.log("登录成功");
-          //this.showTips("登录成功！", "success")
-          this.$router.push("/");
+          store.commit("setCurUserID",res.data.user_id);
+          this.$router.push("/dashboard");
         }
-           else if (res.data.status === 'error') {
+        else if (res.data.status === 'error') {
+             this.$message.error("登录失败");
           console.log("登录失败");
-          //this.showTips("用户名或密码错误！", "danger")
           return;
         }
                 })
                 .catch(() => {
                   console.log("登录失败");
-                    //this.showTips("登录失败")
                 })
         },
   }

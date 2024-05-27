@@ -33,12 +33,6 @@
     </div>
   </div>
 
-  <!--模拟登录，确定用户-->
-  <div style="margin-top:80px" >
-    <input v-model="user.name">
-    <button @click="checkLogin" style="border: 1px solid #888888;padding: 10px">确认</button>
-  </div>
-
 </template>
 
 <script lang="ts">

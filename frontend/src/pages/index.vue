@@ -123,8 +123,7 @@
         <router-view />
       </div>
     </div>
-
-    <Login v-show="c" @click-child="close"></Login>
+    
   </div>
 </template>
 
@@ -143,7 +142,6 @@ import {
   CirclePlus,
 } from "@element-plus/icons-vue";
 import { useRouter } from "vue-router";
-import Login from "@/pages/login.vue";
 import { ref } from "vue";
 const router = useRouter();
 

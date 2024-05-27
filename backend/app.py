@@ -155,6 +155,7 @@ def fallback(fallback):       # Vue Router 的 mode 为 'hash' 时可移除该�
 @app.route('/login', methods=['POST', 'GET'])
 @cross_origin(supports_credentials=True)
 def login():
+    print("login")
     data = request.form
     username = data.get('username')
     password = data.get('password')
@@ -168,7 +169,7 @@ def login():
             return jsonify({'status': 'error', 'message': 'Unauthorized access for admin'}), 401
         if user_type == 'premium' and not user.is_premium:
             return jsonify({'status': 'error', 'message': 'Unauthorized access for premium user'}), 401
-        return jsonify({'status': 'success', 'message': 'Login successful'}), 200
+        return jsonify({'status': 'success', 'message': 'Login successful',"user_id":user.id}), 200
     else:
         return jsonify({'status': 'error', 'message': 'Invalid username or password'}), 401
 
@@ -474,7 +475,7 @@ def transUserData(user):
             'avatar': user.photo,
             }
 
-@app.route('/api/fake-login/<int:user_id>', methods=['GET'])
+@app.route('/api/get-user-info/<int:user_id>', methods=['GET'])
 def get_user_info(user_id):
     if user_id:
         user = User.query.filter_by(id=user_id).first()

@@ -44,7 +44,7 @@
       </template>
     </div>
     <!--发送框-->
-    <div class="footer">
+    <div class="chat-footer">
       <input class="message-input" v-model.trim="text" autocomplete="off" />
       <button class="message-send-button" @click="sendMessage">发送</button>
     </div>
@@ -365,7 +365,7 @@ export default {
   color: #a020f0;
 }
 
-.footer {
+.chat-footer {
   margin: 10px;
   display: flex;
   justify-content: space-around;

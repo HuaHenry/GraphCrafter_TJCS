@@ -33,18 +33,13 @@
     </div>
   </div>
 
-  <!--模拟登录，确定用户-->
-  <div style="margin-top:80px" >
-    <input id="user-id-input">|
-    <button @click="checkLogin" style="border: 1px solid #888888;padding: 10px">确认</button>
-  </div>
-
 </template>
 
 <script lang="ts">
 import axios from 'axios';
 import ChatWindow from "./chatwindow.vue";
 import type {User} from "@/utils/socket";
+import store from "../../../store/index";
 
 export default{
   name:"ChatRoom",
@@ -66,17 +61,22 @@ export default{
   },
   methods: {
     async checkLogin(): Promise<void> {
-      this.user.id = document.getElementById("user-id-input").value;
-      const response = await axios.get(`/api/fake-login/${this.user.id}`);
-      this.user.name = response.data.name;
-      this.user.avatar = response.data.avatar;
-      this.login = true;
-      await this.fetchChatList();
+      if (store.state.isLoggedIn){
+        this.user.id = store.state.user_id;
+        const response = await axios.get(`/api/get-user-info/${this.user.id}`);
+        this.user.name = response.data.name;
+        this.user.avatar = response.data.avatar;
+        this.login = true;
+        await this.fetchChatList();
+      }
+      else{
+        this.$message.error("请先登录");
+        this.$router.push("/login");
+      }
     },
 
     async fetchChatList(): Promise<void> {
       try {
-        console.log("user")
         const response = await axios.get(`/api/chat/${this.user.id}`);
         // const response = await axios.get(`/api/chat/1`);
         this.chatList = response.data;
