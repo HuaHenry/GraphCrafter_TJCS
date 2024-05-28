@@ -1,11 +1,11 @@
 <template>
   <div class="feeds-page">
-    <!-- <div class="channel-container">
+    <div class="channel-container">
       <div class="scroll-container channel-scroll-container">
         <div class="content-container">
           <div class="channel active">推荐</div>
-          <div class="channel">穿搭</div>
-          <div class="channel">美食</div>
+          <div class="channel">关注</div>
+          <!-- <div class="channel">美食</div>
           <div class="channel">彩妆</div>
           <div class="channel">影视</div>
           <div class="channel">职场</div>
@@ -14,10 +14,10 @@
           <div class="channel">游戏</div>
           <div class="channel">旅行</div>
           <div class="channel">动漫</div>
-          <div class="channel">健身</div>
+          <div class="channel">健身</div> -->
         </div>
       </div>
-    </div> -->
+    </div>
     <div class="loading-container"></div>
     <div class="feeds-container">
       <Waterfall :list="list" :width="220" :hasAroundGutter="false" style="max-width: 1260px">

@@ -34,9 +34,15 @@
                 />
                 <span class="name">{{ items.author }}</span>
               </div>
-              <div class="follow-btn">
+              <!-- <div class="follow-btn">
                 <el-button type="danger" size="large" round>关注</el-button>
-              </div>
+              </div> -->
+
+              <el-button type="danger" size="large" round @click="followUser">
+                  {{ buttonText }}
+              </el-button>
+
+
             </div>
 
             <div class="note-scroller">
@@ -159,15 +165,16 @@
 <script lang="ts" setup>
 import { Close, Star, StarFilled, PictureRounded, ChatRound } from "@element-plus/icons-vue";
 import { useRouter, useRoute } from 'vue-router';
-import { ref, onMounted } from 'vue';
+import { ref, computed,onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
+import store from "../store/index";
 import axios from 'axios';
 const router = useRouter();
 const route = useRoute();
 
 // 用户id先写死，后面实现登陆后再改为变量实现
-const userId = 1;
-
+const userId = store.state.user_id;
+console.log("检查一下",store.state.user_id)
 // const ImageList=ref([]);
 const ImageList=ref([]);
 const items=ref({});
@@ -175,6 +182,7 @@ const comments=ref([]);
 const com_content=ref('');
 const isLiked=ref();
 const isCollected=ref();
+//const author_id = ref();
 
 const fetchPost = async () => {
   try {
@@ -185,7 +193,8 @@ const fetchPost = async () => {
     // const data = await fetch('http://127.0.0.1:5000/api/post_content/${post_id}'); 
     const result = response.data;
     // 解构出各个属性数组
-    const { pictures,date,title,body,author,avatar,likes_num,comments_num,collects_num } = result;
+    const { pictures,date,title,body,author,avatar,author_id,likes_num,comments_num,collects_num } = result;
+    //author_id =  response.data.author_id;
     // 遍历数组，构建每个对象并添加到数组中
     for (let i = 0; i < pictures.length; i++) {
       ImageList.value.push(pictures[i]);
@@ -198,15 +207,62 @@ const fetchPost = async () => {
       body: body,
       author: author, // 使用对应索引的作者属性
       avatar: avatar, // 使用对应索引的头像属性
+      author_id: author_id, //获取post的id，我需要互相关注
+
       likes_num: likes_num, // 使用对应索引的点赞数属性
       comments_num: comments_num, // 使用对应索引的评论数属性
       collects_num: collects_num
     };
+    console.log("WTFFFFFF",items.value.author_id)
 
   }catch(error){
     console.error('Error fetching data:', error);
   }
 }
+
+const followUser = async () => {
+    if (!isFollowed.value) {
+        try {
+            const response = await axios.post('/api/follow', {
+                follower_id: userId,
+                followed_id: items.value.author_id
+            });
+            if (response.status === 200) {
+                isFollowed.value = true;  // 更新关注状态
+            }
+            console.log('Follow response:', response.data);
+            console.log('!!!!!!!!',store.state.user_id,items.value.author_id)
+        } catch (error) {
+            console.error('Error following user:', error);
+        }
+    }
+};
+
+const isFollowed = ref(false);
+const followStatus = ref(0);  // 0: 单独关注, 1: 互相关注
+
+const checkFollowStatus = async () => {
+    try {
+        const response = await axios.get(`/api/check-follow/${userId}/${items.value.author_id }`);
+        console.log(response.data.isFollowed)
+        console.log(response.data.status)
+        isFollowed.value = response.data.isFollowed;
+        
+        followStatus.value = response.data.status;
+    } catch (error) {
+        console.error('Error checking follow status:', error);
+    }
+};
+
+const buttonText = computed(() => {
+    if (followStatus.value === 1) {
+        return '互相关注';
+    } else if (isFollowed.value) {
+        return '已关注';
+    } else {
+        return '关注';
+    }
+});
 
 const fetchComments = async () => {
   try {
@@ -340,14 +396,12 @@ const toggleCollect = async () => {
   }
 }
 
-
-
-
-onMounted(() => {
-  getStatus();
-  fetchPost(); // Call fetchData function when the component is mounted
+onMounted(async () => {
+  await fetchPost();  //做的比较慢 要确保得到了想要的数据
+  console.log("WTF",items.value.author_id)
+  await checkFollowStatus();
   fetchComments();
-  
+  checkFollowStatus();
 });
 
 const goBack = () => {

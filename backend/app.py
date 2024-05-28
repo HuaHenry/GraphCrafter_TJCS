@@ -822,68 +822,189 @@ def get_postComment(post_id):
     return response_json
 
 # 获取帖子详情
+# @app.route('/api/post_content/<int:post_id>', methods=['GET'])
+# def get_postContent(post_id):
+#     # 首先是文章信息，包括内容、作者等
+#     print(post_id)
+#     contents=db.session.query(
+#         Post.picture1,
+#         Post.picture2,
+#         Post.picture3,
+#         Post.picture4,
+#         Post.picture5,
+#         # Post.date,
+#         cast(Post.date, String),
+#         Post.title,
+#         Post.body,
+#         User.name,
+#         User.photo,
+#         func.count(Like.id.distinct()).label('like'),
+#         func.count(Comment.id.distinct()).label('comment'),
+#         func.count(Collect.id.distinct()).label('collect'),
+#         Post.id
+#     ).join(User, Post.author_id == User.id) \
+#         .outerjoin(Like, Post.id == Like.post_id) \
+#         .outerjoin(Comment, Post.id == Comment.post_id) \
+#         .outerjoin(Collect, Post.id == Collect.post_id) \
+#         .filter(Post.id==post_id) \
+#         .order_by(desc(Post.id)) \
+#         .all() 
+#     content=contents[0]
+#     pictures=[]
+#     print(content)
+#     # titles=[]
+#     # authors=[]
+#     # avatars=[]
+#     # likes=[]
+#     for i in range(5):
+#         # print(("this is id {}").format(i))
+#         if content[i]:
+#             pictures.append(content[i])
+#     # print(pictures)
+#     response_json = jsonify({
+#         'pictures': pictures,
+#         'date': content[5],
+#         'title': content[6],
+#         'body': content[7],
+#         'author': content[8],
+#         'avatar': content[9],
+#         'likes_num': content[10],
+#         'comments_num': content[11],
+#         'collects_num': content[12]
+#     })
+#     print({
+#         'pictures': pictures,
+#         'date': content[5],
+#         'title': content[6],
+#         'body': content[7],
+#         'author': content[8],
+#         'avatar': content[9],
+#         'likes_num': content[10],
+#         'comments_num': content[11],
+#         'collects_num': content[12]
+#     })
+#     return response_json
+
+
 @app.route('/api/post_content/<int:post_id>', methods=['GET'])
 def get_postContent(post_id):
-    # 首先是文章信息，包括内容、作者等
     print(post_id)
-    contents=db.session.query(
+    # Expanded query to include User.id
+    contents = db.session.query(
         Post.picture1,
         Post.picture2,
         Post.picture3,
         Post.picture4,
         Post.picture5,
-        # Post.date,
         cast(Post.date, String),
         Post.title,
         Post.body,
         User.name,
         User.photo,
+        User.id,  # Adding this to capture the author's ID
         func.count(Like.id.distinct()).label('like'),
         func.count(Comment.id.distinct()).label('comment'),
         func.count(Collect.id.distinct()).label('collect'),
         Post.id
     ).join(User, Post.author_id == User.id) \
-        .outerjoin(Like, Post.id == Like.post_id) \
-        .outerjoin(Comment, Post.id == Comment.post_id) \
-        .outerjoin(Collect, Post.id == Collect.post_id) \
-        .filter(Post.id==post_id) \
-        .order_by(desc(Post.id)) \
-        .all() 
-    content=contents[0]
-    pictures=[]
-    print(content)
-    # titles=[]
-    # authors=[]
-    # avatars=[]
-    # likes=[]
-    for i in range(5):
-        # print(("this is id {}").format(i))
-        if content[i]:
-            pictures.append(content[i])
-    # print(pictures)
-    response_json = jsonify({
-        'pictures': pictures,
-        'date': content[5],
-        'title': content[6],
-        'body': content[7],
-        'author': content[8],
-        'avatar': content[9],
-        'likes_num': content[10],
-        'comments_num': content[11],
-        'collects_num': content[12]
-    })
-    print({
-        'pictures': pictures,
-        'date': content[5],
-        'title': content[6],
-        'body': content[7],
-        'author': content[8],
-        'avatar': content[9],
-        'likes_num': content[10],
-        'comments_num': content[11],
-        'collects_num': content[12]
-    })
-    return response_json
+      .outerjoin(Like, Post.id == Like.post_id) \
+      .outerjoin(Comment, Post.id == Comment.post_id) \
+      .outerjoin(Collect, Post.id == Collect.post_id) \
+      .filter(Post.id == post_id) \
+      .group_by(Post.id, User.id, User.name, User.photo) \
+      .order_by(desc(Post.id)) \
+      .all()
+
+    if contents:
+        content = contents[0]
+        pictures = [pic for pic in content[:5] if pic]
+        response_json = jsonify({
+            'pictures': pictures,
+            'date': content[5],
+            'title': content[6],
+            'body': content[7],
+            'author': content[8],
+            'avatar': content[9],
+            'author_id': content[10],  # Using the fetched author ID
+            'likes_num': content[11],
+            'comments_num': content[12],
+            'collects_num': content[13]
+        })
+        print(response_json.get_json())  # This will print the JSON response in your server logs
+        return response_json
+    else:
+        return jsonify({'error': 'Post not found'}), 404
+
+
+#互相关注
+# @app.route('/api/follow', methods=['POST'])
+# def follow_user():
+#     data = request.get_json()
+#     follower_id = data.get('follower_id')
+#     followed_id = data.get('followed_id')
+
+#     # 检查是否已存在关注关系
+#     follow = Follow.query.filter_by(follower_id=follower_id, followed_id=followed_id).first()
+#     if not follow:
+#         # 如果不存在，则创建新的关注关系
+#         follow = Follow(follower_id=follower_id, followed_id=followed_id, status=0)
+#         db.session.add(follow)
+#         db.session.commit()
+#         print("Followed successfully")
+#         return jsonify({'message': 'Followed successfully'}), 200
+#     else:
+#         # 可以选择更新状态或者返回已关注的消息
+#         print("Already followed")
+#         return jsonify({'message': 'Already followed'}), 409
+
+#     return jsonify({'error': 'Failed to follow'}), 500
+
+
+
+@app.route('/api/follow', methods=['POST'])
+def follow_user():
+    data = request.get_json()
+    follower_id = data.get('follower_id')
+    followed_id = data.get('followed_id')
+    #print(follower_id)
+    if follower_id == followed_id:
+        return jsonify({'error': 'Cannot follow yourself'}), 400
+
+    follow = Follow.query.filter_by(follower_id=follower_id, followed_id=followed_id).first()
+    if follow:
+        # 已经存在关注记录，检查是否已经是互相关注
+        return jsonify({'message': 'Already followed', 'status': follow.status}), 409
+    else:
+        # 创建新的关注关系
+        new_follow = Follow(follower_id=follower_id, followed_id=followed_id, status=0)
+       # print(follower_id)
+        db.session.add(new_follow)
+
+        # 检查对方是否已关注当前用户，实现互相关注
+        reverse_follow = Follow.query.filter_by(follower_id=followed_id, followed_id=follower_id).first()
+        if reverse_follow:
+            new_follow.status = 1
+            reverse_follow.status = 1
+            db.session.add(reverse_follow)
+
+        db.session.commit()
+        return jsonify({'message': 'Followed successfully', 'status': new_follow.status}), 200
+
+
+
+#查看，来显示
+@app.route('/api/check-follow/<int:follower_id>/<int:followed_id>', methods=['GET'])
+def check_follow(follower_id, followed_id):
+    follow = Follow.query.filter_by(follower_id=follower_id, followed_id=followed_id).first()
+    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    print(follow)
+    if follow:
+        return jsonify({'isFollowed': True, 'status': follow.status}), 200
+    else:
+        return jsonify({'isFollowed': False, 'status': 0}), 200
+
+
+
 
 # 广场页获取帖子
 # @cross_origin()

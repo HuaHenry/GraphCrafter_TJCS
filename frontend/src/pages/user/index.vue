@@ -21,7 +21,7 @@
                   <button @click="toEdit" class="edit-button">编辑</button>
                 </div>
                 <div class="user-content">
-                  <span class="user-redId">id号：{{ uid }}</span>
+                  <span class="user-redId">图匠id号：{{ uid }}</span>
                   <span class="user-redId">权限：{{ is_premium}}</span>
                 </div>
               </div>
