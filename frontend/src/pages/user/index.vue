@@ -209,14 +209,25 @@ onMounted(()=>{
               }
             }
           }
+          // .user-desc {
+          //   width: 100%;
+          //   font-size: 14px;
+          //   line-height: 140%;
+          //   color: #333;
+          //   margin-top: 16px;
+          //   white-space: pre-line;
+          // }
           .user-desc {
-            width: 100%;
+            width: 450px; /* 根据25个字符实际需要的宽度进行调整 */
             font-size: 14px;
             line-height: 140%;
             color: #333;
             margin-top: 16px;
-            white-space: pre-line;
+            white-space: pre-wrap; /* 改为pre-wrap以实现自然换行 */
+            overflow-wrap: break-word; /* 确保长单词可以换行到下一行 */
+            word-wrap: break-word; /* 适用于旧浏览器 */
           }
+
           .user-tags {
             height: 24px;
             margin-top: 16px;
