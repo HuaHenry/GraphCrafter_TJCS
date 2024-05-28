@@ -18,7 +18,7 @@
     </div>
     <div class="main">
       <div class="side-bar" style="z-index:10">
-        <ul class="channel-list">
+        <!-- <ul class="channel-list">
           <li>
             <a class="link-wrapper"
               ><House style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel" @click="toDashboard()"
@@ -38,6 +38,28 @@
             <User style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel" @click="toUser()">
               个人</span
             >
+          </li>
+        </ul> -->
+        <ul class="channel-list">
+          <li :class="{ 'active-channel': activeChannel === 'dashboard' }">
+            <a class="link-wrapper" @click="toDashboard">
+              <House style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel">发现</span>
+            </a>
+          </li>
+          <li :class="{ 'active-channel': activeChannel === 'message' }">
+            <a class="link-wrapper" @click="toMessage">
+              <Bell style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel">消息</span>
+            </a>
+          </li>
+          <li :class="{ 'active-channel': activeChannel === 'push' }">
+            <a class="link-wrapper" @click="toPush">
+              <CirclePlus style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel">发布</span>
+            </a>
+          </li>
+          <li :class="{ 'active-channel': activeChannel === 'user' }">
+            <a class="link-wrapper" @click="toUser">
+              <User style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel">个人</span>
+            </a>
           </li>
         </ul>
 
@@ -136,32 +158,52 @@ import {
   More,
   CirclePlus,
 } from "@element-plus/icons-vue";
-import { useRouter } from "vue-router";
+import { useRouter,useRoute} from "vue-router";
 import { ref } from "vue";
 import store from "../store/index";
 
 const router = useRouter();
 
-const c = ref(true);
+const route = useRoute();
+const activeChannel = ref(route.name);  // Set initial active channel based on route name
 
 const toDashboard = () => {
-  router.push({ path: "/dashboard" });
+  router.push({ name: 'dashboard' });
+  activeChannel.value = 'dashboard';
 };
-
-const toTrend = () => {
-  router.push({ path: "/followTrend" });
-};
-
 const toMessage = () => {
-  router.push({ path: "/message" });
-};
-
-const toUser = () => {
-  router.push({ path: "/user" });
+  router.push({ name: 'message' });
+  activeChannel.value = 'message';
 };
 const toPush = () => {
-  router.push({ path: "/push" });
+  router.push({ name: 'push' });
+  activeChannel.value = 'push';
 };
+const toUser = () => {
+  router.push({ name: 'user' });
+  activeChannel.value = 'user';
+};
+
+const c = ref(true);
+
+// const toDashboard = () => {
+//   router.push({ path: "/dashboard" });
+// };
+
+// const toTrend = () => {
+//   router.push({ path: "/followTrend" });
+// };
+
+// const toMessage = () => {
+//   router.push({ path: "/message" });
+// };
+
+// const toUser = () => {
+//   router.push({ path: "/user" });
+// };
+// const toPush = () => {
+//   router.push({ path: "/push" });
+// };
 
 const close = (val: boolean) => {
   console.log(val);

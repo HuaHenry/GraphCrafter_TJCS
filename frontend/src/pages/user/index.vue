@@ -35,8 +35,8 @@
             </div>
             <div class="data-info">
               <div class="user-interactions">
-                <div><span class="count">8</span><span class="shows">关注</span></div>
-                <div><span class="count">575</span><span class="shows">粉丝</span></div>
+                <!-- <div><span class="count">8</span><span class="shows">关注</span></div>
+                <div><span class="count">575</span><span class="shows">粉丝</span></div> -->
                 <div><span class="count">{{ userStats.likes }}</span><span class="shows">获赞</span></div>
                 <div><span class="count">{{ userStats.favorites }}</span><span class="shows">收藏</span></div>
               </div>
