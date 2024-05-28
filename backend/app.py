@@ -437,12 +437,6 @@ def serve_avatar(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 #查看要改的用户名是否已存在，要确保所有都是unique
-# @app.route('/check-username', methods=['GET'])
-# def check_username():
-#     username = request.args.get('username')
-#     existing_user = User.query.filter_by(name=username).first()
-#     return jsonify(is_unique=existing_user is None)
-
 @app.route('/check-username', methods=['GET'])
 def check_username():
     username = request.args.get('username')
