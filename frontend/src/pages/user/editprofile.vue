@@ -166,6 +166,7 @@
   import { ElMessage } from 'element-plus';
   import { Close, Camera, Edit } from '@element-plus/icons-vue';
   import { useRouter } from 'vue-router';
+  import store from "../../store/index";
 
   import OSS from 'ali-oss';
   const router = useRouter();
@@ -178,8 +179,9 @@
   bucket: "graphcrafter",
   });
 
-  const userId = 1;
+ const userId = store.state.user_id;
   
+ 
   // 初始化数据
   const initialAvatar = 'http://graphcrafter.oss-cn-beijing.aliyuncs.com/avatars/1-default.webp'; // 初始头像路径
   const initialUsername = '';

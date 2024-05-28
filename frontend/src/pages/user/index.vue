@@ -74,7 +74,9 @@ import { useRouter } from "vue-router";
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 const router = useRouter();
-const userId = 1;
+import store from "../../store/index";
+
+//const userId = 1;
 
 const avatar = ref('');
 const username = ref('');
@@ -105,7 +107,7 @@ const toDrafts = () => {
 // 加载用户资料
 const loadUserProfile = async () => {
   try {
-    const response = await axios.get(`/api/user/${userId}`);
+    const response = await axios.get(`/api/user/${store.state.user_id}`);
     const data = response.data;
     avatar.value = data.photo || 'http://graphcrafter.oss-cn-beijing.aliyuncs.com/avatars/1-default.webp';
     username.value = data.name || '未知用户';
