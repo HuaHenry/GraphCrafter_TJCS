@@ -335,46 +335,10 @@ const checkUsernameUnique = async (newUsername) => {
 };
 
 
-
-  // 更新用户数据
-  //此处需要向数据库中查询所有的用户名
-  // const saveProfile = async (field: string) => {
-  //   try {
-  //     const updatedData: Record<string, any> = {
-  //       id: userId, // 包含用户 ID
-  //       name: username.value,
-  //       email: email.value,
-  //       photo: avatar.value,
-  //       bio: bio.value,
-  //       sex: sex.value === '男', // 转换性别
-  //       age: age.value, // 转换性别
-  //     };
-  //     if (field === 'username') updatedData.name = username.value;
-  //     if (field === 'sex') updatedData.sex = sex.value === '男';
-  //     if (field === 'email') updatedData.email = email.value;
-  //     if (field === 'bio') updatedData.bio = bio.value;
-  //     if (field === 'age') updatedData.age = age.value;
-  //     console.log(updatedData)
-  
-  //     await axios.post('/api/update-profile', updatedData); // 使用 POST 方法
-  //     ElMessage({ message: `资料(${field})已保存`, type: 'success' });
-  //   } catch (error) {
-  //     console.error('Error updating profile:', error);
-  //   }
-  
-  //   // 关闭编辑状态
-  //   if (field === 'username') editingUsername.value = false;
-  //   if (field === 'sex') editingsex.value = false;
-  //   if (field === 'email') editingEmail.value = false;
-  //   if (field === 'bio') editingBio.value = false;
-  //   if (field === 'age') editingAge.value = false;
-  // };
-
-  
   // 更新用户数据
   //此处需要向数据库中查询所有的用户名
   //还需要向后端传输自己的用户名，允许他假装改一下
-  
+
   const saveProfile = async (field) => {
   if (field === 'username' && username.value !== originalUsername.value) {
     const isUnique = await checkUsernameUnique(username.value);

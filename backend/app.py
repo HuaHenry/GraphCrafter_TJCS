@@ -66,7 +66,7 @@ class Comment(db.Model):  # 评论
 class Like(db.Model):  # 点赞
     id = db.Column(db.Integer, primary_key=True)  # 主键
     date = db.Column(db.DateTime)     # 日期
-    author_id = db.Column(db.Integer)      # 作者id
+    author_id = db.Column(db.Integer)      # 点赞者id
     post_id = db.Column(db.Integer)      # 文章id
 
 class Collect( db.Model):  # 收藏
@@ -224,6 +224,38 @@ def get_user_profile(user_id):
             'bio': user.description
         })
     return jsonify({'error': 'User not found'}), 404
+
+
+
+#显示被点赞数量
+def get_total_likes_count_for_user(user_id):
+    # Query to count unique likes per post for a specific author
+    likes_count = db.session.query(db.func.count(db.distinct(Like.id)))\
+                    .join(Post, Post.id == Like.post_id)\
+                    .filter(Post.author_id == user_id)\
+                    .scalar()
+    return likes_count
+
+#显示被收藏数量
+def get_favorites_count_for_user(user_id):
+    # Query to count unique likes per post for a specific author
+    favorites_count = db.session.query(db.func.count(db.distinct(Collect.id)))\
+                    .join(Post, Post.id == Collect.post_id)\
+                    .filter(Post.author_id == user_id)\
+                    .scalar()
+    return favorites_count
+
+
+# 获取指定作者的帖子的获赞与收藏总数
+@app.route('/api/user-stats/<int:user_id>')
+def user_stats(user_id):
+    likes_count = get_total_likes_count_for_user(user_id)
+    favorites_count = get_favorites_count_for_user(user_id)  # Assuming you implement this
+    return jsonify({
+        'likes': likes_count,
+        'favorites': favorites_count
+    })
+
 
 # 获取用户收藏
 @cross_origin()

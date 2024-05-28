@@ -37,7 +37,8 @@
               <div class="user-interactions">
                 <div><span class="count">8</span><span class="shows">关注</span></div>
                 <div><span class="count">575</span><span class="shows">粉丝</span></div>
-                <div><span class="count">2445</span><span class="shows">获赞与收藏</span></div>
+                <div><span class="count">{{ userStats.likes }}</span><span class="shows">获赞</span></div>
+                <div><span class="count">{{ userStats.favorites }}</span><span class="shows">收藏</span></div>
               </div>
             </div>
           </div>
@@ -85,6 +86,13 @@ const activeTab = ref('collection');
 const is_premium = ref('');
 const uid = ref('');
 
+const userStats = ref({
+    likes: 0,
+    favorites: 0
+});
+
+
+
 const toNote = () => {
   router.push({ path: "/note" });
   activeTab.value = 'note';
@@ -120,8 +128,18 @@ const loadUserProfile = async () => {
   }
 };
 
+const fetchUserStats = async () => {
+    try {
+        const response = await axios.get(`/api/user-stats/${store.state.user_id}`);
+        userStats.value = response.data;
+    } catch (error) {
+        console.error('Error fetching user stats:', error);
+    }
+};
+
 // 组件加载时调用
 onMounted(()=>{
+  fetchUserStats();
   toCollection();
   loadUserProfile();
 });
