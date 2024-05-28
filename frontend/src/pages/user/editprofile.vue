@@ -76,11 +76,14 @@
             <Edit style="margin-left: 8px; cursor: pointer; color: #13386c; width: 1em; height: 1em;" @click="startEdit('age')" />
           </div>
           <div class="field-content" v-else>
-            <el-input
-              type="text"
+            <!-- 使用 el-input-number 来允许数字输入和调整 -->
+            <el-input-number
               v-model="age"
-              placeholder="输入您的年龄"
-            ></el-input>
+              :min="0"  
+              :max="120" 
+              placeholder="请输入年龄"
+              controls-position="right">
+            </el-input-number>
             <div class="profile-actions">
               <el-button type="primary" @click="saveProfile('age')">保存</el-button>
               <el-button @click="cancelEdit('age')">取消</el-button>
@@ -89,6 +92,7 @@
           <!-- 横线 -->
           <hr class="field-separator" />
         </div>
+
 
         <!-- 邮箱 -->
         <div class="profile-field">
@@ -177,7 +181,7 @@
   const userId = 1;
   
   // 初始化数据
-  const initialAvatar = '/static/avatars/default.png'; // 初始头像路径
+  const initialAvatar = 'http://graphcrafter.oss-cn-beijing.aliyuncs.com/avatars/1-default.webp'; // 初始头像路径
   const initialUsername = '';
   const initialsex = '';
   const initialEmail = '';
@@ -215,11 +219,11 @@
       const data = response.data;
       username.value = data.name;
       email.value = data.email;
-      avatar.value = data.photo;
-      sex.value = data.sex == 1 ? '男' : '女';
+      avatar.value = data.photo ? data.photo : 'http://graphcrafter.oss-cn-beijing.aliyuncs.com/avatars/1-default.webp';
+      sex.value = data.sex == null ? "未知" : data.sex == 1 ? '男' : '女';
       bio.value = data.bio;
-      age.value = data.age;
-    } catch (error) {
+      age.value = data.age == null ? "未知" :  data.age;
+    } catch (error) { 
       console.error('Error loading user profile:', error);
     }
   };

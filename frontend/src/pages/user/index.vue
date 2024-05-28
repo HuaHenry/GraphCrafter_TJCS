@@ -21,8 +21,8 @@
                   <button @click="toEdit" class="edit-button">编辑</button>
                 </div>
                 <div class="user-content">
-                  <span class="user-redId">小红书号：275592512</span>
-                  <span class="user-IP">IP属地：广东</span>
+                  <span class="user-redId">id号：{{ uid }}</span>
+                  <span class="user-redId">权限：{{ is_premium}}</span>
                 </div>
               </div>
             </div>
@@ -76,10 +76,12 @@ import axios from 'axios';
 const router = useRouter();
 const userId = 1;
 
-const avatar = ref('/static/avatars/default.png');
+const avatar = ref('');
 const username = ref('');
 const description = ref('');
 const activeTab = ref('collection'); 
+const is_premium = ref('');
+const uid = ref('');
 
 const toNote = () => {
   router.push({ path: "/note" });
@@ -105,9 +107,12 @@ const loadUserProfile = async () => {
   try {
     const response = await axios.get(`/api/user/${userId}`);
     const data = response.data;
-    avatar.value = data.photo || '/static/avatars/default.png';
+    avatar.value = data.photo || 'http://graphcrafter.oss-cn-beijing.aliyuncs.com/avatars/1-default.webp';
     username.value = data.name || '未知用户';
     description.value = data.bio || '未填写简介';
+    is_premium.value = data.is_premium == 1 ? "高级" : "普通";
+    console.log(is_premium)
+    uid.value = data.id;
   } catch (error) {
     console.error('Error loading user profile:', error);
   }

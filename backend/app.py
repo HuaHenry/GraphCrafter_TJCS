@@ -189,7 +189,9 @@ def register():
             invite_code = None
             if user_type == "admin":
                 invite_code = request.form['inviteCode']
-            user_now = User(id=id, name=username, password=password, email=email, is_premium=(user_type == 'premium'))
+
+            default_avatar_url = 'http://graphcrafter.oss-cn-beijing.aliyuncs.com/avatars/1-default.webp'
+            user_now = User(id=id, name=username, password=password, email=email, is_premium=(user_type == 'premium'),photo=default_avatar_url)
             # 用户名已占用
             users = User.query.filter_by(name=username).all()
             if users:
@@ -217,6 +219,7 @@ def get_user_profile(user_id):
             'email': user.email,
             'age': user.age,
             'sex': user.sex,
+            'is_premium':user.is_premium,
             #'senior': user.senior,
             'bio': user.description
         })
