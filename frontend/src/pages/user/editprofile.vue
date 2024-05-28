@@ -323,38 +323,94 @@
   };
   
   
+// 检查用户名是否唯一
+const checkUsernameUnique = async (newUsername) => {
+  try {
+    const response = await axios.get(`/check-username?username=${encodeURIComponent(newUsername)}&user_id=${userId}`);
+    return response.data.is_unique; // 假设端点返回 { is_unique: boolean }
+  } catch (error) {
+    console.error('Error checking username uniqueness:', error);
+    return false; // 出错时假设用户名不唯一
+  }
+};
+
+
+
   // 更新用户数据
-  const saveProfile = async (field: string) => {
-    try {
-      const updatedData: Record<string, any> = {
-        id: userId, // 包含用户 ID
-        name: username.value,
-        email: email.value,
-        photo: avatar.value,
-        bio: bio.value,
-        sex: sex.value === '男', // 转换性别
-        age: age.value, // 转换性别
-      };
-      if (field === 'username') updatedData.name = username.value;
-      if (field === 'sex') updatedData.sex = sex.value === '男';
-      if (field === 'email') updatedData.email = email.value;
-      if (field === 'bio') updatedData.bio = bio.value;
-      if (field === 'age') updatedData.age = age.value;
-      console.log(updatedData)
+  //此处需要向数据库中查询所有的用户名
+  // const saveProfile = async (field: string) => {
+  //   try {
+  //     const updatedData: Record<string, any> = {
+  //       id: userId, // 包含用户 ID
+  //       name: username.value,
+  //       email: email.value,
+  //       photo: avatar.value,
+  //       bio: bio.value,
+  //       sex: sex.value === '男', // 转换性别
+  //       age: age.value, // 转换性别
+  //     };
+  //     if (field === 'username') updatedData.name = username.value;
+  //     if (field === 'sex') updatedData.sex = sex.value === '男';
+  //     if (field === 'email') updatedData.email = email.value;
+  //     if (field === 'bio') updatedData.bio = bio.value;
+  //     if (field === 'age') updatedData.age = age.value;
+  //     console.log(updatedData)
   
-      await axios.post('/api/update-profile', updatedData); // 使用 POST 方法
-      ElMessage({ message: `资料(${field})已保存`, type: 'success' });
-    } catch (error) {
-      console.error('Error updating profile:', error);
+  //     await axios.post('/api/update-profile', updatedData); // 使用 POST 方法
+  //     ElMessage({ message: `资料(${field})已保存`, type: 'success' });
+  //   } catch (error) {
+  //     console.error('Error updating profile:', error);
+  //   }
+  
+  //   // 关闭编辑状态
+  //   if (field === 'username') editingUsername.value = false;
+  //   if (field === 'sex') editingsex.value = false;
+  //   if (field === 'email') editingEmail.value = false;
+  //   if (field === 'bio') editingBio.value = false;
+  //   if (field === 'age') editingAge.value = false;
+  // };
+
+  
+  // 更新用户数据
+  //此处需要向数据库中查询所有的用户名
+  //还需要向后端传输自己的用户名，允许他假装改一下
+  
+  const saveProfile = async (field) => {
+  if (field === 'username' && username.value !== originalUsername.value) {
+    const isUnique = await checkUsernameUnique(username.value);
+    if (!isUnique) {
+      ElMessage({ message: '用户名已被占用，请选择其他用户名', type: 'error' });
+      return; // 停止保存操作
     }
-  
-    // 关闭编辑状态
-    if (field === 'username') editingUsername.value = false;
-    if (field === 'sex') editingsex.value = false;
-    if (field === 'email') editingEmail.value = false;
-    if (field === 'bio') editingBio.value = false;
-    if (field === 'age') editingAge.value = false;
-  };
+  }
+
+  // 如果用户名是唯一的或者字段不是用户名，继续保存操作
+  try {
+    const updatedData = {
+      id: userId,
+      name: username.value,
+      email: email.value,
+      photo: avatar.value,
+      bio: bio.value,
+      sex: sex.value === '男',
+      age: age.value,
+    };
+
+    // 使用新数据更新数据库
+    await axios.post('/api/update-profile', updatedData);
+    ElMessage({ message: `资料(${field})已保存`, type: 'success' });
+  } catch (error) {
+    console.error('Error updating profile:', error);
+  }
+
+  // 关闭编辑状态
+  if (field === 'username') editingUsername.value = false;
+  if (field === 'sex') editingsex.value = false;
+  if (field === 'email') editingEmail.value = false;
+  if (field === 'bio') editingBio.value = false;
+  if (field === 'age') editingAge.value = false;
+};
+
   
   
   
