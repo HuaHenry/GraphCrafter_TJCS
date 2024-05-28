@@ -29,10 +29,11 @@
             <!-- 使用动态数据的简介 -->
             <div class="user-desc">{{ description }}</div>
             <div class="user-tags">
-              <div class="tag-item"><div>射手座</div></div>
-              <div class="tag-item"><div>广东广州</div></div>
-              <div class="tag-item"><div>程序员</div></div>
+                <div v-if="sex === '男'" class="tag-item" style="color: blue; font-weight: 900; font-size: 13px;">♂</div>
+                <div v-else class="tag-item" style="color: red; font-weight: 900; font-size: 13px;">♀</div>
             </div>
+
+
             <div class="data-info">
               <div class="user-interactions">
                 <!-- <div><span class="count">8</span><span class="shows">关注</span></div>
@@ -85,6 +86,7 @@ const description = ref('');
 const activeTab = ref('collection'); 
 const is_premium = ref('');
 const uid = ref('');
+const sex = ref('');
 
 const userStats = ref({
     likes: 0,
@@ -123,6 +125,8 @@ const loadUserProfile = async () => {
     is_premium.value = data.is_premium == 1 ? "高级" : "普通";
     console.log(is_premium)
     uid.value = data.id;
+    sex.value= data.sex == 1 ? "男" :"女";
+    console.log(sex.value)
   } catch (error) {
     console.error('Error loading user profile:', error);
   }
