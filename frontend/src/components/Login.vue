@@ -11,18 +11,11 @@
         <input type="password" id="password" v-model="password" required />
       </div>
       <div class="form-group user-type">
-        <label class="radio-label">
-          <input type="radio" value="normal" v-model="userType" checked />
-          Normal User
-        </label>
-        <label class="radio-label">
-          <input type="radio" value="premium" v-model="userType" />
-          Premium User
-        </label>
-        <label class="radio-label">
-          <input type="radio" value="admin" v-model="userType" />
-          Admin User
-        </label>
+        <el-radio-group v-model="userType" class="ml-4">
+          <el-radio value="normal" size="large">Normal User</el-radio>
+          <el-radio value="premium" size="large">Premium User</el-radio>
+          <el-radio value="admin" size="large">Admin</el-radio>
+        </el-radio-group>
       </div>
       <button type="submit">Log In</button>
     </form>
@@ -81,6 +74,7 @@ export default {
 </script>
 
 <style scoped>
+
 .login-container {
   display: flex;
   flex-direction: column;
@@ -88,7 +82,7 @@ export default {
   align-items: center;
   min-height: calc(50vh - 60px); /* Full viewport height minus some space for top and bottom */
   max-width: 400px;
-  margin: 30px auto; /* Center horizontally and give top/bottom margins */
+  margin: 150px auto; /* Center horizontally and give top/bottom margins */
   padding: 20px; /* Reduce padding */
   border: 1px solid #ccc;
   border-radius: 10px;
@@ -134,10 +128,11 @@ input[type="password"] {
   font-size: 0.9em;
 }
 
-input[type="radio"] {
-  margin-right: 5px;
-  transform: scale(0.5);
-}
+/*input[type="radio"] {*/
+/*  background: #666666;*/
+/*  margin-right: 5px;*/
+/*  transform: scale(0.5);*/
+/*}*/
 
 button {
   width: 100%;
