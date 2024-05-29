@@ -248,7 +248,7 @@ export default {
                     //设置图片名称
 
                     // TODO:替换为session中的用户名
-                    const Uname = "加完班打麻药";
+                    const Uname = store.state.user_id ;
                     // 
                 
                     const imgName = Uname +'/'+ formattedTime + ".jpg";

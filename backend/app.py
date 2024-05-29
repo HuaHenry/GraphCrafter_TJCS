@@ -873,7 +873,7 @@ def get_postComment(post_id):
     avatars=[]
     for comment in comments:
         ids.append(comment[0])
-        dates.append(comment[1])
+        dates.append(comment[1][:19])
         contents.append(comment[2])
         authors.append(comment[3])
         avatars.append(comment[4])
@@ -992,7 +992,7 @@ def get_postContent(post_id):
         pictures = [pic for pic in content[:5] if pic]
         response_json = jsonify({
             'pictures': pictures,
-            'date': content[5],
+            'date': content[5][:19],
             'title': content[6],
             'body': content[7],
             'author': content[8],
@@ -1234,9 +1234,9 @@ def postnotes():
     title = request.json.get('title')
     description = request.json.get('description')
     user_id = request.json.get('userId')  # 获取用户 ID
+    # user_id = 1
     # 获取dataform的实际大小
     cnt = len(dataform)
-    # 下面这坨也许可以改进，但是能跑
     pic1 = ''
     pic2 = ''
     pic3 = ''
@@ -1253,7 +1253,10 @@ def postnotes():
     if cnt>=5:
         pic5 = dataform[4]
     # 谁定义的数据表，表项名字那么长...pic不好么
-    post = Post(author_id=user_id, title=title, body=description, picture1=pic1, picture2=pic2, picture3=pic3, picture4=pic4, picture5=pic5)
+    dateToday = datetime.now()
+    print(dateToday)
+    post = Post(date=dateToday, author_id=user_id, title=title, body=description,
+                picture1=pic1, picture2=pic2, picture3=pic3, picture4=pic4, picture5=pic5)
     db.session.add(post)
     db.session.commit()
     return jsonify({'message': 'Post created successfully'})
