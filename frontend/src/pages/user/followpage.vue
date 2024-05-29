@@ -60,11 +60,12 @@ onMounted(async () => {
 
 .close-circle {
   position: absolute;
-  top: 0px;
-  right: 0px;
+  top: -0px;
+  left: -25px;
   z-index: 100;
   cursor: pointer;
 }
+
 
 .close-mask-white {
   background-color: white;
@@ -85,12 +86,6 @@ onMounted(async () => {
   padding: 0;
 }
 
-.following-item {
-  display: flex;
-  align-items: center;
-  margin-bottom: 16px;
-}
-
 .user-avatar {
   width: 48px;
   height: 48px;
@@ -98,9 +93,9 @@ onMounted(async () => {
   margin-right: 16px;
 }
 
-.user-details {
+/* .user-details {
   flex-grow: 1;
-}
+} */
 
 .user-name {
   font-weight: bold;
@@ -111,6 +106,19 @@ onMounted(async () => {
   font-size: 14px;
 }
 
+.following-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Keeps elements justified but can be adjusted */
+  gap: 10px; /* Reduces the gap between elements in the flex container */
+  margin-bottom: 16px;
+}
+
+.user-details {
+  flex-grow: 1;
+  margin-right: 0px; /* Adjust or remove if unnecessary */
+}
+
 .follow-button {
   padding: 7px 14px;
   background-color: #ff4d4f;
@@ -118,7 +126,9 @@ onMounted(async () => {
   border: none;
   border-radius: 20px;
   cursor: pointer;
-  font-size: 14px; /* Adjusted font size to make text smaller */
+  font-size: 14px;
+  margin-left: 5px;
 }
+
 
 </style>

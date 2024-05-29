@@ -1,7 +1,7 @@
 <template>
   <div class="profile-editor-container">
     <!-- 退出按钮 -->
-    <div class="close-cricle">
+    <div class="close-circle">
       <div class="close close-mask-white" @click="exitPage">
         <Close style="width: 1.2em; height: 1.2em; color: rgba(51, 51, 51, 0.8)" />
       </div>
@@ -521,7 +521,7 @@ const checkUsernameUnique = async (newUsername) => {
   gap: 10px;
 }
 
-.close-cricle {
+.close-circle {
   position: absolute;
   top: -0px;
   left: -25px;

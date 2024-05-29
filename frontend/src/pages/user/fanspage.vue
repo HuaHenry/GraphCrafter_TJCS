@@ -62,11 +62,12 @@ onMounted(async () => {
 
 .close-circle {
   position: absolute;
-  top: 0px;
-  right: 0px;
+  top: -0px;
+  left: -25px;
   z-index: 100;
   cursor: pointer;
 }
+
 
 .close-mask-white {
   background-color: white;
