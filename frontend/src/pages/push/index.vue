@@ -161,6 +161,7 @@ import "https://gosspublic.alicdn.com/aliyun-oss-sdk-6.18.0.min.js";
 import axios from "axios";
 import {ElMessage} from "element-plus";
 import {Buffer} from 'buffer';
+import store from "../../store/index";
 
 export default {
     name:"upclick_click",
@@ -310,7 +311,7 @@ export default {
                 const ruleForm =this.ruleForm
                 console.log(title, description)
                 console.log(this.reluForm)
-                const userId = 1
+                const userId = store.state.user_id
                 axios.post('/api/postnotes', {
                     pics: this.push_fileList,
                     title: title,

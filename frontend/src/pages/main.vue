@@ -166,7 +166,7 @@
 import { Close, Star, StarFilled, PictureRounded, ChatRound } from "@element-plus/icons-vue";
 import { useRouter, useRoute } from 'vue-router';
 import { ref, computed,onMounted } from 'vue';
-import { ElMessage } from 'element-plus';
+import { ElMessage,ElMessageBox } from 'element-plus';
 import store from "../store/index";
 import axios from 'axios';
 const router = useRouter();
@@ -247,6 +247,24 @@ const followUser = async () => {
     }
 };
 
+
+const unfollowUser = async () => {
+    try {
+        const response = await axios.post('/api/unfollow', {  // 确保后端有处理取消关注的API
+            follower_id: store.state.user_id,
+            followed_id: items.value.author_id
+        });
+        if (response.status === 200) {
+            isFollowed.value = false;  // 更新未关注状态
+            followStatus.value = 0;    // 更新关注状态
+            ElMessage.success('取消关注成功！');
+        }
+    } catch (error) {
+        ElMessage.error('取消关注失败，请稍后再试。');
+    }
+};
+
+
 const checkFollowStatus = async () => {
     try {
         const response = await axios.get(`/api/check-follow/${userId}/${items.value.author_id }`);
@@ -271,10 +289,36 @@ const buttonText = computed(() => {
 });
 
 
+// const handleClick = async () => {
+//     await followUser();  // 等待 followUser 方法完成
+//     await checkFollowStatus();  // 然后执行 checkFollowStatus 方法
+// };
+
+
 const handleClick = async () => {
-    await followUser();  // 等待 followUser 方法完成
-    await checkFollowStatus();  // 然后执行 checkFollowStatus 方法
+    // 检查是否已经关注或者互相关注
+    if (isFollowed.value || followStatus.value === 1) {
+        // 弹出确认取消关注的对话框
+        try {
+            await ElMessageBox.confirm('您确定要取消关注吗？', '确认信息', {
+                confirmButtonText: '确认',
+                cancelButtonText: '取消',
+                type: 'warning'
+            });
+            // 用户确认取消关注
+            await unfollowUser();  // 这是你需要实现的取消关注的方法
+            await checkFollowStatus();  // 再次检查关注状态
+        } catch (error) {
+            // 用户取消操作
+            ElMessage.info('已取消操作');
+        }
+    } else {
+        // 如果还没有关注，则尝试关注
+        await followUser();
+        await checkFollowStatus();
+    }
 };
+
 
 
 const fetchComments = async () => {

@@ -936,31 +936,8 @@ def get_postContent(post_id):
         return jsonify({'error': 'Post not found'}), 404
 
 
+
 #互相关注
-# @app.route('/api/follow', methods=['POST'])
-# def follow_user():
-#     data = request.get_json()
-#     follower_id = data.get('follower_id')
-#     followed_id = data.get('followed_id')
-
-#     # 检查是否已存在关注关系
-#     follow = Follow.query.filter_by(follower_id=follower_id, followed_id=followed_id).first()
-#     if not follow:
-#         # 如果不存在，则创建新的关注关系
-#         follow = Follow(follower_id=follower_id, followed_id=followed_id, status=0)
-#         db.session.add(follow)
-#         db.session.commit()
-#         print("Followed successfully")
-#         return jsonify({'message': 'Followed successfully'}), 200
-#     else:
-#         # 可以选择更新状态或者返回已关注的消息
-#         print("Already followed")
-#         return jsonify({'message': 'Already followed'}), 409
-
-#     return jsonify({'error': 'Failed to follow'}), 500
-
-
-
 @app.route('/api/follow', methods=['POST'])
 def follow_user():
     data = request.get_json()
@@ -990,7 +967,32 @@ def follow_user():
         db.session.commit()
         return jsonify({'message': 'Followed successfully', 'status': new_follow.status}), 200
 
+# 取消关注
+@app.route('/api/unfollow', methods=['POST'])
+def unfollow_user():
+    data = request.get_json()
+    follower_id = data.get('follower_id')
+    followed_id = data.get('followed_id')
 
+    if follower_id == followed_id:
+        return jsonify({'error': 'Cannot unfollow yourself'}), 400
+
+    # 查询是否存在关注记录
+    follow = Follow.query.filter_by(follower_id=follower_id, followed_id=followed_id).first()
+    if not follow:
+        return jsonify({'message': 'No follow relation found'}), 404
+
+    # 存在关注记录，进行取消
+    db.session.delete(follow)
+
+    # 检查是否需要更新互相关注状态
+    reverse_follow = Follow.query.filter_by(follower_id=followed_id, followed_id=follower_id).first()
+    if reverse_follow and reverse_follow.status == 1:
+        reverse_follow.status = 0  # 更新为非互相关注状态
+        db.session.add(reverse_follow)
+
+    db.session.commit()
+    return jsonify({'message': 'Unfollowed successfully'}), 200
 
 #查看，来显示
 @app.route('/api/check-follow/<int:follower_id>/<int:followed_id>', methods=['GET'])
