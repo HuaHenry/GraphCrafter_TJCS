@@ -38,7 +38,7 @@
                 <el-button type="danger" size="large" round>关注</el-button>
               </div> -->
 
-              <el-button type="danger" size="large" round @click="followUser">
+              <el-button type="danger" size="large" round @click="handleClick">
                   {{ buttonText }}
               </el-button>
 
@@ -220,26 +220,32 @@ const fetchPost = async () => {
   }
 }
 
+const isFollowed = ref(false);
+const followStatus = ref(0);  // 0: 单独关注, 1: 互相关注
+
 const followUser = async () => {
+    // 检查是否尝试自己关注自己
+    if (store.state.user_id == items.value.author_id) {
+        ElMessage.error('您不能关注自己。'); // 使用ElMessage显示错误信息
+        return;  // 直接返回，不执行关注操作
+    }
+
+    // 如果还未关注，则尝试执行关注操作
     if (!isFollowed.value) {
         try {
             const response = await axios.post('/api/follow', {
-                follower_id: userId,
+                follower_id: store.state.user_id,
                 followed_id: items.value.author_id
             });
             if (response.status === 200) {
                 isFollowed.value = true;  // 更新关注状态
+                ElMessage.success('关注成功！'); // 显示成功消息
             }
-            console.log('Follow response:', response.data);
-            console.log('!!!!!!!!',store.state.user_id,items.value.author_id)
         } catch (error) {
-            console.error('Error following user:', error);
+            ElMessage.error('关注失败，请稍后再试。'); // 出错时使用ElMessage显示错误信息
         }
     }
 };
-
-const isFollowed = ref(false);
-const followStatus = ref(0);  // 0: 单独关注, 1: 互相关注
 
 const checkFollowStatus = async () => {
     try {
@@ -263,6 +269,13 @@ const buttonText = computed(() => {
         return '关注';
     }
 });
+
+
+const handleClick = async () => {
+    await followUser();  // 等待 followUser 方法完成
+    await checkFollowStatus();  // 然后执行 checkFollowStatus 方法
+};
+
 
 const fetchComments = async () => {
   try {
