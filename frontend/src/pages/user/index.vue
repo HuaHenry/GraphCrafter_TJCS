@@ -36,8 +36,9 @@
 
             <div class="data-info">
               <div class="user-interactions">
-                <!-- <div><span class="count">8</span><span class="shows">关注</span></div>
-                <div><span class="count">575</span><span class="shows">粉丝</span></div> -->
+                <div><span class="count">{{ followingCount }}</span><span class="shows">关注</span></div>
+                <div><span class="count">{{ followersCount }}</span><span class="shows">粉丝</span></div>
+
                 <div><span class="count">{{ userStats.likes }}</span><span class="shows">获赞</span></div>
                 <div><span class="count">{{ userStats.favorites }}</span><span class="shows">收藏</span></div>
               </div>
@@ -114,21 +115,28 @@ const toDrafts = () => {
   activeTab.value = 'drafts';
 };
 
-// 加载用户资料
+const followingCount = ref(0);
+const followersCount = ref(0);
+
+// Load user profile and follow counts
 const loadUserProfile = async () => {
   try {
-    const response = await axios.get(`/api/user/${store.state.user_id}`);
-    const data = response.data;
-    avatar.value = data.photo || 'http://graphcrafter.oss-cn-beijing.aliyuncs.com/avatars/1-default.webp';
-    username.value = data.name || '未知用户';
-    description.value = data.bio || '未填写简介';
-    is_premium.value = data.is_premium == 1 ? "高级" : "普通";
-    console.log(is_premium)
-    uid.value = data.id;
-    sex.value= data.sex == 1 ? "男" :"女";
-    console.log(sex.value)
+    // Fetch the main user data
+    const userProfileResponse = await axios.get(`/api/user/${store.state.user_id}`);
+    const userData = userProfileResponse.data;
+    avatar.value = userData.photo || 'http://graphcrafter.oss-cn-beijing.aliyuncs.com/avatars/1-default.webp';
+    username.value = userData.name || '未知用户';
+    description.value = userData.bio || '未填写简介';
+    is_premium.value = userData.is_premium == 1 ? "高级" : "普通";
+    uid.value = userData.id;
+    sex.value = userData.sex == 1 ? "男" : "女";
+
+    // Fetch the follow counts
+    const followCountsResponse = await axios.get(`/api/user/${store.state.user_id}/counts`);
+    followingCount.value = followCountsResponse.data.following_count;
+    followersCount.value = followCountsResponse.data.followers_count;
   } catch (error) {
-    console.error('Error loading user profile:', error);
+    console.error('Error loading user profile and follow counts:', error);
   }
 };
 

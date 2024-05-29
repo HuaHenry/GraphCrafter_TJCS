@@ -257,6 +257,21 @@ def user_stats(user_id):
     })
 
 
+#获取关注和粉丝列表
+@app.route('/api/user/<int:user_id>/counts')
+def get_follow_counts(user_id):
+    # Count how many people the user is following
+    following_count = Follow.query.filter_by(follower_id=user_id).count()
+    
+    # Count how many followers the user has
+    followers_count = Follow.query.filter_by(followed_id=user_id).count()
+    
+    return jsonify({
+        'following_count': following_count,
+        'followers_count': followers_count
+    })
+
+
 # 获取用户收藏
 @cross_origin()
 @app.route('/api/collection', methods=['GET'])
@@ -467,6 +482,7 @@ def upload_avatar():
 @app.route('/uploads/<filename>')
 def serve_avatar(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
 
 #查看要改的用户名是否已存在，要确保所有都是unique
 @app.route('/check-username', methods=['GET'])
