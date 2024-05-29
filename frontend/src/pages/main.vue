@@ -31,6 +31,7 @@
                   class="avatar-item"
                   style="width: 40px; height: 40px"
                   :src="items.avatar"
+                  @click="ToOther(items.author_id)"
                 />
                 <span class="name">{{ items.author }}</span>
               </div>
@@ -183,6 +184,10 @@ const com_content=ref('');
 const isLiked=ref();
 const isCollected=ref();
 //const author_id = ref();
+
+const ToOther = (id: number) => {
+  router.push({ path: "/other",query: { id: id } });
+};
 
 const fetchPost = async () => {
   try {

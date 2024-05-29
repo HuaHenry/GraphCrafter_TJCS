@@ -125,7 +125,11 @@ export const routes = [
         component: () => import("@/pages/user/followpage.vue"),
         name: "followpage", // 用于 keep-alive, 必须与SFC自动推导或者显示声明的组件name一致
       },
-
+      {
+        path: "/other",
+        component: () => import("@/pages/other.vue"),
+        name: "other", // 用于 keep-alive, 必须与SFC自动推导或者显示声明的组件name一致
+      },
       {
         path: "/push",
         component: () => import("@/pages/push/index.vue"),
