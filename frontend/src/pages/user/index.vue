@@ -36,8 +36,15 @@
 
             <div class="data-info">
               <div class="user-interactions">
-                <div><span class="count">{{ followingCount }}</span><span class="shows">关注</span></div>
-                <div><span class="count">{{ followersCount }}</span><span class="shows">粉丝</span></div>
+                <div @click="goToFollowPage" class="navigation-item">
+                  <span class="count">{{ followingCount }}</span>
+                  <span class="shows">关注</span>
+                </div>
+                <div @click="goToFansPage" class="navigation-item">
+                  <span class="count">{{ followersCount }}</span>
+                  <span class="shows">粉丝</span>
+                </div>
+
 
                 <div><span class="count">{{ userStats.likes }}</span><span class="shows">获赞</span></div>
                 <div><span class="count">{{ userStats.favorites }}</span><span class="shows">收藏</span></div>
@@ -110,9 +117,25 @@ const toEdit = () => {
   router.push({ path: "/editprofile" });
 };
 
+const toFans = () => {
+  router.push({ path: "/fanspage" });
+};
+
+const toFollow = () => {
+  router.push({ path: "/Follow" });
+};
+
 const toDrafts = () => {
   router.push({ path: "/drafts" });
   activeTab.value = 'drafts';
+};
+
+const goToFollowPage = () => {
+  router.push('/followpage');
+};
+
+const goToFansPage = () => {
+  router.push('/fanspage');
 };
 
 const followingCount = ref(0);
@@ -158,6 +181,19 @@ onMounted(()=>{
 
 </script>
 <style lang="less" scoped>
+
+.count, .shows {
+  cursor: pointer;
+}
+
+.navigation-item {
+  cursor: pointer; /* Indicates the item is clickable */
+  color: black; /* Text color */
+}
+
+.navigation-item:hover {
+  color: #51a8d7; /* Change color on hover */
+}
 .user-page {
   background: #fff;
   overflow-y: scroll;

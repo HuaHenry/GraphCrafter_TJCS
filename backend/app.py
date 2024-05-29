@@ -257,7 +257,7 @@ def user_stats(user_id):
     })
 
 
-#获取关注和粉丝列表
+#获取关注和粉丝数量
 @app.route('/api/user/<int:user_id>/counts')
 def get_follow_counts(user_id):
     # Count how many people the user is following
@@ -270,6 +270,61 @@ def get_follow_counts(user_id):
         'following_count': following_count,
         'followers_count': followers_count
     })
+
+
+#得到我follow的人的列表
+@app.route('/api/followings/<int:user_id>')
+def get_followings(user_id):
+    # Fetching all users that the given user_id is following
+    followings = Follow.query.join(User, Follow.followed_id == User.id).filter(Follow.follower_id == user_id).all()
+
+    # Preparing the data to return
+    following_list = []
+    for following in followings:
+        user = User.query.get(following.followed_id)
+        
+        # Counting the followers of each followed user
+        followers_count = Follow.query.filter_by(followed_id=user.id).count()
+        
+        # Counting the posts for each followed user
+        posts_count = Post.query.filter_by(author_id=user.id, status=False).count()  # only counting active posts
+
+        following_list.append({
+            'id': user.id,
+            'name': user.name,
+            'avatar': user.photo,  # Assuming 'photo' is the correct field name for the user's avatar
+            'followers': followers_count,
+            'posts': posts_count
+        })
+
+    return jsonify({'followings': following_list})
+
+
+#得到我follow的人的列表
+@app.route('/api/followers/<int:user_id>')
+def get_followers(user_id):
+    # Fetching all users that are following the given user_id
+    followers = Follow.query.join(User, Follow.follower_id == User.id).filter(Follow.followed_id == user_id).all()
+
+    # Preparing the data to return
+    follower_list = []
+    for follower in followers:
+        user = User.query.get(follower.follower_id)
+        
+        followers_count = Follow.query.filter_by(followed_id=user.id).count()
+        
+        # Counting the active posts of this follower
+        posts_count = Post.query.filter_by(author_id=user.id, status=False).count()
+
+        follower_list.append({
+            'id': user.id,
+            'name': user.name,
+            'avatar': user.photo,
+            'followers': followers_count,
+            'posts': posts_count
+        })
+
+    return jsonify({'followers': follower_list})
 
 
 # 获取用户收藏
