@@ -28,7 +28,7 @@ import { Search } from "@element-plus/icons-vue";
 import { LazyImg, Waterfall } from "vue-waterfall-plugin-next";
 import "vue-waterfall-plugin-next/dist/style.css";
 // import { ref } from "vue";
-
+import store from "../../../store/index";
 import { ref, onMounted } from "vue";
 import axios from 'axios';
 
@@ -66,7 +66,7 @@ const list = ref([
 const fetchData = async () => {
   try {
     // Simulated asynchronous database query
-    const data = await axios.get("/api/note");
+    const data = await axios.get(`/api/note/${store.state.user_id}`);
     const result = data.data;
     // 解构出各个属性数组
     const { authors, avatars, likes, pictures, titles, ids } = result;

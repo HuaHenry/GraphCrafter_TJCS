@@ -326,11 +326,12 @@ def get_followers(user_id):
 
     return jsonify({'followers': follower_list})
 
-
+###################################################################################################################################################################################################################################################################################
 # 获取用户收藏
 @cross_origin()
-@app.route('/api/collection', methods=['GET'])
-def get_collection():
+@app.route('/api/collection/<int:user_id>', methods=['GET'])
+def get_collection(user_id):
+    print(user_id,type(user_id))
     # user = db.session.query(Post.picture1,Post.title,User.name,User.photo,func.count(Like.id).label('like')).filter(Post.id==Collect.post_id and Collect.user_id==1 and Post.author_id==User.id and Like.post_id==Post.id).all()
     collections=db.session.query(
         Post.picture1,
@@ -339,7 +340,7 @@ def get_collection():
         User.photo,
         func.count(Like.id).label('like'),
         Post.id
-    ).join(Collect, Post.id == Collect.post_id).join(User, Post.author_id == User.id).outerjoin(Like, Post.id == Like.post_id).filter(Collect.user_id == 1).group_by(Post.picture1, Post.title, User.name, User.photo).all()
+    ).join(Collect, Post.id == Collect.post_id).join(User, Post.author_id == User.id).outerjoin(Like, Post.id == Like.post_id).filter(Collect.user_id == user_id).group_by(Post.picture1, Post.title, User.name, User.photo).all()
     pictures=[]
     titles=[]
     authors=[]
@@ -364,10 +365,10 @@ def get_collection():
     return response_json
     # return jsonify({'error': 'collect not found'}), 404
 
-# 获取用户收藏
+# 获取个人笔记
 @cross_origin()
-@app.route('/api/note', methods=['GET'])
-def get_note():
+@app.route('/api/note/<int:user_id>', methods=['GET'])
+def get_note(user_id):
     # user = db.session.query(Post.picture1,Post.title,User.name,User.photo,func.count(Like.id).label('like')).filter(Post.id==Collect.post_id and Collect.user_id==1 and Post.author_id==User.id and Like.post_id==Post.id).all()
     # collections=db.session.query(
     #     Post.picture1,
@@ -384,7 +385,7 @@ def get_note():
     User.photo,
     func.count(Like.id).label('like'),
     Post.id
-    ).join(User, Post.author_id == User.id).filter(User.id == 1).outerjoin(Like, Post.id == Like.post_id).group_by(Post.picture1, Post.title, User.name, User.photo).all()
+    ).join(User, Post.author_id == User.id).filter(User.id == user_id).outerjoin(Like, Post.id == Like.post_id).group_by(Post.picture1, Post.title, User.name, User.photo).all()
     pictures=[]
     titles=[]
     authors=[]
@@ -411,15 +412,15 @@ def get_note():
 
 # 获取草稿箱
 @cross_origin()
-@app.route('/api/drafts', methods=['GET'])
-def get_drafts():
+@app.route('/api/drafts/<int:user_id>', methods=['GET'])
+def get_drafts(user_id):
     # user = db.session.query(Post.picture1,Post.title,User.name,User.photo,func.count(Like.id).label('like')).filter(Post.id==Collect.post_id and Collect.user_id==1 and Post.author_id==User.id and Like.post_id==Post.id).all()
     drafts=db.session.query(
         Draft.picture,
         cast(Draft.date,String),
         Draft.label,
         Draft.id
-    ).join(User, Draft.user_id == User.id).filter(User.id == 1).all()
+    ).join(User, Draft.user_id == User.id).filter(User.id == user_id).all()
     pictures=[]
     dates=[]
     labels=[]
@@ -466,12 +467,12 @@ def get_draft(post_id):
 
 # 获取草稿箱标签
 @cross_origin()
-@app.route('/api/get_labels', methods=['GET'])
-def get_labels():
+@app.route('/api/get_labels/<int:user_id>', methods=['GET'])
+def get_labels(user_id):
     # user = db.session.query(Post.picture1,Post.title,User.name,User.photo,func.count(Like.id).label('like')).filter(Post.id==Collect.post_id and Collect.user_id==1 and Post.author_id==User.id and Like.post_id==Post.id).all()
     drafts=db.session.query(
         Draft.label
-    ).join(User, Draft.user_id == User.id).filter(User.id == 1).distinct()
+    ).join(User, Draft.user_id == User.id).filter(User.id == user_id).distinct()
     labels=[]
     for draft in drafts:
         labels.append(draft[0])

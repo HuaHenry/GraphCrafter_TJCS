@@ -40,7 +40,7 @@ import "vue-waterfall-plugin-next/dist/style.css";
 
 import { ref, onMounted } from "vue";
 import axios from 'axios';
-
+import store from "../../../store/index";
 
 import { useRouter } from "vue-router";
 const router = useRouter();
@@ -80,7 +80,7 @@ const selected_label=ref();
 
 const get_labels = async() => {
   try{
-    const data = await axios.get("/api/get_labels");
+    const data = await axios.get(`/api/get_labels/${store.state.user_id}`);
     labels.value= data.data;
     console.log(labels.value);
   } catch (error) {
@@ -118,7 +118,7 @@ const labelSearch = async () => {
 const fetchData = async () => {
   try {
     // Simulated asynchronous database query
-    const data = await axios.get("/api/drafts");
+    const data = await axios.get(`/api/drafts/${store.state.user_id}`);
     const result = data.data;
     // 解构出各个属性数组
     const { pictures, dates, labels, ids } = result;
