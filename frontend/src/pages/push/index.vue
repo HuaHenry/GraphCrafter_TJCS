@@ -139,7 +139,6 @@
 
     }
 
-
     .input_txt{
         position: relative;
         top: 100px;
@@ -189,6 +188,8 @@ export default {
                 issue:'',
             },
 
+            imgname_tmp:'',
+
             rules: {
                 name: [
                 {
@@ -234,7 +235,7 @@ export default {
 
             // const upload = document.getElementById("upload");
             
-            async function putObject(data,that) {
+            async function putObject(data,that,file) {
                 // var that = this;
                 try {
                     const options = {
@@ -247,9 +248,8 @@ export default {
                     const formattedTime = new Intl.DateTimeFormat('en-US', ops).format(new Date()).replace(/[^0-9]/g, '');
                     //设置图片名称
 
-                    // TODO:替换为session中的用户名
-                    const Uname = store.state.user_id ;
-                    // 
+                    // const Uname = "加完班打麻药";
+                    const Uname = store.state.user_id;
                 
                     const imgName = Uname +'/'+ formattedTime + ".jpg";
                     const result = await client.put(imgName, data, options);
@@ -259,7 +259,9 @@ export default {
                     console.log(imgURL);
                     that.push_fileList.push(imgURL);
                     console.log(that.push_fileList);
-
+                    that.imgname_tmp = imgURL;
+                    console.log("imgname_tmp_in", that.imgname_tmp)
+                    file.name = imgURL;
                 } catch (e) {
                     console.log(e);
                 }
@@ -285,14 +287,25 @@ export default {
             const arrayBuffer = new Uint8Array(arr).buffer;
             const data = (arrayBuffer);
             console.log(data.type);
-            putObject(fileToBlob(file.raw),this);
-            console.log(fileList);
+            putObject(fileToBlob(file.raw),this,file);
             this.noneBtnImg = fileList.length >= this.limitCountImg;
-            
+            console.log("imgname_tmp",this.imgname_tmp)
+            // if (this.imgname_tmp) {
+            //     file.name = this.imgname_tmp;
+            // }
         },
+
         //移除图片功能
         handleRemove(file, fileList) {
-            console.log(file, fileList);
+            console.log(file);
+            console.log(this.push_fileList);
+            //找到并删除
+            const del_name = file.name;
+            const index = this.push_fileList.indexOf(del_name);
+            if (index > -1) {
+                this.push_fileList.splice(index, 1);
+            }
+            console.log(this.push_fileList);
             this.noneBtnImg = fileList.length >= this.limitCountImg;
         },
 
@@ -308,10 +321,20 @@ export default {
             try {
                 const title = document.getElementById("title").value;
                 const description = document.getElementById("description").value;
-                const ruleForm =this.ruleForm
+                const ruleForm = this.ruleForm
+                if(ruleForm.name == '' || ruleForm.summary == ''){
+                    alert("标题和内容不能为空！")
+                    return
+                }
                 console.log(title, description)
                 console.log(this.reluForm)
                 const userId = store.state.user_id
+                console.log(userId)
+                if(userId==null){
+                    alert("请先登录！")
+                    // location.href = "/login";
+                    return;
+                }
                 axios.post('/api/postnotes', {
                     pics: this.push_fileList,
                     title: title,

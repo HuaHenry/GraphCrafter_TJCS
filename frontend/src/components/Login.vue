@@ -61,7 +61,7 @@ export default {
             this.$router.push("/manager");
           }
           else{
-            this.$router.push("/dashborad");
+            this.$router.push("/dashboard");
           }
         }
         else if (res.data.status === 'error') {
