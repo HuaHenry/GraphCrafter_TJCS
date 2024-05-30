@@ -1,0 +1,31 @@
+/* ======================
+    Blog Area 
+=======================*/
+
+.rn-blog {
+    margin-top: 40px;
+    h2 {
+        font-size: 22px;
+        font-weight: 500;
+        margin-bottom: 13px;
+        a {
+            color: #000000;
+            span {
+                font-weight: 300;
+                font-size: 18px;
+            }
+        }
+    }
+    p {
+        color: #222;
+        font-size: 18px;
+        line-height: 30px;
+        font-weight: 300;
+        letter-spacing: 1px;
+        margin-bottom: 0;
+        @media only screen and (max-width: 767px) {
+            font-size: 14px;
+            line-height: 24px;
+        }
+    }
+}

@@ -1,0 +1,76 @@
+/* ====================
+    Breadcaump Area 
+==========================*/
+
+.main-paralax-wrapper {
+    perspective: 1px;
+    transform-style: preserve-3d;
+    height: 100vh;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+.parallaxContainer {
+    display: flex;
+    flex: 1 0 auto;
+    position: relative;
+    padding: 180px 0;
+    justify-content: center;
+    align-items: center;
+    background: url(../img/bg/bg-image-2.jpg);
+    background-color: rgb(250, 228, 216);
+    background-size: cover;
+    &.paralaxbg--2 {
+        background: url(../img/bg/bg-image-3.jpg);
+    }
+    &.paralaxbg--3 {
+        background: url(../img/bg/bg-image-12.jpg);
+    }
+}
+
+.static-breadcaump {
+    padding: 312px 0 310px 0;
+}
+
+.bradcaump_inner {
+    position: relative;
+    z-index: 8;
+    display: block;
+    h2 {
+        &.bradcaump-title {
+            color: #ffffff;
+            font-size: 60px;
+            line-height: 90px;
+            margin: 0;
+        }
+    }
+    ul {
+        &.blog-meta {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            margin-top: 42px;
+            li {
+                color: #ffffff;
+                font-size: 18px;
+                font-weight: 300;
+                a {
+                    color: #ffffff;
+                }
+                &.separator {
+                    margin: 0 22px;
+                }
+            }
+        }
+    }
+    p {
+        color: #ffffff;
+        font-size: 22px;
+        line-height: 38px;
+        font-weight: 300;
+        padding: 0 10%;
+        margin-bottom: 0;
+    }
+}
