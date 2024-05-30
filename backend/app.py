@@ -681,7 +681,7 @@ def get_chats_feedback(user_id):
             chat_data['messages'].append(message_data)
         data.append(chat_data)
     data.sort(key=lambda x: parse_last_time(x['last_time']), reverse=True) # 按最后一条消息的时间降序排序
-    print("chats data:", data[0])
+    print("chats data:", len(data))
     return jsonify(data)
 
 # 新增会话
@@ -691,7 +691,7 @@ def create_chat():
     sender_id = data.get('sender_id')
     receiver_id = data.get('receiver_id')
 
-    if not sender_id or not receiver_id:
+    if sender_id == None or receiver_id == None:
         return jsonify({"error": "Sender ID and Receiver ID are required"}), 400
 
     # 查找是否已经存在包含 sender_id 和 receiver_id 的会话

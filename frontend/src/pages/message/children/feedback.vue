@@ -1,5 +1,6 @@
 <template>
-  <div class="chat-module-container">
+  <div v-if="!exist_feedback" class="feedback-button" @click="createFeedback">我要反馈</div>
+  <div v-else class="chat-module-container">
     <div class="chat-body-container">
       <div class="chat-sidebar-header">反馈消息</div>
       <!--消息侧边栏-->
@@ -14,14 +15,14 @@
             <img :src="chat.sender.avatar" alt="Message Icon" class="user-avatar" />
             <div  class="user-info">
               <div class="user-name">{{ chat.sender.name }}</div>
-              <div class="user-last-msg">{{ chat.messages[chat.messages.length - 1].content }}</div>
+              <div class="user-last-msg">{{ chat.messages[chat.messages.length - 1]?chat.messages[chat.messages.length - 1].content :" " }}</div>
             </div>
           </div>
           <div v-else class="user-container">
             <img :src="chat.receiver.avatar" alt="Message Icon" class="user-avatar" />
             <div class="user-info">
               <div class="user-name">{{ chat.receiver.name }}</div>
-              <div class="user-last-msg">{{ chat.messages[chat.messages.length - 1].content }}</div>
+              <div class="user-last-msg">{{ chat.messages[chat.messages.length - 1]?chat.messages[chat.messages.length - 1].content :" " }}</div>
             </div>
           </div>
         </div>
@@ -46,6 +47,7 @@ export default{
 
   data() {
     return {
+      exist_feedback:false,
       server_url: 'localhost:8080',
       ready: false,
       login: false,
@@ -77,15 +79,24 @@ export default{
       try {
         const response = await axios.get(`/api/chat-feedback/${this.user.id}`);
         this.chatList = response.data;
-        if (this.user.name === this.chatList[0].sender.name) {
-          this.user = this.chatList[0].sender;
-          this.otherside = this.chatList[0].receiver;
-        } else {
-          this.user = this.chatList[0].receiver;
-          this.otherside = this.chatList[0].sender;
+        console.log("clist",this.chatList[0]);
+        if (!this.chatList[0]){
+          this.exist_feedback = false;
         }
-        this.currentChat = this.chatList[0];
-        this.ready = true;
+        else{
+          console.log("exits feedback");
+          this.exist_feedback = true;
+          if (this.user.name === this.chatList[0].sender.name) {
+            this.user = this.chatList[0].sender;
+            this.otherside = this.chatList[0].receiver;
+          } else {
+            this.user = this.chatList[0].receiver;
+            this.otherside = this.chatList[0].sender;
+          }
+          this.currentChat = this.chatList[0];
+          this.ready = true;
+        }
+        console.log(this.exist_feedback)
       } catch (error) {
         console.error('Error fetching messages:', error);
       }
@@ -105,11 +116,33 @@ export default{
         console.log('curChat:', this.currentChat);
       }
     },
+
+    async createFeedback(){
+      console.log("create fd");
+      const response = await axios.post('/create_chat', {
+        sender_id: store.state.user_id,
+        receiver_id: 0,
+      });
+      this.exist_feedback = true;
+      await this.fetchFeedbackList();
+    }
   }
 }
 </script>
 
 <style scoped>
+.feedback-button{
+  border-radius: 10px;
+  padding: 10px;
+  background: #6fb0e5;
+  max-width: 90px;
+  font-size: 16px;
+  color: #ffffff;
+}
+.feedback-button:hover{
+  transition:0.3s ease;
+  background: #77bbf6;
+}
 .chat-module-container{
   background-color:#ffffff ;
   width: 900px;
