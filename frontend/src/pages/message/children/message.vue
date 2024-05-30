@@ -10,19 +10,23 @@
             :class="['chat-sidebar-bubble', { 'active-chat': currentChat.id === chat.id }]"
             @click="changeChat(index)"
         >
-          <div v-if="chat.sender.id !== user.id" class="user-container">
+          <div v-if="chat.sender.id !== user.id" class="user-container" @contextmenu.prevent="showContextMenu($event, index)">
             <img :src="chat.sender.avatar" alt="Message Icon" class="user-avatar" />
             <div  class="user-info">
               <div class="user-name">{{ chat.sender.name }}</div>
               <div class="user-last-msg">{{ chat.messages[chat.messages.length - 1]?chat.messages[chat.messages.length - 1].content :" " }}</div>
             </div>
           </div>
-          <div v-else class="user-container">
+          <div v-else class="user-container" @contextmenu.prevent="showContextMenu($event, index)">
             <img :src="chat.receiver.avatar" alt="Message Icon" class="user-avatar" />
             <div class="user-info">
               <div class="user-name">{{ chat.receiver.name }}</div>
               <div class="user-last-msg">{{ chat.messages[chat.messages.length - 1]?chat.messages[chat.messages.length - 1].content :" " }}</div>
             </div>
+          </div>
+          <!--删除-->
+          <div v-if="showMenu" class="chat-context-menu" :style="{ top: menuY + 'px', left: menuX + 'px' }" @click="deleteChat">
+            删除会话
           </div>
         </div>
       </div>
@@ -53,7 +57,12 @@ export default{
       user: {id: 1, name: '加完班打麻药', avatar: ''},
       otherside: {id: 0, name: '', avatar: ''},
       chatList: [],
-      currentChat: null,
+      currentChat: null, //当前显示的会话
+
+      showMenu: true,
+      menuX: 0,
+      menuY: 0,
+      selectChatIndex:0,//要进行操作的会话
     };
   },
   setup(){
@@ -119,6 +128,38 @@ export default{
         console.log('curChat:', this.currentChat);
       }
     },
+
+    showContextMenu(event,index) {
+      event.preventDefault();
+      this.menuX = event.pageX;
+      this.menuY = event.pageY;
+      this.showMenu = true;
+      this.selectChatIndex = index;
+
+      // 点击其他地方时隐藏菜单
+      document.addEventListener('click', this.hideContextMenuOnce);
+    },
+    hideContextMenuOnce(event) {
+      // 检查点击的位置是否在右键菜单之外
+      const contextMenu = document.querySelector('.chat-context-menu');
+      if (contextMenu && !contextMenu.contains(event.target)) {
+        this.showMenu = false;
+        document.removeEventListener('click', this.hideContextMenuOnce);
+      }
+    },
+    deleteChat() {
+      let index = this.selectChatIndex;
+      //从数据库中删掉消息
+      axios.delete(`/api/delete_chat/${ this.chatList[index].id }`)
+          .then(response => {
+            console.log('Chat deleted successfully');
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+      this.chatList.splice(index, 1);//从页面中删掉会话
+      this.showMenu = false; // 隐藏右键菜单
+    },
   }
 }
 </script>
@@ -179,7 +220,7 @@ export default{
   background: #e4e5e6;
 }
 .chat-sidebar-bubble:hover{
-  background: #e4e5e6;
+  /*background: #efefef;*/
 }
 .chat-sidebar-bubble .user-avatar{
   width: 50px;
@@ -199,5 +240,19 @@ export default{
   align-items: center;
   justify-content: center;
   color: #a7a7a7;
+}
+
+.chat-context-menu {
+  position: absolute;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  color: #666666;
+  padding: 5px 25px;
+  font-size: 14px;
+  box-shadow: 0 0 5px 2px rgba(0, 0, 0, 0.02);
+  z-index: 3;
+}
+.chat-context-menu:hover{
+  background-color: #f5f4f4;
 }
 </style>

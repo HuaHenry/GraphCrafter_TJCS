@@ -116,7 +116,7 @@ class Chat(db.Model):  # 会话
     unread_sender = db.Column(db.Boolean)  # 发起者是否已经阅读
     unread_receiver = db.Column(db.Boolean)  # 接收者是否已经阅读
     last_time = db.Column(db.DateTime)  # 最后一条消息的时间
-    messages = relationship("Message", backref="chat") # 包含的消息 一对多
+    messages = relationship("Message", backref="chat", cascade="all, delete-orphan") # 包含的消息 一对多
 
 class Draft(db.Model):  # 草稿箱
     __tablename__ = 'Draft'
@@ -722,6 +722,19 @@ def create_chat():
         db.session.commit()
 
     return jsonify({"message": "Chat created successfully", "chat_id": new_id}), 201
+
+# 删除指定会话
+@app.route('/api/delete_chat/<int:chat_id>', methods=['DELETE'])
+def delete_chat(chat_id):
+    chat = Chat.query.get(chat_id)
+    if not chat:
+        return jsonify({"error": "Chat not found"}), 404
+
+    db.session.delete(chat)
+    db.session.commit()
+
+    return jsonify({"message": "Chat and associated messages deleted successfully"}), 200
+
 
 # 检查对话是否为空，空则删去
 @app.route('/api/check_empty_chat', methods=['POST'])
