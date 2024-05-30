@@ -69,8 +69,8 @@ export default {
   data(){
     return{
       showMenu: true,
-      menuX: 0,
-      menuY: 0,
+      menuX: -100,
+      menuY: -100,
       selectMessageIndex:0,
       isLeftBubbleHover: false,
 

@@ -16,12 +16,12 @@
             </template>
           </el-table-column>
 
-          <el-table-column label="标题" width="200px" fixed>
+          <el-table-column label="标题" width="120px" fixed>
             <template v-slot:default="scope">
               <span>{{ scope.row.title }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="内容" width="250px" fixed>
+          <el-table-column label="内容" width="200px" fixed>
             <template v-slot:default="scope">
               <span>{{ scope.row.content }}</span>
             </template>
@@ -177,5 +177,11 @@ export default {
 <style scoped>
 .data-table {
     margin-top: 20px;
+}
+:deep(.el-table__header-wrapper)  {
+  position: sticky;
+  top: 1px;
+  margin-bottom: -22px;
+  z-index: 10;
 }
 </style>

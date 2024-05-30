@@ -66,7 +66,7 @@
             <el-tag v-else type="danger" plain>Disable</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作" :span="1">
+        <el-table-column label="操作" :span="1" width="160px" fixed="right">
           <template v-slot:default="scope">
             <el-button size="mini" type="primary" @click="handleAble(scope.$index, scope.row)" :disabled="!scope.row.status">解禁</el-button>
             <el-button slot="reference" size="mini" type="danger"  @click="handleDisable(scope.$index, scope.row)" :disabled="scope.row.status" style="margin-left: 5px;">禁用</el-button>
@@ -82,6 +82,12 @@
 <style scoped>
 .data-table {
     margin-top: 20px;
+}
+:deep(.el-table__header-wrapper)  {
+  position: sticky;
+  top: 1px;
+  margin-bottom: -22px;
+  z-index: 10;
 }
 </style>
 

@@ -4,7 +4,7 @@
     <div class="manage-container">
         <ManageUser v-if="index === '/manageUser'" />
         <ManagePost v-else-if="index === '/managePost'" />
-        <feedback v-else-if="index === '/manageFeedback'" style="margin: 60px"/>
+        <feedback v-else-if="index === '/manageFeedback'" style="margin: 40px"/>
         <ManageDashboard v-else />
     </div>
 </div>
