@@ -10,6 +10,7 @@ const app = createApp(App);
 
 app.use(router);
 app.use(ElementPlus);
+//app.use(Toast, options); // 可以自定义选项
 app.use(store);
 app.mount("#app");
 

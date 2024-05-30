@@ -1414,6 +1414,28 @@ def call_P2P():
     prompt = request.json.get('prompt')
     return jsonify({'img': 'Post created successfully'})
 
+
+# 删除帖子的接口
+@app.route('/api/delete-post/<int:post_id>', methods=['DELETE'])
+def delete_post(post_id):
+    post = Post.query.get_or_404(post_id)
+
+    # 删除相关的评论
+    Comment.query.filter_by(post_id=post_id).delete()
+
+    # 删除相关的点赞
+    Like.query.filter_by(post_id=post_id).delete()
+
+    # 删除相关的收藏
+    Collect.query.filter_by(post_id=post_id).delete()
+
+    # 删除帖子
+    db.session.delete(post)
+    db.session.commit()
+
+    return jsonify({'message': 'Post deleted successfully'}), 200
+
+
 if __name__ == '__main__':
     config = dict(
         host='0.0.0.0',
