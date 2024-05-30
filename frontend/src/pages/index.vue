@@ -64,66 +64,37 @@
         </ul>
 
         <div class="information-container">
-          <div class="information-pad">
-            <div class="container" style="visibility: hidden;">
+          <div class="information-pad" >
+            <div class="container" id="more-info" style="visibility: hidden">
               <div>
                 <div>
                   <div class="group-wrapper">
                     <div class="menu-item hover-effect">
-                      <span>关于小红书</span>
+                      <span>关于图匠</span>
                       <div class="icon">
                         <ArrowRight style="width: 1em; height: 1em; margin-right: 8px" />
                       </div>
-                    </div>
-                    <div class="menu-item hover-effect">
-                      <span>隐私，协议</span>
-                      <div class="icon">
-                        <ArrowRight style="width: 1em; height: 1em; margin-right: 8px" />
-                      </div>
-                    </div>
-                    <div class="menu-item hover-effect">
-                      <span>帮助与客服</span>
                     </div>
                   </div>
                   <div class="divider"></div>
                 </div>
+
                 <div>
                   <div class="group-wrapper">
-                    <div class="group-header">访问方式</div>
+<!--                    <div class="group-header">设置</div>-->
+<!--                    <div class="menu-item hover-effect">-->
+<!--                      <span>深色模式</span>-->
+<!--                      <div class="multistage-toggle component">-->
+<!--                        <button class="toggle-item active">-->
+<!--                          <div class="icon-wrapper"><Sunny style="width: 1em; height: 1em" /></div>-->
+<!--                        </button>-->
+<!--                        <button class="toggle-item">-->
+<!--                          <div class="icon-wrapper"><Moon style="width: 1em; height: 1em" /></div>-->
+<!--                        </button>-->
+<!--                      </div>-->
+<!--                    </div>-->
                     <div class="menu-item hover-effect">
-                      <span>键盘快捷键</span>
-                      <div class="icon">
-                        <Search style="width: 1em; height: 1em; margin-right: 8px" />
-                      </div>
-                    </div>
-                    <div class="menu-item hover-effect">
-                      <span>添加小红书到桌面</span>
-                      <div class="icon">
-                        <ArrowRight style="width: 1em; height: 1em; margin-right: 8px" />
-                      </div>
-                    </div>
-                    <div class="menu-item hover-effect">
-                      <span>小窗模式</span>
-                    </div>
-                  </div>
-                  <div class="divider"></div>
-                </div>
-                <div>
-                  <div class="group-wrapper">
-                    <div class="group-header">设置</div>
-                    <div class="menu-item hover-effect">
-                      <span>深色模式</span>
-                      <div class="multistage-toggle component">
-                        <button class="toggle-item active">
-                          <div class="icon-wrapper"><Sunny style="width: 1em; height: 1em" /></div>
-                        </button>
-                        <button class="toggle-item">
-                          <div class="icon-wrapper"><Moon style="width: 1em; height: 1em" /></div>
-                        </button>
-                      </div>
-                    </div>
-                    <div class="menu-item hover-effect">
-                      <span>推出登录</span>
+                      <span @click="Logout">退出登录</span>
                     </div>
                   </div>
                 </div>
@@ -132,7 +103,7 @@
           </div>
 
           <div class="information-wrapper">
-            <More style="width: 1em; height: 1em; margin-right: 8px" /> <span class="channel"> 更多</span>
+            <More style="width: 1em; height: 1em; margin-right: 8px" @click="toggleMoreInfoState" /> <span class="channel"  @click="toggleMoreInfoState"> 更多</span>
           </div>
         </div>
       </div>
@@ -210,6 +181,20 @@ const close = (val: boolean) => {
   c.value = val;
 };
 
+function toggleMoreInfoState() {
+  let div = document.getElementById('more-info');
+  console.log(div);
+  if (div.style.visibility === 'hidden') {
+    div.style.visibility = 'visible';
+  } else {
+    div.style.visibility = 'hidden';
+  }
+}
+function Logout(){
+  store.commit("setLoginState",false);
+  store.commit("setCurUserID",null);
+  router.push("/login");
+}
 // 保存到本地，这样不需要每次刷新都得登录
 store.commit("setLoginState",localStorage.getItem("user")?true:false);
 store.commit("setCurUserID",localStorage.getItem("user")?localStorage.getItem("user"):null);
