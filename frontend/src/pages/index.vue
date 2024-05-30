@@ -3,7 +3,7 @@
     <div class="top">
       <header class="mask-paper" >
         <!-- <a style="display: flex; z-index: -100;"></a> -->
-        <img src="https://graphcrafter.oss-cn-beijing.aliyuncs.com/LOGO.gif" style="width:20%;position: relative; top:10px; left:-50px; z-index: -1;"/>
+        <img src="https://graphcrafter.oss-cn-beijing.aliyuncs.com/LOGO.gif" class="logo" style="width:20%;position: relative; top:10px; left:-50px; z-index: -1;" @click="toDemo"/>
           
         <div class="tool-box"></div>
         <div class="input-box">
@@ -133,6 +133,11 @@ import { useRouter,useRoute} from "vue-router";
 import { ref } from "vue";
 import store from "../store/index";
 
+const toDemo = () => {
+  router.push({ name: 'Demo' });  // 确保这里的路由名称与你的routes配置中的主页名称相匹配
+  activeChannel.value = 'Demo';
+};
+
 const router = useRouter();
 
 const route = useRoute();
@@ -193,7 +198,8 @@ function toggleMoreInfoState() {
 function Logout(){
   store.commit("setLoginState",false);
   store.commit("setCurUserID",null);
-  router.push("/login");
+  localStorage.removeItem("user");
+  router.push("/");
 }
 // 保存到本地，这样不需要每次刷新都得登录
 store.commit("setLoginState",localStorage.getItem("user")?true:false);
@@ -229,7 +235,9 @@ store.commit("setCurUserID",localStorage.getItem("user")?localStorage.getItem("u
       height: 72px;
       padding: 0 16px 0 24px;
       z-index: 10;
-
+      .logo {
+          cursor: pointer;  /* 设置鼠标为手形指针 */
+      }
       .tool-box {
         width: 24px;
         height: 70px;

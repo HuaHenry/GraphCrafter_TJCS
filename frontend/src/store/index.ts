@@ -1,4 +1,5 @@
 import { createStore } from 'vuex';
+import router from '@/router';  // 确保路径正确
 
 export default createStore({
   state() {
@@ -21,6 +22,9 @@ export default createStore({
     },
     logout({ commit }) {
       commit('setLoginState', false);
+      commit('setCurUserID', null); // 注销时清除用户ID
+      localStorage.removeItem("user"); // 清除 localStorage 中的用户信息
+      router.push('/'); // 导航回登录页面
     }
 
   },
