@@ -1,11 +1,14 @@
 <template>
+
 <div class="sidebar">
-  <el-menu class="sidebar-el-menu" background-color="#324157" unique-opened>
+  <el-menu class="sidebar-el-menu" background-color="#ffffff" unique-opened>
+    <img src="https://graphcrafter.oss-cn-beijing.aliyuncs.com/LOGO.gif" class="sidebar-logo"/>
     <el-menu-item
         v-for="item in items"
         :key="item.index"
         :index="item.index"
-        :style="{ color: item.index === activatedIndex ? 'white' : '#aaaaaa' }"
+        :style="{color: item.index === activatedIndex ? 'black' : '#7e7e7e' ,background: item.index === activatedIndex ? '#ececec':'white'}"
+        style=" border-radius:10px; margin: 8px"
         @click="handleClick(item.index)"
     >
       <el-icon size="25px" >
@@ -18,11 +21,18 @@
 </template>
 
 <style>
+.sidebar-logo{
+  width:120%;
+  margin-top: -80px;
+  margin-left: -30px;
+  margin-bottom: -80px;
+  z-index: 1;
+}
 .sidebar {
     display: block;
     position: fixed;
     left: 0;
-    top: 62px;
+    top: 0;
     bottom: 0;
     overflow-y: scroll;
     text-align: center;

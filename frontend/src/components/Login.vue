@@ -57,17 +57,22 @@ export default {
           console.log("登录成功");
           store.commit("setCurUserID",res.data.user_id);
           localStorage.setItem("user",res.data.user_id);
-          this.$router.push("/dashboard");
+          if(this.userType === "admin"){
+            this.$router.push("/manager");
+          }
+          else{
+            this.$router.push("/dashborad");
+          }
         }
         else if (res.data.status === 'error') {
-             this.$message.error("登录失败");
-          console.log("登录失败");
-          return;
+              this.$message.error("登录失败");
+              console.log("登录失败");
+              return;
         }
-                })
-                .catch(() => {
-                  console.log("登录失败");
-                })
+        })
+        .catch(() => {
+          console.log("登录失败");
+        })
         },
   }
 };

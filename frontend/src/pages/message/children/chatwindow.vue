@@ -141,23 +141,25 @@ export default {
       const lastMessageTimeString = props.chat?.messages.length > 0 ? props.chat.messages[props.chat.messages.length - 1].time : null;
       const now = new Date();
       if (lastMessageTimeString) {
-        const lastMessageTimeParts = lastMessageTimeString.split(' ');
-        const dateParts = lastMessageTimeParts[0].split('-');
-        const timeParts = lastMessageTimeParts[1].split(':');
+        // 将类似 '2024年5月29日 21:42:15' 的字符串转换为 '2024-05-29T21:42:15'
+        const dateTimeParts = lastMessageTimeString.split(' ');
+        const datePart = dateTimeParts[0].replace(/[年月]/g, '-').replace('日', '');
+        const dateSegments = datePart.split('-');
+        const year = dateSegments[0];
+        const month = dateSegments[1].padStart(2, '0'); // 补齐月份
+        const day = dateSegments[2].padStart(2, '0'); // 补齐日期
+        const formattedDatePart = `${year}-${month}-${day}`;
+        const timePart = dateTimeParts[1];
+        const isoDateTimeString = `${formattedDatePart}T${timePart}`;
 
-        const lastMessageTime = new Date(
-            Number(dateParts[0]), // 年份
-            Number(dateParts[1]) - 1, // 月份
-            Number(dateParts[2]), // 日期
-            Number(timeParts[0]), // 小时
-            Number(timeParts[1]), // 分钟
-            Number(timeParts[2]) // 秒
-        );
-
+        const lastMessageTime = new Date(isoDateTimeString);
+        console.log(lastMessageTimeString);
         if (!isNaN(lastMessageTime.getTime())) {
           const diff = now - lastMessageTime;
           const diffInHours = diff / (1000 * 60 * 60);
-          if (diffInHours > 0.5) {//半小时
+          console.log(lastMessageTime.getTime());
+          console.log(diffInHours);
+          if (diffInHours > 0.5) { // 半小时
             return true;
           } else {
             return false;
@@ -167,7 +169,10 @@ export default {
       return false;
     }
     async function sendMessage(e: Event): void {
-      if(checkTimeDiff()===false){
+      if (props.chat?.messages.length === 0){
+        curTimeFirstMsg = true;
+      }
+      else if(checkTimeDiff()===false){
         curTimeFirstMsg = false;
       }
       e.preventDefault();
@@ -366,7 +371,7 @@ export default {
 .message-container {
   border-top: 1px solid #e9eaec;
   border-bottom: 1px solid #e9eaec;
-  height: 400px;
+  height: 360px;
   overflow-y: scroll;
   background-color: #f4f5f7;
   /*border-radius: 8px;*/

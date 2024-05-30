@@ -38,7 +38,7 @@
 <script lang="ts">
 import axios from 'axios';
 import ChatWindow from "./chatwindow.vue";
-import type {User} from "@/utils/socket";
+import store from "@/store/index";
 
 export default{
   name:"feedback",
@@ -60,16 +60,23 @@ export default{
   },
   methods: {
     async checkLogin(): Promise<void> {
+      if (!store.state.isLoggedIn){
+        this.$message.error("请先登录");
+        this.$router.push("/login");
+      }
       this.login = true;
+      this.user.id = store.state.user_id;
+      const response = await axios.get(`/api/get-user-info/${this.user.id}`);
+      this.user.name = response.data.name;
+      this.user.avatar = response.data.avatar;
+      console.log(response.data);
       await this.fetchFeedbackList();
     },
 
     async fetchFeedbackList(): Promise<void> {
       try {
-        // const response = await axios.get(`/api/chat/${this.user.id}`);
-        const response = await axios.get(`/api/feedback/1`);
+        const response = await axios.get(`/api/chat-feedback/${this.user.id}`);
         this.chatList = response.data;
-        console.log(this.chatList);
         if (this.user.name === this.chatList[0].sender.name) {
           this.user = this.chatList[0].sender;
           this.otherside = this.chatList[0].receiver;

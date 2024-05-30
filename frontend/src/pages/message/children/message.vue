@@ -14,14 +14,14 @@
             <img :src="chat.sender.avatar" alt="Message Icon" class="user-avatar" />
             <div  class="user-info">
               <div class="user-name">{{ chat.sender.name }}</div>
-              <div class="user-last-msg">{{ chat.messages[chat.messages.length - 1].content }}</div>
+              <div class="user-last-msg">{{ chat.messages[chat.messages.length - 1]?chat.messages[chat.messages.length - 1].content :" " }}</div>
             </div>
           </div>
           <div v-else class="user-container">
             <img :src="chat.receiver.avatar" alt="Message Icon" class="user-avatar" />
             <div class="user-info">
               <div class="user-name">{{ chat.receiver.name }}</div>
-              <div class="user-last-msg">{{ chat.messages[chat.messages.length - 1].content }}</div>
+              <div class="user-last-msg">{{ chat.messages[chat.messages.length - 1]?chat.messages[chat.messages.length - 1].content :" " }}</div>
             </div>
           </div>
         </div>
@@ -39,6 +39,7 @@
 import axios from 'axios';
 import ChatWindow from "./chatwindow.vue";
 import store from "../../../store/index";
+import {onBeforeUnmount} from "vue";
 
 export default{
   name:"ChatRoom",
@@ -54,6 +55,16 @@ export default{
       chatList: [],
       currentChat: null,
     };
+  },
+  setup(){
+    const beforeLeave = (to, from, next) => {
+      console.log('即将离开消息界面，执行检查对话操作');
+      axios.post(`/api/check_empty_chat`);
+      next();
+    };
+    onBeforeUnmount(() => {
+      axios.post(`/api/check_empty_chat`);
+    });
   },
   mounted(): void {
     this.checkLogin();
@@ -115,7 +126,7 @@ export default{
 <style scoped>
 .chat-module-container{
   background-color:#ffffff ;
-  width: 900px;
+  width: 820px;
   height: 80%;
   display: flex;
   flex-direction:row;
@@ -124,6 +135,7 @@ export default{
   border-radius: 10px;
   border: 1px solid #e9eaec;
 }
+
 .chat-header-container {
   display: flex;
   justify-content: space-around;
@@ -153,7 +165,7 @@ export default{
   justify-content: center;
 }
 .chat-sidebar-container {
-  width: 270px;
+  width: 250px;
   background-color: #f5f5f5;
 }
 .chat-sidebar-bubble {

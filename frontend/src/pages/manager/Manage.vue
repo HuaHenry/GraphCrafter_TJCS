@@ -1,10 +1,10 @@
 <template>
 <div class="main">
     <SideBar @func="getIndex"></SideBar>
-    <div class="container">
+    <div class="manage-container">
         <ManageUser v-if="index === '/manageUser'" />
         <ManagePost v-else-if="index === '/managePost'" />
-        <feedback v-else-if="index === '/manageFeedback'"/>
+        <feedback v-else-if="index === '/manageFeedback'" style="margin: 60px"/>
         <ManageDashboard v-else />
     </div>
 </div>
@@ -44,7 +44,7 @@ export default {
 </script>
 
 <style scoped>
-.container {
+.manage-container {
     padding-left: 280px;
     padding-top: 30px;
     padding-bottom: 30px;

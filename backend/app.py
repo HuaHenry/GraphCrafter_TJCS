@@ -156,12 +156,11 @@ def fallback(fallback):       # Vue Router 的 mode 为 'hash' 时可移除该�
 @app.route('/login', methods=['POST', 'GET'])
 @cross_origin(supports_credentials=True)
 def login():
-    print("login")
     data = request.form
     username = data.get('username')
     password = data.get('password')
     user_type = data.get('userType')
-
+    print(username,password,user_type)
     # 查询用户
     user = User.query.filter_by(name=username, password=password).first()
 
@@ -594,10 +593,9 @@ def transUserData(user):
 
 @app.route('/api/get-user-info/<int:user_id>', methods=['GET'])
 def get_user_info(user_id):
-    if user_id:
+    if user_id>=0:
         user = User.query.filter_by(id=user_id).first()
         if user:
-            # If user found, construct response
             response = {
                 'name': user.name,
                 'avatar': user.photo
@@ -611,6 +609,10 @@ def get_user_info(user_id):
 # 转换时间格式
 def formatDateTime(time):
     return time.strftime("%Y年%m月%d日 %H:%M:%S").replace("年0", "年").replace("月0", "月").replace("日0", "日")
+
+def parse_last_time(last_time_str):
+    return datetime.strptime(last_time_str, '%Y年%m月%d日 %H:%M:%S')
+
 # 获取历史消息
 @app.route('/api/chat/<int:user_id>', methods=['GET'])
 def get_chats(user_id):
@@ -641,8 +643,97 @@ def get_chats(user_id):
             }
             chat_data['messages'].append(message_data)
         data.append(chat_data)
-
+    data.sort(key=lambda x: parse_last_time(x['last_time']), reverse=True) # 按最后一条消息的时间降序排序
+    print("chats data:", data)
     return jsonify(data)
+
+
+@app.route('/api/chat-feedback/<int:user_id>', methods=['GET'])
+def get_chats_feedback(user_id):
+    print("get chats user:",user_id)
+    stuff_id = 0
+    if user_id != stuff_id:
+        chats = Chat.query.filter(((Chat.sender == user_id) & (Chat.receiver == stuff_id))).all()
+    else:
+        chats = Chat.query.filter((Chat.receiver == stuff_id)).all()
+    data = []
+    for chat in chats:
+        messages = Message.query.filter_by(chat_id=chat.id).order_by(Message.id).all()
+        chat_data = {
+            'id': chat.id,
+            'sender': transUserData(User.query.get(chat.sender)),
+            'receiver': transUserData(User.query.get(chat.receiver)),
+            'unread_sender': chat.unread_sender,
+            'unread_receiver': chat.unread_receiver,
+            'last_time': formatDateTime(chat.last_time),
+            'messages': []
+        }
+        for message in messages:
+            user = User.query.get(message.user_id)
+            message_data = {
+                'id': message.id,
+                'type': message.type,
+                'time': formatDateTime(message.time),
+                'show_time':message.show_time,
+                'content': message.content,
+                'user': transUserData(user)
+            }
+            chat_data['messages'].append(message_data)
+        data.append(chat_data)
+    data.sort(key=lambda x: parse_last_time(x['last_time']), reverse=True) # 按最后一条消息的时间降序排序
+    print("chats data:", data[0])
+    return jsonify(data)
+
+# 新增会话
+@app.route('/create_chat', methods=['POST'])
+def create_chat():
+    data = request.get_json()
+    sender_id = data.get('sender_id')
+    receiver_id = data.get('receiver_id')
+
+    if not sender_id or not receiver_id:
+        return jsonify({"error": "Sender ID and Receiver ID are required"}), 400
+
+    # 查找是否已经存在包含 sender_id 和 receiver_id 的会话
+    chat = Chat.query.filter(
+        (Chat.sender == sender_id) & (Chat.receiver == receiver_id) |
+        (Chat.sender == receiver_id) & (Chat.receiver == sender_id)
+    ).first()
+
+    if chat:
+        # 如果会话已存在，更新 last_time
+        chat.last_time = datetime.now()
+        db.session.commit()
+        return jsonify({"message": "Chat updated successfully", "chat_id": chat.id}), 200
+    else:
+        # 获取当前数据库中最大的id值
+        max_id = db.session.query(db.func.max(Chat.id)).scalar()
+        new_id = (max_id or 0) + 1
+
+        new_chat = Chat(
+            id=new_id,
+            sender=sender_id,
+            receiver=receiver_id,
+            unread_sender=True,
+            unread_receiver=True,
+            last_time=datetime.now()
+        )
+        db.session.add(new_chat)
+        db.session.commit()
+
+    return jsonify({"message": "Chat created successfully", "chat_id": new_id}), 201
+
+# 检查对话是否为空，空则删去
+@app.route('/api/check_empty_chat', methods=['POST'])
+def check_empty_chat():
+    # 查询没有消息的聊天记录
+    empty_chats = Chat.query.filter(~Chat.messages.any()).all()
+
+    for chat in empty_chats:
+        db.session.delete(chat)
+    db.session.commit()
+
+    return jsonify({"message": f"Deleted {len(empty_chats)} empty chats."}), 200
 
 # 新增消息
 @app.route('/api/save_message', methods=['POST'])
@@ -1157,6 +1248,8 @@ def get_all_users():
     users_data = []
 
     for user in users:
+        if user.is_admin:
+            continue
         user_data = {
             'id': user.id,
             'name': user.name,
@@ -1165,7 +1258,7 @@ def get_all_users():
             'email': user.email,
             'age': user.age,
             'sex': user.sex,
-            'senior': user.senior,
+            'senior': user.is_premium,
             'description': user.description,
             'status':user.status
         }
