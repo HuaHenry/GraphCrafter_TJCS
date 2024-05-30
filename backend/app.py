@@ -997,69 +997,56 @@ def get_postComment(post_id):
     })
     return response_json
 
-# 获取帖子详情
-# @app.route('/api/post_content/<int:post_id>', methods=['GET'])
-# def get_postContent(post_id):
-#     # 首先是文章信息，包括内容、作者等
-#     print(post_id)
-#     contents=db.session.query(
-#         Post.picture1,
-#         Post.picture2,
-#         Post.picture3,
-#         Post.picture4,
-#         Post.picture5,
-#         # Post.date,
-#         cast(Post.date, String),
-#         Post.title,
-#         Post.body,
-#         User.name,
-#         User.photo,
-#         func.count(Like.id.distinct()).label('like'),
-#         func.count(Comment.id.distinct()).label('comment'),
-#         func.count(Collect.id.distinct()).label('collect'),
-#         Post.id
-#     ).join(User, Post.author_id == User.id) \
-#         .outerjoin(Like, Post.id == Like.post_id) \
-#         .outerjoin(Comment, Post.id == Comment.post_id) \
-#         .outerjoin(Collect, Post.id == Collect.post_id) \
-#         .filter(Post.id==post_id) \
-#         .order_by(desc(Post.id)) \
-#         .all() 
-#     content=contents[0]
-#     pictures=[]
-#     print(content)
-#     # titles=[]
-#     # authors=[]
-#     # avatars=[]
-#     # likes=[]
-#     for i in range(5):
-#         # print(("this is id {}").format(i))
-#         if content[i]:
-#             pictures.append(content[i])
-#     # print(pictures)
-#     response_json = jsonify({
-#         'pictures': pictures,
-#         'date': content[5],
-#         'title': content[6],
-#         'body': content[7],
-#         'author': content[8],
-#         'avatar': content[9],
-#         'likes_num': content[10],
-#         'comments_num': content[11],
-#         'collects_num': content[12]
-#     })
-#     print({
-#         'pictures': pictures,
-#         'date': content[5],
-#         'title': content[6],
-#         'body': content[7],
-#         'author': content[8],
-#         'avatar': content[9],
-#         'likes_num': content[10],
-#         'comments_num': content[11],
-#         'collects_num': content[12]
-#     })
-#     return response_json
+# 获取帖子评论
+@app.route('/api/all_comments/<int:user_id>', methods=['GET'])
+def get_allComment(user_id):
+    # 获取用户发表的所有帖子
+    posts = db.session.query(Post.id).filter(Post.author_id == user_id).all()
+    post_ids = [post.id for post in posts]
+
+    # 获取这些帖子的评论，以及评论的作者信息和帖子的第一张图片
+    comments = db.session.query(
+        Comment.id,
+        cast(Comment.date, String),
+        Comment.content,
+        User.name,
+        User.photo,
+        Post.picture1
+    ).join(User, Comment.author_id == User.id) \
+        .join(Post, Comment.post_id == Post.id) \
+        .filter(Post.id.in_(post_ids)) \
+        .order_by(desc(Comment.date)) \
+        .all()
+    ids=[]
+    dates=[]
+    contents=[]
+    authors=[]
+    avatars=[]
+    pictures=[]
+    for comment in comments:
+        ids.append(comment[0])
+        dates.append(comment[1][:19])
+        contents.append(comment[2])
+        authors.append(comment[3])
+        avatars.append(comment[4])
+        pictures.append(comment[5])
+    response_json = jsonify({
+        'ids'  : ids,
+        'dates': dates,
+        'contents': contents,
+        'authors': authors,  
+        'avatars': avatars,
+        'pictures': pictures
+    })
+    print({
+        'ids'  : ids,
+        'dates': dates,
+        'contents': contents,
+        'authors': authors,  
+        'avatars': avatars,
+        'pictures': pictures
+    })
+    return response_json
 
 
 @app.route('/api/post_content/<int:post_id>', methods=['GET'])
@@ -1200,6 +1187,58 @@ def get_posts():
         .group_by(Post.picture1, 
                   Post.title, 
                   User.name, 
+                  User.photo) \
+        .all()
+    ids=[] 
+    pictures=[]
+    titles=[]
+    authors=[]
+    avatars=[]
+    likes=[]
+    for post in posts:
+        ids.append(post[0])
+        pictures.append(post[1])
+        titles.append(post[2])
+        authors.append(post[3])
+        avatars.append(post[4])
+        likes.append(post[5])
+    response_json = jsonify({
+        'ids': ids,
+        'pictures': pictures,
+        'titles': titles,
+        'authors': authors,
+        'avatars': avatars,
+        'likes': likes
+    })
+    # print({
+    #     'ids': ids,
+    #     'pictures': pictures,
+    #     'titles': titles,
+    #     'authors': authors,
+    #     'avatars': avatars,
+    #     'likes': likes
+    # })
+    return response_json
+
+# 广场页获取关注帖子
+# @cross_origin()
+@app.route('/api/follow_posts/<int:user_id>', methods=['GET'])
+def get_followposts(user_id):
+    # user_id = 1  # Replace with the current logged in user's ID
+    posts = db.session.query(
+        Post.id,
+        Post.picture1,
+        Post.title,
+        User.name,
+        User.photo,
+        func.count(Like.id).label('like')
+    ).join(User, Post.author_id == User.id) \
+        .outerjoin(Like, Post.id == Like.post_id) \
+        .join(Follow, Follow.followed_id == Post.author_id) \
+        .filter(Follow.follower_id == user_id) \
+        .group_by(Post.picture1,
+                  Post.title,
+                  User.name,
                   User.photo) \
         .all()
     ids=[] 
