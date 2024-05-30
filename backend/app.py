@@ -11,8 +11,8 @@ from flask_socketio import SocketIO, emit, join_room
 from datetime import datetime
 
 # 防止通信报错 by zyp
-import locale
-locale.setlocale(locale.LC_CTYPE,"chinese")
+# import locale
+# locale.setlocale(locale.LC_CTYPE,"chinese")
 
 WIN = sys.platform.startswith('win')
 if WIN:  # 如果是 Windows 系统，使用三个斜线
@@ -1366,6 +1366,14 @@ def postnotes():
     db.session.add(post)
     db.session.commit()
     return jsonify({'message': 'Post created successfully'})
+
+# 后端调用修图指令
+# 参数：img_url(原图URL) + prompt(修图prompt)
+@app.route('/api/call_P2P', methods=['GET', 'POST'])
+def call_P2P():
+    img_old = request.json.get('img_url')
+    prompt = request.json.get('prompt')
+    return jsonify({'img': 'Post created successfully'})
 
 if __name__ == '__main__':
     config = dict(
