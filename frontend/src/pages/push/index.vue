@@ -139,6 +139,7 @@
 
     }
 
+
     .input_txt{
         position: relative;
         top: 100px;
@@ -234,7 +235,7 @@ export default {
             });
 
             // const upload = document.getElementById("upload");
-
+            
             async function putObject(data,that,file) {
                 // var that = this;
                 try {
@@ -250,7 +251,7 @@ export default {
 
                     // const Uname = "加完班打麻药";
                     const Uname = store.state.user_id;
-
+                
                     const imgName = Uname +'/'+ formattedTime + ".jpg";
                     const result = await client.put(imgName, data, options);
 
@@ -329,6 +330,12 @@ export default {
                 console.log(title, description)
                 console.log(this.reluForm)
                 const userId = store.state.user_id
+                console.log(userId)
+                if(userId==null){
+                    alert("请先登录！")
+                    // location.href = "/login";
+                    return;
+                }
                 axios.post('/api/postnotes', {
                     pics: this.push_fileList,
                     title: title,

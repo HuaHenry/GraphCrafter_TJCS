@@ -185,9 +185,15 @@ const isLiked=ref();
 const isCollected=ref();
 //const author_id = ref();
 
+
 const ToOther = (id: number) => {
-  router.push({ path: "/other",query: { id: id } });
+  if (id == store.state.user_id) {
+    router.push({ path: "/collection" });
+  } else {
+    router.push({ path: "/other", query: { id: id } });
+  }
 };
+
 
 const fetchPost = async () => {
   try {

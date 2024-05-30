@@ -1,13 +1,15 @@
 <template>
   <div class="follow-container">
     <!-- Exit button -->
-    <div class="close-circle" @click="exitPage">
-      <Close style="width: 1.2em; height: 1.2em; color: rgba(51, 51, 51, 0.8)" />
+    <div class="close-circle">
+      <div class="close close-mask-white" @click="exitPage">
+       <Close style="width: 1.2em; height: 1.2em; color: rgba(51, 51, 51, 0.8)" />
+      </div>
     </div>
     <!-- Follower list -->
     <ul class="follower-list">
       <li v-for="follower in followers" :key="follower.id" class="follower-item">
-        <img :src="follower.avatar" class="user-avatar" alt="User Avatar">
+        <img :src="follower.avatar" class="user-avatar" alt="User Avatar" @click="ToOther(follower.id)">
         <div class="user-details">
           <div class="user-name">{{ follower.name }}</div>
           <div class="user-stats">{{ follower.followers }} 粉丝 {{ follower.posts }} 帖子</div>
@@ -35,6 +37,10 @@ const followers = ref([]);
 
 const exitPage = () => {
   router.go(-1);
+};
+
+const ToOther = (id: number) => {
+  router.push({ path: "/other", query: { id: id } });
 };
 
 const followUser = async (followerId) => {
@@ -197,6 +203,7 @@ onMounted(async () => {
   height: 48px;
   border-radius: 50%;
   margin-right: 16px;
+  cursor: pointer;
 }
 
 .user-details {
