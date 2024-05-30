@@ -1,0 +1,102 @@
+/* =====================
+Service Area 
+========================*/
+
+.service{
+    margin-top: 40px;
+    h4 {
+        font-size: 18px;
+        font-weight: 500;
+        margin-bottom: 11px;
+        a {
+            color: #000000;
+            transition: 0.3s ease-in-out;
+            -webkit-transition: 0.3s ease-in-out;
+            -moz-transition: 0.3s ease-in-out;
+            -ms-transition: 0.3s ease-in-out;
+            -o-transition: 0.3s ease-in-out;
+        }
+    }
+    p {
+        color: #000000;
+        font-size: 14px;
+        line-height: 26px;
+        font-weight: 300;
+        letter-spacing: 1px;
+
+        a{
+            color: #ca3c08;
+            &:hover{
+                color: #ea9629;
+            }
+        }
+    }
+}
+
+
+
+// preview wrapper service
+.service-main-wrapper.prev-service-main-wrapper {
+    &>[class*="col"] {
+ 
+        .single-feature {
+            .icon {
+                position: relative;
+                &::before{
+                    content: "";
+                    background-size: contain;
+                    background-repeat: no-repeat;
+                }
+            }
+        }
+        
+        &:nth-child(1) {
+            .single-feature {
+                .icon {
+                    svg{
+                        display: none;
+                    }
+                    &::before{
+                        width: 45px;
+                        height: 45px;
+                        background-image: url(../img/demos/vue.svg);
+                    }
+                }
+            }
+        }
+        &:nth-child(2) {
+            .single-feature {
+                .icon {
+                    svg{
+                        display: none;
+                    }
+                    &::before{
+                        width: 45px;
+                        height: 45px;
+                        background-image: url(../img/demos/vuetify.svg);
+                    }
+                }
+            }
+        }
+        &:nth-child(4) {
+            .single-feature {
+                .icon {
+                    svg{
+                        display: none;
+                    }
+                    &::before{
+                        width: 45px;
+                        height: 34px;
+                        background-image: url(../img/demos/sass.svg);
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+
+
+
+

@@ -185,9 +185,15 @@ const isLiked=ref();
 const isCollected=ref();
 //const author_id = ref();
 
+
 const ToOther = (id: number) => {
-  router.push({ path: "/other",query: { id: id } });
+  if (id == store.state.user_id) {
+    router.push({ path: "/collection" });
+  } else {
+    router.push({ path: "/other", query: { id: id } });
+  }
 };
+
 
 const fetchPost = async () => {
   try {
@@ -373,7 +379,7 @@ const submitComment = async () => {
     // const { ids,dates,contents,authors,avatars } = processed_data;
     com_content.value = '';
     ElMessage({ message: '评论发布成功！', type: 'success' });
-    
+    items.value.comments_num++;
     
   }catch(error){
     console.error('Error sending comment:', error);

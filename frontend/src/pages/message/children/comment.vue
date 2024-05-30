@@ -1,116 +1,85 @@
 <template>
   <div>
     <ul class="message-container">
-      <li class="message-item">
-        <a class="user-avatar">
-          <!-- https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png -->
-          <img class="avatar-item" src="https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg" />
-        </a>
-        <div class="main">
-          <div class="info">
-            <div class="user-info">
-              <a class>这是名词</a>
-            </div>
-            <div class="interaction-hint"><span>评论了您的笔记&nbsp;</span><span>2021-10-9</span></div>
-            <div class="interaction-content">
-              <span>这是具体内容</span>
-            </div>
-            <div class="action">
-              <div class="action-reply">
-                <ChatRound style="width: 1.2em; height: 1.2em" />
-                <div class="action-text">回复</div>
+      <div v-for="comment in comments" :key="comments.id" class="parent-comment">
+        <li class="message-item">
+          <a class="user-avatar">
+            <!-- https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png -->
+            <img class="avatar-item" :src="comment.avatar" />
+          </a>
+          <div class="main">
+            <div class="info">
+              <div class="user-info">
+                <a class>{{ comment.author }}</a>
               </div>
-              <div class="action-like">
-                <Star style="width: 1.2em; height: 1.2em" />
+              <div class="interaction-hint"><span>评论了您的笔记&nbsp;</span><span>{{ comment.date }}</span></div>
+              <div class="interaction-content">
+                <span>{{ comment.content }}</span>
               </div>
+            
+            </div>
+            <div class="extra">
+              <img class="extra-image" :src="comment.picture" />
             </div>
           </div>
-          <div class="extra">
-            <img class="extra-image" src="https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg" />
-          </div>
-        </div>
-      </li>
-      <li class="message-item">
-        <a class="user-avatar">
-          <!-- https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png -->
-          <img class="avatar-item" src="https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg" />
-        </a>
-        <div class="main">
-          <div class="info">
-            <div class="user-info">
-              <a class>这是名词</a>
-            </div>
-            <div class="interaction-hint"><span>评论了您的笔记&nbsp;</span><span>2021-10-9</span></div>
-            <div class="interaction-content">
-              <span>这是具体内容</span>
-            </div>
-            <div class="quote-info">确实是不行</div>
-            <div class="action">
-              <div class="action-reply">
-                <ChatRound style="width: 1.2em; height: 1.2em" />
-                <div class="action-text">回复</div>
-              </div>
-              <div class="action-like">
-                <Star style="width: 1.2em; height: 1.2em" />
-              </div>
-            </div>
-          </div>
-          <div class="extra">
-            <img class="extra-image" src="https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg" />
-          </div>
-        </div>
-      </li>
-      <li class="message-item">
-        <a class="user-avatar">
-          <!-- https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png -->
-          <img class="avatar-item" src="https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg" />
-        </a>
-        <div class="main">
-          <div class="info">
-            <div class="user-info">
-              <a class>这是名词</a>
-            </div>
-            <div class="interaction-hint"><span>评论了您的笔记&nbsp;</span><span>2021-10-9</span></div>
-            <div class="interaction-content">
-              <span>这是具体内容</span>
-            </div>
-            <div class="action">
-              <div class="comment-wrapper action-comment">
-                <div class="input-wrapper">
-                  <textarea
-                    rows="1"
-                    class="comment-input"
-                    type="text"
-                    placeholder="回复 你好"
-                    style="height: 40px"
-                  ></textarea>
-                  <div class="input-buttons">
-                    <Star style="width: 1.2em; height: 1.2em; margin: 0 6px" />
-                    <Star style="width: 1.2em; height: 1.2em; margin: 0 6px" />
-                  </div>
-                </div>
-                <button class="submit">发送</button>
-              </div>
-              <div class="action-cancel">取消</div>
-            </div>
-          </div>
-          <div class="extra">
-            <img class="extra-image" src="https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg" />
-          </div>
-        </div>
-      </li>
+        </li>
+      </div>
+      
     </ul>
   </div>
 </template>
 <script lang="ts" setup>
 import { ChatRound, Star } from "@element-plus/icons-vue";
+import { ref, computed,onMounted } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import axios from 'axios';
+import store from "../../../store/index";
+const router = useRouter();
+const route = useRoute();
+const userId = store.state.user_id;
+const comments=ref([]);
+const fetchComments = async () => {
+  try {
+    const post_id = route.query.id;
+    console.log(post_id);
+    const response = await axios.get(`/api/all_comments/${userId}`);
+    const result = response.data;
+    // 解构出各个属性数组
+    const { ids,dates,contents,authors,avatars,pictures } = result;
+    // 遍历数组，构建每个对象并添加到数组中
+    for (let i = 0; i < contents.length; i++) {
+      const item = {
+        id: ids[i],
+        date: dates[i],
+        content: contents[i],
+        author: authors[i],
+        avatar: avatars[i],
+        picture: pictures[i]
+      };
+      comments.value.push(item);
+    }
+  }catch(error){
+    console.error('Error fetching data:', error);
+  }
+}
+onMounted(async () => {
+  fetchComments();
+});
 </script>
+
+
+
+
 <style lang="less" scoped>
 textarea {
   overflow: auto;
 }
 .message-container {
   width: 40rem;
+  height: 80vh;
+  background-color: #fff;
+  // border-radius: 15px;
+  border: #fff;
   .message-item {
     display: flex;
     flex-direction: row;

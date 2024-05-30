@@ -17,6 +17,10 @@
               </span>
             </div>
           </div>
+           <!-- 添加删除按钮 -->
+          <button class="delete-button" @click="deleteItem(item.ids)">
+              删除
+          </button>
         </div>
       </template>
     </Waterfall>
@@ -87,11 +91,40 @@ const fetchData = async () => {
     console.error('Error fetching data:', error);
   }
 };
+
+const deleteItem = async (id) => {
+  try {
+    await axios.delete(`/api/items/${id}`); // 假设的API端点
+    list.value = list.value.filter(item => item.ids !== id); // 从视图中移除
+  } catch (error) {
+    console.error("Error deleting item:", error);
+  }
+};
+
+
 onMounted(() => {
   fetchData(); // Call fetchData function when the component is mounted
 });
 </script>
 <style lang="less" scoped>
+
+.delete-button {
+  position: absolute;
+  top: 10px; // 调整位置以适应你的设计
+  right: 10px;
+  background: #ff4d4f;
+  border: none;
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
+  padding: 5px 10px;
+  font-size: 14px;
+
+  &:hover {
+    background: #ff7875;
+  }
+}
+
 .feeds-container {
   position: relative;
   transition: width 0.5s;

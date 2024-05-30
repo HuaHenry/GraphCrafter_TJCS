@@ -90,17 +90,17 @@
           {
             src: new URL("@/assets/img/menu/oceantown.jpg", import.meta.url).href,
             title: "图像处理",
-            href: "/main-demo",
+            href: "/",
           },
           {
             src:  new URL("@/assets/img/menu/flower.jpg", import.meta.url).href,
             title: "分享广场",
-            href: "/main-demo",
+            href: "/index",
           },
           {
             src:  new URL("../assets/img/menu/person.jpg", import.meta.url).href,
             title: "个人中心",
-            href: "/main-demo",
+            href: "/collection",
           },
         ],
         demoContent: [
