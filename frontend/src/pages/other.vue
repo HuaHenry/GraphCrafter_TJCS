@@ -18,7 +18,9 @@
                 <div class="user-nickname">
                   <!-- 使用动态数据的用户名 -->
                   <div class="user-name">{{ username }}</div>
-                  <button @click="" class="edit-button">关注</button>
+                  <el-button type="danger" size="medium" round @click="handleClick">
+                  {{ buttonText }}
+                  </el-button>
                   <button @click="chatWithOther" class="chat-with-other-button">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-dots" viewBox="0 0 16 16">
                       <path d="M5 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
@@ -107,11 +109,12 @@
 <script lang="ts" setup>
 // import { Star } from "@element-plus/icons-vue";
 import { useRouter,useRoute } from "vue-router";
-import { ref, onMounted } from 'vue';
+import { ref, onMounted,computed } from 'vue';
 import axios from 'axios';
 const router = useRouter();
 const route = useRoute();
 import store from "../store/index";
+import { ElMessage,ElMessageBox } from 'element-plus';
 import { Close } from "@element-plus/icons-vue";
 import { LazyImg, Waterfall } from "vue-waterfall-plugin-next";
 //const userId = 1;
@@ -176,6 +179,98 @@ const fetchUserStats = async () => {
     }
 };
 
+
+const isFollowed = ref(false);
+const followStatus = ref(0);  // 0: 单独关注, 1: 互相关注
+
+const followUser = async () => {
+    // 检查是否尝试自己关注自己
+    if (store.state.user_id == other_user_id) {
+        ElMessage.error('您不能关注自己。'); // 使用ElMessage显示错误信息
+        return;  // 直接返回，不执行关注操作
+    }
+
+    // 如果还未关注，则尝试执行关注操作
+    if (!isFollowed.value) {
+        try {
+            const response = await axios.post('/api/follow', {
+                follower_id: store.state.user_id,
+                followed_id: other_user_id
+            });
+            if (response.status === 200) {
+                isFollowed.value = true;  // 更新关注状态
+                ElMessage.success('关注成功！'); // 显示成功消息
+            }
+        } catch (error) {
+            ElMessage.error('关注失败，请稍后再试。'); // 出错时使用ElMessage显示错误信息
+        }
+    }
+};
+
+
+const unfollowUser = async () => {
+    try {
+        const response = await axios.post('/api/unfollow', {  // 确保后端有处理取消关注的API
+            follower_id: store.state.user_id,
+            followed_id: other_user_id
+        });
+        if (response.status === 200) {
+            isFollowed.value = false;  // 更新未关注状态
+            followStatus.value = 0;    // 更新关注状态
+            ElMessage.success('取消关注成功！');
+        }
+    } catch (error) {
+        ElMessage.error('取消关注失败，请稍后再试。');
+    }
+};
+
+
+const checkFollowStatus = async () => {
+    try {
+        const response = await axios.get(`/api/check-follow/${store.state.user_id}/${other_user_id }`);
+        console.log(response.data.isFollowed)
+        console.log(response.data.status)
+        isFollowed.value = response.data.isFollowed;
+        
+        followStatus.value = response.data.status;
+    } catch (error) {
+        console.error('Error checking follow status:', error);
+    }
+};
+
+const buttonText = computed(() => {
+    if (followStatus.value === 1) {
+        return '互相关注';
+    } else if (isFollowed.value) {
+        return '已关注';
+    } else {
+        return '关注';
+    }
+});
+
+const handleClick = async () => {
+    // 检查是否已经关注或者互相关注
+    if (isFollowed.value || followStatus.value === 1) {
+        // 弹出确认取消关注的对话框
+        try {
+            await ElMessageBox.confirm('您确定要取消关注吗？', '确认信息', {
+                confirmButtonText: '确认',
+                cancelButtonText: '取消',
+                type: 'warning'
+            });
+            // 用户确认取消关注
+            await unfollowUser();  // 这是你需要实现的取消关注的方法
+            await checkFollowStatus();  // 再次检查关注状态
+        } catch (error) {
+            // 用户取消操作
+            ElMessage.info('已取消操作');
+        }
+    } else {
+        // 如果还没有关注，则尝试关注
+        await followUser();
+        await checkFollowStatus();
+    }
+};
 
 const toMain = (id: number) => {
   router.push({ path: "/main", query: { id: id } });
@@ -248,6 +343,7 @@ onMounted(()=>{
   fetchUserStats();
   fetchData();
   loadUserProfile();
+  checkFollowStatus();
 });
 
 </script>
@@ -347,6 +443,7 @@ onMounted(()=>{
                   font-size: 24px;
                   line-height: 120%;
                   color: #333;
+                  margin-right: 20px;
                 }
               }
               .edit-button {

@@ -23,11 +23,11 @@
               <span>赞和收藏</span>
             </div>
           </div>
-          <div :class="{ 'reds-tab-item': true, 'active': activeTab === 'followerTab' }">
+          <!-- <div :class="{ 'reds-tab-item': true, 'active': activeTab === 'followerTab' }">
             <div class="badge-container" @click="toFollower()">
               <span>新增关注</span>
             </div>
-          </div>
+          </div> -->
         </div>
         <div class="divider" style="margin: 16px 32px 0px"></div>
       </div>
@@ -58,10 +58,10 @@ const toAgree = () => {
   activeTab = "agreeTab";
   router.push({ path: "/agreeCollection" });
 };
-const toFollower = () => {
-  activeTab = "followerTab";
-  router.push({ path: "/follower" });
-};
+// const toFollower = () => {
+//   activeTab = "followerTab";
+//   router.push({ path: "/follower" });
+// };
 </script>
 <style lang="less" scoped>
 .container {

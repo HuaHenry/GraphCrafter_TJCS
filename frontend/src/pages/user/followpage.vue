@@ -9,7 +9,7 @@
     <!-- Following list -->
     <ul class="following-list">
       <li v-for="following in followings" :key="following.id" class="following-item">
-        <img :src="following.avatar" class="user-avatar" alt="User Avatar">
+        <img :src="following.avatar" class="user-avatar" alt="User Avatar" @click="ToOther(following.id)">
         <div class="user-details">
           <div class="user-name">{{ following.name }}</div>
           <div class="user-stats">{{ following.followers }} 粉丝   {{ following.posts }} 发帖</div>
@@ -36,6 +36,10 @@ const followings = ref([]);
 
 const exitPage = () => {
   router.go(-1);
+};
+
+const ToOther = (id: number) => {
+  router.push({ path: "/other", query: { id: id } });
 };
 
 const followUser = async (followingId) => {
@@ -191,6 +195,7 @@ onMounted(async () => {
   height: 48px;
   border-radius: 50%;
   margin-right: 16px;
+  cursor: pointer;
 }
 
 /* .user-details {
