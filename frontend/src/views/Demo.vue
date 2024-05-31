@@ -32,10 +32,10 @@
           <div class="row">
             <div class="col-lg-4 col-md-4 col-sm-6 col-12" v-for="(item, i) in menuContent" :key="i">
               <div class="demo-item">
-                <a :href="item.href" target="_blank">
+                <router-link :to="item.href">
                   <img :src="item.src" alt="Main Demo" class="image-shadow"/>
                   <span class="title-style">{{ item.title }}</span>
-                </a>
+                </router-link>
               </div>
             </div>
           </div>

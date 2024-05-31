@@ -11,8 +11,8 @@ from flask_socketio import SocketIO, emit, join_room
 from datetime import datetime
 
 # 防止通信报错 by zyp
-import locale
-locale.setlocale(locale.LC_CTYPE,"chinese")
+# import locale
+# locale.setlocale(locale.LC_CTYPE,"chinese")
 
 WIN = sys.platform.startswith('win')
 if WIN:  # 如果是 Windows 系统，使用三个斜线
@@ -1409,6 +1409,36 @@ def postnotes():
     db.session.add(post)
     db.session.commit()
     return jsonify({'message': 'Post created successfully'})
+
+# 后端调用修图指令
+# 参数：img_url(原图URL) + prompt(修图prompt)
+@app.route('/api/call_P2P', methods=['GET', 'POST'])
+def call_P2P():
+    img_old = request.json.get('img_url')
+    prompt = request.json.get('prompt')
+    return jsonify({'img': 'Post created successfully'})
+
+
+# 删除帖子的接口
+@app.route('/api/delete-post/<int:post_id>', methods=['DELETE'])
+def delete_post(post_id):
+    post = Post.query.get_or_404(post_id)
+
+    # 删除相关的评论
+    Comment.query.filter_by(post_id=post_id).delete()
+
+    # 删除相关的点赞
+    Like.query.filter_by(post_id=post_id).delete()
+
+    # 删除相关的收藏
+    Collect.query.filter_by(post_id=post_id).delete()
+
+    # 删除帖子
+    db.session.delete(post)
+    db.session.commit()
+
+    return jsonify({'message': 'Post deleted successfully'}), 200
+
 
 if __name__ == '__main__':
     config = dict(
