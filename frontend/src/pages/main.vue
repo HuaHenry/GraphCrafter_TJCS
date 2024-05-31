@@ -4,8 +4,8 @@
     style="transition: background-color 0.4s ease 0s"
   >
     <div class="note-container">
-      <div class="media-container">
-        <el-carousel height="90vh">
+      <div class="media-container" >
+        <el-carousel height="90vh" @change="handleCarouselChange">
           <el-carousel-item v-for="item in ImageList" :key="item">
             <el-image
               :src="item"
@@ -42,8 +42,6 @@
               <el-button type="danger" size="large" round @click="handleClick">
                   {{ buttonText }}
               </el-button>
-
-
             </div>
 
             <div class="note-scroller">
@@ -59,9 +57,51 @@
                   <span class="date">{{ items.date }}</span>
                 </div>
                 <div class="buttons" style="display: flex; justify-content: center; margin-top: 2ch">
-                  <el-button @click="openDialog" type="danger" size="medium" style="width: 100%; height:40px; border-radius: 10px;">一键使用模板</el-button>
+                  <el-button @click="showModal = true" type="danger" size="medium" style="width: 100%; height:40px; border-radius: 10px;">一键使用模板</el-button>
                 </div>
-                <el-dialog :visible.sync="dialogVisible" title="Upload Image" width="30%" style="z-index:10">
+                <!-- 一键导入上传图 -->
+                <div v-if="showModal" class="modal">
+                  <div class="modal-content">
+                    <span class="close" @click="showModal = false">&times;</span>
+                    <div class="upload_con">
+                        <el-form
+                            :rules="rules"
+                            ref="ruleF"
+                            :model="ruleForm"
+                        >
+                        <el-form-item>
+                        <el-upload
+                            :class="{uoloadSty:showBtnDealImg,disUoloadSty:noneBtnImg}"
+                            ref="upload"
+                            action=""
+                            list-type="picture-card"
+                            accept="image/*"
+
+                            :on-preview="handlePictureCardPreview"
+                            :on-remove="handleRemove"
+                            :on-change="upclick_click"
+                            :limit="1"
+                            :file-list="fileList"
+                            :auto-upload="false"
+                        >
+                          <i class="el-icon-plus"></i>
+                          <template #tip>
+                            <!-- <div style="font-size: 12px;color: #919191;">
+                              单次限制上传一张图片
+                            </div> -->
+                          </template>
+                        </el-upload>
+                        <el-dialog v-model="dialogVisible" style="line-height: 0;">
+                          <img style="width: 100%;height: 100%"  :src="dialogImageUrl" alt="" />
+                        </el-dialog>
+                      </el-form-item>
+                      </el-form>
+                    </div>
+                    <el-button type="primary" @click="submitForm('ruleF')" id="submit_button">确认图片</el-button>
+                    <!-- <input type="file" @change="handleFileUpload"/> -->
+                  </div>
+                </div>
+                <!-- <el-dialog :visible.sync="dialogVisible" title="Upload Image" width="30%" style="z-index:10"> -->
                   <!-- <el-upload
                     action="/api/upload_image"
                     :on-success="handleUploadSuccess"
@@ -77,7 +117,7 @@
                     <el-button @click="dialogVisible = false">Cancel</el-button>
                     <el-button type="primary" @click="uploadImage">Upload</el-button>
                   </span> -->
-                </el-dialog>
+                <!-- </el-dialog> -->
               </div>
               <div class="divider interaction-divider"></div>
 
@@ -164,28 +204,164 @@
 </template>
 
 <script lang="ts" setup>
+
 import { Close, Star, StarFilled, PictureRounded, ChatRound } from "@element-plus/icons-vue";
 import { useRouter, useRoute } from 'vue-router';
 import { ref, computed,onMounted } from 'vue';
 import { ElMessage,ElMessageBox } from 'element-plus';
 import store from "../store/index";
 import axios from 'axios';
+import "https://gosspublic.alicdn.com/aliyun-oss-sdk-6.18.0.min.js";
+
+//=============================================================================
+// 变量定义
+//=============================================================================
 const router = useRouter();
 const route = useRoute();
-
 // 用户id先写死，后面实现登陆后再改为变量实现
 const userId = store.state.user_id;
 console.log("检查一下",store.state.user_id)
-// const ImageList=ref([]);
 const ImageList=ref([]);
 const items=ref({});
 const comments=ref([]);
 const com_content=ref('');
 const isLiked=ref();
 const isCollected=ref();
-//const author_id = ref();
+const showModal = ref(false);
+const isFollowed = ref(false);
+const followStatus = ref(0);  // 0: 单独关注, 1: 互相关注
+const rules = ref({
+  name: [
+  {
+      required: true,
+      message: '请输入标题',
+      trigger: 'blur',
+  },
+  ],
+  summary: [
+  {
+      required: true,
+      message: '请输入简介',
+      trigger: 'blur',
+  },
+  ]
+});
+const ruleForm = ref({
+    name:'',
+    image:'',
+    summary:'',
+    issue:'',
+});
+const showBtnDealImg = ref(true);
+const noneBtnImg = ref(false);
+const dialogVisible = ref(false);
+const dialogImageUrl = ref();
+const push_fileList = ref([]);
+const limitCountImg=1;
+const imgname_tmp = ref('');
+const fileList = ref([]);
+const current_pic = ref();
 
+//=============================================================================
+// 一键导入模板
+//=============================================================================
+//预览图片功能
+const handlePictureCardPreview = (file) => {
+    console.log(file.url);
+    dialogVisible.value = true;
+    dialogImageUrl.value = file.url;
+};
+//移除图片功能
+const handleRemove = (file, fileList) => {
+    console.log(file);
+    console.log(push_fileList.value);
+    //找到并删除
+    const del_name = file.name;
+    const index = push_fileList.value.indexOf(del_name);
+    if (index > -1) {
+        push_fileList.value.splice(index, 1);
+    }
+    console.log(push_fileList.value);
+    noneBtnImg.value = fileList.length >= limitCountImg;
+};
 
+const putObject = async (data,that,file) => {
+      // var that = this;
+    try {
+        const options = {
+            meta: { temp: "demo" },
+            mime: "json",
+            headers: { "Content-Type": "Buffer" },
+        };
+        //获取年月日时间
+        const ops = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+        const formattedTime = new Intl.DateTimeFormat('en-US', ops).format(new Date()).replace(/[^0-9]/g, '');
+        //设置图片名称
+
+        // const Uname = "加完班打麻药";
+        const Uname = store.state.user_id;
+    
+        const imgName = Uname +'/'+ formattedTime + ".jpg";
+        const result = await client.put(imgName, data, options);
+
+        //存储图片的url至本地消息中
+        const imgURL = "https://graphcrafter.oss-cn-beijing.aliyuncs.com/" + imgName;
+        console.log(imgURL);
+        that.push_fileList.push(imgURL);
+        console.log(that.push_fileList);
+        that.imgname_tmp = imgURL;
+        console.log("imgname_tmp_in", that.imgname_tmp)
+        file.name = imgURL;
+    } catch (e) {
+        console.log(e);
+    }
+};
+
+const fileToBlob = (file) => {
+    return new Blob([file], { type: file.type });
+}
+
+const upclick_click = (file, fileList) => {
+  const client = new OSS({
+      region: "oss-cn-beijing",
+      accessKeyId: "LTAI5tR1c1uhFRfWxjq8BWT4",
+      accessKeySecret: "BdN5OIEdet7IO6KWOq7TJiivHOsC5B",
+      bucket: "graphcrafter",
+  });
+
+  console.log("upload image ...");
+
+  const arr = Array.from(Object.entries(file));
+  const arrayBuffer = new Uint8Array(arr).buffer;
+  const data = (arrayBuffer);
+  console.log(data.type);
+  putObject(fileToBlob(file.raw),this,file);
+  noneBtnImg.value = fileList.length >= limitCountImg;
+  console.log("imgname_tmp",imgname_tmp.value)
+};
+
+const handleCarouselChange = (index) => {
+
+  // console.log('handleCarouselChange called');
+  // console.log('当前显示的图片是：', ImageList.value[index]);
+  current_pic.value = ImageList.value[index];
+};
+
+const submitForm = () => {
+  //获取内容
+  try {
+    //待写
+    //当前图片链接：current_pic.value
+    //传到后端，查找prompt，调用模型返回结果
+    
+  } catch(error) {
+    console.error('Error adding like:', error);
+  }  
+};
+
+//=============================================================================
+// 页面跳转
+//=============================================================================
 const ToOther = (id: number) => {
   if (id == store.state.user_id) {
     router.push({ path: "/collection" });
@@ -194,7 +370,9 @@ const ToOther = (id: number) => {
   }
 };
 
-
+//=============================================================================
+// 获取帖子
+//=============================================================================
 const fetchPost = async () => {
   try {
     // this.$route.params.id
@@ -231,9 +409,9 @@ const fetchPost = async () => {
   }
 }
 
-const isFollowed = ref(false);
-const followStatus = ref(0);  // 0: 单独关注, 1: 互相关注
-
+//=============================================================================
+// 关注操作
+//=============================================================================
 const followUser = async () => {
     // 检查是否尝试自己关注自己
     if (store.state.user_id == items.value.author_id) {
@@ -258,7 +436,6 @@ const followUser = async () => {
     }
 };
 
-
 const unfollowUser = async () => {
     try {
         const response = await axios.post('/api/unfollow', {  // 确保后端有处理取消关注的API
@@ -274,7 +451,6 @@ const unfollowUser = async () => {
         ElMessage.error('取消关注失败，请稍后再试。');
     }
 };
-
 
 const checkFollowStatus = async () => {
     try {
@@ -298,13 +474,6 @@ const buttonText = computed(() => {
         return '关注';
     }
 });
-
-
-// const handleClick = async () => {
-//     await followUser();  // 等待 followUser 方法完成
-//     await checkFollowStatus();  // 然后执行 checkFollowStatus 方法
-// };
-
 
 const handleClick = async () => {
     // 检查是否已经关注或者互相关注
@@ -330,8 +499,10 @@ const handleClick = async () => {
     }
 };
 
-
-
+//=============================================================================
+// 评论相关操作
+//=============================================================================
+//获取评论
 const fetchComments = async () => {
   try {
     const post_id = route.query.id;
@@ -355,7 +526,7 @@ const fetchComments = async () => {
     console.error('Error fetching data:', error);
   }
 }
-
+//发布评论
 const submitComment = async () => {
   try {
     const post_id = route.query.id;
@@ -386,6 +557,9 @@ const submitComment = async () => {
   }
 }
 
+//=============================================================================
+// 点赞、收藏计数相关操作
+//=============================================================================
 const getStatus = async () => {
   try{
     const post_id = route.query.id;
@@ -477,7 +651,49 @@ const goBack = () => {
 }
 </script>
 
+
+
 <style lang="less" scoped>
+.modal {
+  position: fixed;
+  z-index: 10;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.4);
+  border-radius: 20px;
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 40%;
+  border-radius: 20px;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.el-upload-list--picture-card .el-upload-list__item {
+  width: 500px !important;
+  height: 500px !important;
+}
+
 .note-detail-mask {
   position: fixed;
   left: 0;

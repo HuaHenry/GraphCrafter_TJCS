@@ -163,6 +163,7 @@ import {ElMessage} from "element-plus";
 import {Buffer} from 'buffer';
 import store from "../../store/index";
 
+// 麻，怎么全写到一个类里了，很难移植啊
 export default {
     name:"upclick_click",
     data(){

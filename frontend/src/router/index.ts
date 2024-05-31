@@ -1,6 +1,11 @@
 import { createRouter, createWebHistory } from "vue-router";
 // import Login from "@/pages/login.vue";
 import Dashboard from "@/pages/dashboard/dashboard.vue";
+import easy1 from "@/pages/edit/easy1.vue";
+import easy2 from "@/pages/edit/easy2.vue";
+import easy3 from "@/pages/edit/easy3.vue";
+import easy4 from "@/pages/edit/easy4.vue";
+import easy5 from "@/pages/edit/easy5.vue";
 import Manage from "@/pages/manager/Manage.vue";
 
 
@@ -9,6 +14,7 @@ import Login from "@/components/Login.vue";
 import Register from "@/components/Register.vue";
 
 export const routes = [
+ 
   {
     name: "Demo",
     path: "/Demo",
@@ -39,6 +45,31 @@ export const routes = [
     component: () => import("@/pages/index.vue"),
     redirect: "/dashboard",
     children: [
+      {
+        name: "easy1",
+        path: "/easy1",
+        component: easy1,
+      },
+      {
+        name: "easy2",
+        path: "/easy2",
+        component: easy2,
+      },
+      {
+        name: "easy3",
+        path: "/easy3",
+        component: easy3,
+      },
+      {
+        name: "easy4",
+        path: "/easy4",
+        component: easy4,
+      },
+      {
+        name: "easy5",
+        path: "/easy5",
+        component: easy5,
+      },
       {
         path: "/dashboard",
         component: Dashboard,

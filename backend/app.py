@@ -126,6 +126,10 @@ class Draft(db.Model):  # 草稿箱
     picture = db.Column(db.String(60))     # 图片
     label = db.Column(db.Text)  # 标签
 
+class Picture(db.Model):  # 图片
+    id = db.Column(db.String(60), primary_key=True)  # 主键，即路由
+    prompt = db.Column(db.Text)     # 修图的prompt，没有修图时为空
+
 # app = Flask(__name__)
 app.config.from_object(__name__)
 
