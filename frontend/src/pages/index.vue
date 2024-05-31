@@ -1,10 +1,8 @@
 <template>
   <div class="container">
     <div class="top">
-      <header class="mask-paper" >
-        <!-- <a style="display: flex; z-index: -100;"></a> -->
+      <header class="mask-paper">
         <img src="https://graphcrafter.oss-cn-beijing.aliyuncs.com/LOGO.gif" style="width:20%;position: relative; top:10px; left:-50px; z-index: -1;"/>
-          
         <div class="tool-box"></div>
         <div class="input-box">
           <input type="text" class="search-input" placeholder="搜索" />
@@ -18,33 +16,25 @@
     </div>
     <div class="main">
       <div class="side-bar" style="z-index:10">
-        <!-- <ul class="channel-list">
-          <li>
-            <a class="link-wrapper"
-              ><House style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel" @click="toDashboard()"
-                >发现</span>
-            </a>
-          </li>
-         
-          <li class="active-channel"><Bell style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel" @click="toMessage()">
-              消息</span>
-          </li>
-          <li>
-            <CirclePlus style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel" @click="toPush()">
-              发布</span
-            >
-          </li>
-          <li>
-            <User style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel" @click="toUser()">
-              个人</span
-            >
-          </li>
-        </ul> -->
         <ul class="channel-list">
           <li :class="{ 'active-channel': activeChannel === 'dashboard' }">
             <a class="link-wrapper" @click="toDashboard">
               <House style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel">发现</span>
             </a>
+          </li>
+          <li :class="{ 'active-channel': activeChannel === 'photoshop' }">
+            <a class="link-wrapper" @click="togglePhotoshop">
+              <House style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel">修图</span>
+            </a>
+            <!-- 子菜单 -->
+            <ul v-show="activeChannel === 'photoshop'" class="sub-menu">
+              <li @click="toConversation">
+                <House style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel">对话</span>
+              </li>
+              <li @click="toEasy">
+                <House style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel">简单</span>
+              </li>
+            </ul>
           </li>
           <li :class="{ 'active-channel': activeChannel === 'message' }">
             <a class="link-wrapper" @click="toMessage">
@@ -62,9 +52,8 @@
             </a>
           </li>
         </ul>
-
         <div class="information-container">
-          <div class="information-pad" >
+          <div class="information-pad">
             <div class="container" id="more-info" style="visibility: hidden">
               <div>
                 <div>
@@ -78,21 +67,8 @@
                   </div>
                   <div class="divider"></div>
                 </div>
-
                 <div>
                   <div class="group-wrapper">
-<!--                    <div class="group-header">设置</div>-->
-<!--                    <div class="menu-item hover-effect">-->
-<!--                      <span>深色模式</span>-->
-<!--                      <div class="multistage-toggle component">-->
-<!--                        <button class="toggle-item active">-->
-<!--                          <div class="icon-wrapper"><Sunny style="width: 1em; height: 1em" /></div>-->
-<!--                        </button>-->
-<!--                        <button class="toggle-item">-->
-<!--                          <div class="icon-wrapper"><Moon style="width: 1em; height: 1em" /></div>-->
-<!--                        </button>-->
-<!--                      </div>-->
-<!--                    </div>-->
                     <div class="menu-item hover-effect">
                       <span @click="Logout">退出登录</span>
                     </div>
@@ -101,9 +77,9 @@
               </div>
             </div>
           </div>
-
           <div class="information-wrapper">
-            <More style="width: 1em; height: 1em; margin-right: 8px" @click="toggleMoreInfoState" /> <span class="channel"  @click="toggleMoreInfoState"> 更多</span>
+            <More style="width: 1em; height: 1em; margin-right: 8px" @click="toggleMoreInfoState" />
+            <span class="channel" @click="toggleMoreInfoState"> 更多</span>
           </div>
         </div>
       </div>
@@ -111,32 +87,27 @@
         <router-view />
       </div>
     </div>
-
   </div>
 </template>
 
 <script lang="ts" setup>
 import {
   Search,
-  Sunny,
-  Moon,
   Close,
   House,
-  Star,
   Bell,
   User,
   ArrowRight,
   More,
   CirclePlus,
 } from "@element-plus/icons-vue";
-import { useRouter,useRoute} from "vue-router";
+import { useRouter } from "vue-router";
 import { ref } from "vue";
 import store from "../store/index";
 
 const router = useRouter();
 
-const route = useRoute();
-const activeChannel = ref(route.name);  // Set initial active channel based on route name
+const activeChannel = ref(null);
 
 const toDashboard = () => {
   router.push({ name: 'dashboard' });
@@ -155,52 +126,62 @@ const toUser = () => {
   activeChannel.value = 'user';
 };
 
-const c = ref(true);
-
-// const toDashboard = () => {
-//   router.push({ path: "/dashboard" });
-// };
-
-// const toTrend = () => {
-//   router.push({ path: "/followTrend" });
-// };
-
-// const toMessage = () => {
-//   router.push({ path: "/message" });
-// };
-
-// const toUser = () => {
-//   router.push({ path: "/user" });
-// };
-// const toPush = () => {
-//   router.push({ path: "/push" });
-// };
-
-const close = (val: boolean) => {
-  console.log(val);
-  c.value = val;
+const toConversation = () => {
+  router.push({ name: 'conversation' });
+};
+const toEasy = () => {
+  router.push({ name: 'easy1' });
 };
 
-function toggleMoreInfoState() {
+const togglePhotoshop = () => {
+  activeChannel.value = activeChannel.value === 'photoshop' ? null : 'photoshop';
+};
+
+const toggleMoreInfoState = () => {
   let div = document.getElementById('more-info');
-  console.log(div);
   if (div.style.visibility === 'hidden') {
     div.style.visibility = 'visible';
   } else {
     div.style.visibility = 'hidden';
   }
-}
-function Logout(){
-  store.commit("setLoginState",false);
-  store.commit("setCurUserID",null);
+};
+
+const Logout = () => {
+  store.commit("setLoginState", false);
+  store.commit("setCurUserID", null);
   router.push("/login");
-}
-// 保存到本地，这样不需要每次刷新都得登录
-store.commit("setLoginState",localStorage.getItem("user")?true:false);
-store.commit("setCurUserID",localStorage.getItem("user")?localStorage.getItem("user"):null);
+};
+
+store.commit("setLoginState", localStorage.getItem("user") ? true : false);
+store.commit("setCurUserID", localStorage.getItem("user") ? localStorage.getItem("user") : null);
 </script>
 
+
 <style lang="less" scoped>
+.sub-menu {
+  position: absolute;  /* 脱离文档流，按需定位 */
+  left: 0;  /* 与父级左对齐 */
+  top: 100%;  /* 紧贴一级菜单底部 */
+  padding-left: 20px;  /* 适当增加缩进以区分一级和二级菜单 */
+  width: 100%;  /* 宽度与一级菜单相同 */
+  background-color: #6d1f1f;  /* 背景色可调 */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);  /* 可选的阴影效果 */
+}
+
+.channel-list > li {
+  position: relative;
+}
+
+.sub-menu li {
+  padding: 8px 16px;  /* 子菜单项的内边距 */
+  white-space: nowrap;  /* 防止文本换行 */
+  cursor: pointer;
+}
+
+.sub-menu li:hover {
+  background-color: #e0e0e0;
+}
+
 .container {
   max-width: 1728px;
   background-color: #fff;
@@ -341,6 +322,10 @@ store.commit("setCurUserID",localStorage.getItem("user")?localStorage.getItem("u
       position: fixed;
       overflow: visible;
 
+      .channel-list > li {
+        position: relative;  /* Ensuring that the positioning context is set */
+      }
+
       .channel-list {
         min-height: auto;
         -webkit-user-select: none;
@@ -441,7 +426,7 @@ store.commit("setCurUserID",localStorage.getItem("user")?localStorage.getItem("u
                 .multistage-toggle {
                   position: relative;
                   background: rgba(0, 0, 0, 0.03);
-                  display: flex();
+                  display: flex;
                   padding: 2px;
                   border-radius: 999px;
                   cursor: pointer;
