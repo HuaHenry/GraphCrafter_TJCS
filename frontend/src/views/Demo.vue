@@ -32,10 +32,10 @@
           <div class="row">
             <div class="col-lg-4 col-md-4 col-sm-6 col-12" v-for="(item, i) in menuContent" :key="i">
               <div class="demo-item">
-                <a :href="item.href" target="_blank">
+                <router-link :to="item.href">
                   <img :src="item.src" alt="Main Demo" class="image-shadow"/>
                   <span class="title-style">{{ item.title }}</span>
-                </a>
+                </router-link>
               </div>
             </div>
           </div>
@@ -90,17 +90,17 @@
           {
             src: new URL("@/assets/img/menu/oceantown.jpg", import.meta.url).href,
             title: "图像处理",
-            href: "/main-demo",
+            href: "/",
           },
           {
             src:  new URL("@/assets/img/menu/flower.jpg", import.meta.url).href,
             title: "分享广场",
-            href: "/main-demo",
+            href: "/index",
           },
           {
             src:  new URL("../assets/img/menu/person.jpg", import.meta.url).href,
             title: "个人中心",
-            href: "/main-demo",
+            href: "/collection",
           },
         ],
         demoContent: [

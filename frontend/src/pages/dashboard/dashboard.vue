@@ -3,18 +3,10 @@
     <div class="channel-container">
       <div class="scroll-container channel-scroll-container">
         <div class="content-container">
-          <div class="channel active">推荐</div>
-          <div class="channel">关注</div>
-          <!-- <div class="channel">美食</div>
-          <div class="channel">彩妆</div>
-          <div class="channel">影视</div>
-          <div class="channel">职场</div>
-          <div class="channel">情感</div>
-          <div class="channel">家居</div>
-          <div class="channel">游戏</div>
-          <div class="channel">旅行</div>
-          <div class="channel">动漫</div>
-          <div class="channel">健身</div> -->
+          <!-- <div class="channel active">推荐</div>
+          <div class="channel">关注</div>         -->
+          <div class="channel" :class="{ active: activeChannel === '推荐' }" @click="activeChannel = '推荐';fetchData()">推荐</div>
+        <div class="channel" :class="{ active: activeChannel === '关注' }" @click="activeChannel = '关注';fetchFollowData()">关注</div>  
         </div>
       </div>
     </div>
@@ -52,18 +44,23 @@ import { Search } from "@element-plus/icons-vue";
 import { LazyImg, Waterfall } from "vue-waterfall-plugin-next";
 import "vue-waterfall-plugin-next/dist/style.css";
 import { useRouter } from "vue-router";
-
+import store from "../../store/index";
+import axios from "axios";
 import { ref , onMounted } from "vue";
-
+const userId = store.state.user_id;
 const router = useRouter();
 
 const list = ref([]);
+const activeChannel = ref('推荐');
 
 const fetchData = async () => {
+  list.value=[]
   try {
     // Simulated asynchronous database query
-    const data = await fetch('http://127.0.0.1:8080/api/posts'); // Replace URL with your endpoint
-    const result = await data.json();
+    // const data = await fetch('http://127.0.0.1:8080/api/posts'); // Replace URL with your endpoint
+    // const result = await data.json();
+    const response = await axios.get(`/api/posts`);
+    const result = response.data;
     // 解构出各个属性数组
     const { ids,authors, avatars, likes, pictures, titles } = result;
     // 遍历数组，构建每个对象并添加到数组中
@@ -83,6 +80,35 @@ const fetchData = async () => {
     console.error('Error fetching data:', error);
   }
 };
+
+const fetchFollowData = async () => {
+  try {
+    list.value=[]
+    // Simulated asynchronous database query
+    const response = await axios.get(`/api/follow_posts/${userId}`);
+    const result = response.data;
+    // const data = await fetch('http://123.60.90.34:3306/api/posts_follow/${userId}'); // Replace URL with your endpoint
+    // const result = await data.json();
+    // 解构出各个属性数组
+    const { ids,authors, avatars, likes, pictures, titles } = result;
+    // 遍历数组，构建每个对象并添加到数组中
+    for (let i = 0; i < titles.length; i++) {
+      const item = {
+        ids:ids[i],
+        pictures: pictures[i], // 使用对应索引的图片 URL 作为 src 属性
+        titles: titles[i], // 使用对应索引的标题属性
+        authors: authors[i], // 使用对应索引的作者属性
+        avatars: avatars[i], // 使用对应索引的头像属性
+        likes: likes[i] // 使用对应索引的点赞数属性
+      };
+      list.value.push(item);
+    }
+    // console.log(result);
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
+};
+
 onMounted(() => {
   fetchData(); // Call fetchData function when the component is mounted
 });

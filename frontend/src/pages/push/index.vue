@@ -139,6 +139,7 @@
 
     }
 
+
     .input_txt{
         position: relative;
         top: 100px;
@@ -225,7 +226,7 @@ export default {
         // },
 
         upclick_click(file, fileList) {
-            
+
             const client = new OSS({
                 region: "oss-cn-beijing",
                 accessKeyId: "LTAI5tR1c1uhFRfWxjq8BWT4",

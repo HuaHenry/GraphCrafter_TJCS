@@ -18,6 +18,7 @@
     "feather-icons": "^4.29.2",
     "hooper": "^0.3.4",
     "lwaterfall": "^1.0.6",
+    "naive-ui": "^2.38.2",
     "pinia": "^2.1.7",
     "pinia-plugin-persistedstate": "^3.2.0",
     "qs": "^6.12.1",
@@ -27,6 +28,7 @@
     "vue-scrollactive": "^0.9.3",
     "vue-slick-carousel": "^1.0.6",
     "vue-stick": "^1.0.7",
+    "vue-toastification": "^2.0.0-rc.5",
     "vue-waterfall-plugin-next": "^2.2.4",
     "vue3-plock": "^0.0.2",
     "vuex": "^4.1.0"

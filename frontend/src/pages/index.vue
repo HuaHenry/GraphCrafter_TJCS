@@ -2,7 +2,8 @@
   <div class="container">
     <div class="top">
       <header class="mask-paper">
-        <img src="https://graphcrafter.oss-cn-beijing.aliyuncs.com/LOGO.gif" style="width:20%;position: relative; top:10px; left:-50px; z-index: -1;"/>
+        <img src="https://graphcrafter.oss-cn-beijing.aliyuncs.com/LOGO.gif" class="logo" style="width:20%;position: relative; top:10px; left:-50px; z-index: -1;" @click="toDemo"/>
+          
         <div class="tool-box"></div>
         <div class="input-box">
           <input type="text" class="search-input" placeholder="搜索" />
@@ -22,20 +23,40 @@
               <House style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel">发现</span>
             </a>
           </li>
-          <li :class="{ 'active-channel': activeChannel === 'photoshop' }">
+          <li :class="{ 'active-channel': activeChannel === 'photoshop' || activeChannel === 'easy' || activeChannel === 'conversation' }">
             <a class="link-wrapper" @click="togglePhotoshop">
               <House style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel">修图</span>
             </a>
-            <!-- 子菜单 -->
-            <ul v-show="activeChannel === 'photoshop'" class="sub-menu">
-              <li @click="toConversation">
-                <House style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel">对话</span>
+          </li>
+
+          <ul v-if="activeChannel === 'photoshop' || activeChannel === 'easy' || activeChannel === 'conversation'" class="sub-menu">
+              <li :class="{ 'active-channel': activeChannel === ' conversation ' }" @click="toConversation">
+                <a class="link-wrapper">
+                  <House style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel">对话</span>
+                </a>
               </li>
-              <li @click="toEasy">
-                <House style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel">简单</span>
+              <li :class="{ 'active-channel': activeChannel === 'easy' }" @click="toEasy">
+                <a class="link-wrapper">
+                  <House style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel">简单</span>
+                </a>
               </li>
             </ul>
-          </li>
+          
+            <!-- <li v-if="activeChannel === 'photoshop'" :class="{ 'active-channel': activeChannel === 'photoshop' }">
+              <a class="link-wrapper" @click="toConversation">
+                <House style="width: 1em; height: 1em; margin-right: 8px" />
+                <span class="channel">对话</span>
+              </a>
+            </li>
+
+            <li v-if="activeChannel === 'photoshop'" :class="{ 'active-channel': activeChannel === 'photoshop' }">
+              <a class="link-wrapper" @click="toEasy">
+                <House style="width: 1em; height: 1em; margin-right: 8px" />
+                <span class="channel">简单</span>
+              </a>
+            </li> -->
+
+
           <li :class="{ 'active-channel': activeChannel === 'message' }">
             <a class="link-wrapper" @click="toMessage">
               <Bell style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel">消息</span>
@@ -105,6 +126,11 @@ import { useRouter } from "vue-router";
 import { ref } from "vue";
 import store from "../store/index";
 
+const toDemo = () => {
+  router.push({ name: 'Demo' });  // 确保这里的路由名称与你的routes配置中的主页名称相匹配
+  activeChannel.value = 'Demo';
+};
+
 const router = useRouter();
 
 const activeChannel = ref(null);
@@ -128,9 +154,11 @@ const toUser = () => {
 
 const toConversation = () => {
   router.push({ name: 'conversation' });
+  activeChannel.value = 'conversation';
 };
 const toEasy = () => {
   router.push({ name: 'easy1' });
+  activeChannel.value = 'easy';
 };
 
 const togglePhotoshop = () => {
@@ -144,42 +172,43 @@ const toggleMoreInfoState = () => {
   } else {
     div.style.visibility = 'hidden';
   }
-};
-
-const Logout = () => {
-  store.commit("setLoginState", false);
-  store.commit("setCurUserID", null);
-  router.push("/login");
-};
-
-store.commit("setLoginState", localStorage.getItem("user") ? true : false);
-store.commit("setCurUserID", localStorage.getItem("user") ? localStorage.getItem("user") : null);
+}
+function Logout(){
+  store.commit("setLoginState",false);
+  store.commit("setCurUserID",null);
+  localStorage.removeItem("user");
+  router.push("/");
+}
+// 保存到本地，这样不需要每次刷新都得登录
+store.commit("setLoginState",localStorage.getItem("user")?true:false);
+store.commit("setCurUserID",localStorage.getItem("user")?localStorage.getItem("user"):null);
 </script>
-
 
 <style lang="less" scoped>
 .sub-menu {
-  position: absolute;  /* 脱离文档流，按需定位 */
-  left: 0;  /* 与父级左对齐 */
-  top: 100%;  /* 紧贴一级菜单底部 */
-  padding-left: 20px;  /* 适当增加缩进以区分一级和二级菜单 */
-  width: 100%;  /* 宽度与一级菜单相同 */
-  background-color: #6d1f1f;  /* 背景色可调 */
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);  /* 可选的阴影效果 */
+  padding-left: 20px;  /* 保持适当的缩进 */
+  background-color: rgba(255, 255, 255, 0);
+  border-radius:  999px;;
+  margin-top: 0px;
+  min-height: 48px; 
+  
 }
 
 .channel-list > li {
-  position: relative;
+  position: relative;  /* 确保设置了定位上下文 */
 }
 
 .sub-menu li {
   padding: 8px 16px;  /* 子菜单项的内边距 */
   white-space: nowrap;  /* 防止文本换行 */
   cursor: pointer;
+  height: 40px;  /* Explicit height for each submenu item */
 }
 
 .sub-menu li:hover {
-  background-color: #e0e0e0;
+  background-color:  rgba(0, 0, 0, 0.03);
+  border-radius: 999px;
+  
 }
 
 .container {
@@ -210,7 +239,9 @@ store.commit("setCurUserID", localStorage.getItem("user") ? localStorage.getItem
       height: 72px;
       padding: 0 16px 0 24px;
       z-index: 10;
-
+      .logo {
+          cursor: pointer;  /* 设置鼠标为手形指针 */
+      }
       .tool-box {
         width: 24px;
         height: 70px;
@@ -330,6 +361,7 @@ store.commit("setCurUserID", localStorage.getItem("user") ? localStorage.getItem
         min-height: auto;
         -webkit-user-select: none;
         user-select: none;
+        
 
         .active-channel {
           background-color: rgba(0, 0, 0, 0.03);
@@ -359,6 +391,7 @@ store.commit("setCurUserID", localStorage.getItem("user") ? localStorage.getItem
           font-weight: 600;
           margin-left: 12px;
           color: #333;
+          white-space: nowrap;  /* 防止文本换行 */
         }
       }
 
@@ -471,6 +504,7 @@ store.commit("setCurUserID", localStorage.getItem("user") ? localStorage.getItem
           font-weight: 600;
           align-items: center;
           border-radius: 999px;
+          padding: 0 16px;
         }
       }
     }

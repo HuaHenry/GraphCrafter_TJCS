@@ -379,7 +379,7 @@ const submitComment = async () => {
     // const { ids,dates,contents,authors,avatars } = processed_data;
     com_content.value = '';
     ElMessage({ message: '评论发布成功！', type: 'success' });
-    
+    items.value.comments_num++;
     
   }catch(error){
     console.error('Error sending comment:', error);
