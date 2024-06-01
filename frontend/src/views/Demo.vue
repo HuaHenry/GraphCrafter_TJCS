@@ -4,7 +4,6 @@
     <header class="bg-white header root-demo">
       <div>
         <router-link to="/"
-          ><img src="https://graphcrafter.oss-cn-beijing.aliyuncs.com/LOGO.gif" alt="图匠" class="logo"
           ><img src="../assets/img/logo/LOGO2.gif" alt="图匠" class="logo" style="width:100%;position: relative; top:20px; left:-50px; z-index: -1;"
         /></router-link>
       </div>
@@ -32,11 +31,9 @@
           </div>
           <div class="row">
             <div class="col-lg-4 col-md-4 col-sm-6 col-12" v-for="(item, i) in menuContent" :key="i">
-              <div class="demo-item">
-                <router-link :to="item.href">
+              <div class="demo-item" @click="handleLinkClick(item, $event)">
                   <img :src="item.src" alt="Main Demo" class="image-shadow"/>
                   <span class="title-style">{{ item.title }}</span>
-                </router-link>
               </div>
             </div>
           </div>
@@ -84,6 +81,7 @@
   import "hooper/dist/hooper.css";
   import '../assets/scss/style.scss'
   import "../assets/css/home-style.css";
+  import {ElMessage} from "element-plus";
   export default {
     data() {
       return {
@@ -274,6 +272,17 @@
       iconSvg(icon) {
         return feather.icons[icon].toSvg();
       },
+      handleLinkClick(item, event) {
+        if (!this.isLoggedIn) {
+          event.preventDefault(); // 阻止链接跳转
+          ElMessage.error({
+            message: "请先登录！",
+            duration: 1500
+          });
+        } else {
+          this.$router.push(item.href); // 手动执行路由跳转
+        }
+      }
     },
   };
 </script>
