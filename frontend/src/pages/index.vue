@@ -1,8 +1,7 @@
 <template>
   <div class="container">
     <div class="top">
-      <header class="mask-paper" >
-        <!-- <a style="display: flex; z-index: -100;"></a> -->
+      <header class="mask-paper">
         <img src="https://graphcrafter.oss-cn-beijing.aliyuncs.com/LOGO.gif" class="logo" style="width:20%;position: relative; top:10px; left:-50px; z-index: -1;" @click="toDemo"/>
           
         <div class="tool-box"></div>
@@ -18,34 +17,46 @@
     </div>
     <div class="main">
       <div class="side-bar" style="z-index:10">
-        <!-- <ul class="channel-list">
-          <li>
-            <a class="link-wrapper"
-              ><House style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel" @click="toDashboard()"
-                >发现</span>
-            </a>
-          </li>
-         
-          <li class="active-channel"><Bell style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel" @click="toMessage()">
-              消息</span>
-          </li>
-          <li>
-            <CirclePlus style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel" @click="toPush()">
-              发布</span
-            >
-          </li>
-          <li>
-            <User style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel" @click="toUser()">
-              个人</span
-            >
-          </li>
-        </ul> -->
         <ul class="channel-list">
           <li :class="{ 'active-channel': activeChannel === 'dashboard' }">
             <a class="link-wrapper" @click="toDashboard">
               <House style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel">发现</span>
             </a>
           </li>
+          <li :class="{ 'active-channel': activeChannel === 'photoshop' || activeChannel === 'easy' || activeChannel === 'conversation' }">
+            <a class="link-wrapper" @click="togglePhotoshop">
+              <House style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel">修图</span>
+            </a>
+          </li>
+
+          <ul v-if="activeChannel === 'photoshop' || activeChannel === 'easy' || activeChannel === 'conversation'" class="sub-menu">
+              <li :class="{ 'active-channel': activeChannel === ' conversation ' }" @click="toConversation">
+                <a class="link-wrapper">
+                  <House style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel">对话</span>
+                </a>
+              </li>
+              <li :class="{ 'active-channel': activeChannel === 'easy' }" @click="toEasy">
+                <a class="link-wrapper">
+                  <House style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel">简单</span>
+                </a>
+              </li>
+            </ul>
+          
+            <!-- <li v-if="activeChannel === 'photoshop'" :class="{ 'active-channel': activeChannel === 'photoshop' }">
+              <a class="link-wrapper" @click="toConversation">
+                <House style="width: 1em; height: 1em; margin-right: 8px" />
+                <span class="channel">对话</span>
+              </a>
+            </li>
+
+            <li v-if="activeChannel === 'photoshop'" :class="{ 'active-channel': activeChannel === 'photoshop' }">
+              <a class="link-wrapper" @click="toEasy">
+                <House style="width: 1em; height: 1em; margin-right: 8px" />
+                <span class="channel">简单</span>
+              </a>
+            </li> -->
+
+
           <li :class="{ 'active-channel': activeChannel === 'message' }">
             <a class="link-wrapper" @click="toMessage">
               <Bell style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel">消息</span>
@@ -62,9 +73,8 @@
             </a>
           </li>
         </ul>
-
         <div class="information-container">
-          <div class="information-pad" >
+          <div class="information-pad">
             <div class="container" id="more-info" style="visibility: hidden">
               <div>
                 <div>
@@ -78,21 +88,8 @@
                   </div>
                   <div class="divider"></div>
                 </div>
-
                 <div>
                   <div class="group-wrapper">
-<!--                    <div class="group-header">设置</div>-->
-<!--                    <div class="menu-item hover-effect">-->
-<!--                      <span>深色模式</span>-->
-<!--                      <div class="multistage-toggle component">-->
-<!--                        <button class="toggle-item active">-->
-<!--                          <div class="icon-wrapper"><Sunny style="width: 1em; height: 1em" /></div>-->
-<!--                        </button>-->
-<!--                        <button class="toggle-item">-->
-<!--                          <div class="icon-wrapper"><Moon style="width: 1em; height: 1em" /></div>-->
-<!--                        </button>-->
-<!--                      </div>-->
-<!--                    </div>-->
                     <div class="menu-item hover-effect">
                       <span @click="Logout">退出登录</span>
                     </div>
@@ -101,9 +98,9 @@
               </div>
             </div>
           </div>
-
           <div class="information-wrapper">
-            <More style="width: 1em; height: 1em; margin-right: 8px" @click="toggleMoreInfoState" /> <span class="channel"  @click="toggleMoreInfoState"> 更多</span>
+            <More style="width: 1em; height: 1em; margin-right: 8px" @click="toggleMoreInfoState" />
+            <span class="channel" @click="toggleMoreInfoState"> 更多</span>
           </div>
         </div>
       </div>
@@ -111,25 +108,21 @@
         <router-view />
       </div>
     </div>
-
   </div>
 </template>
 
 <script lang="ts" setup>
 import {
   Search,
-  Sunny,
-  Moon,
   Close,
   House,
-  Star,
   Bell,
   User,
   ArrowRight,
   More,
   CirclePlus,
 } from "@element-plus/icons-vue";
-import { useRouter,useRoute} from "vue-router";
+import { useRouter } from "vue-router";
 import { ref } from "vue";
 import store from "../store/index";
 
@@ -140,8 +133,7 @@ const toDemo = () => {
 
 const router = useRouter();
 
-const route = useRoute();
-const activeChannel = ref(route.name);  // Set initial active channel based on route name
+const activeChannel = ref(null);
 
 const toDashboard = () => {
   router.push({ name: 'dashboard' });
@@ -160,35 +152,21 @@ const toUser = () => {
   activeChannel.value = 'user';
 };
 
-const c = ref(true);
-
-// const toDashboard = () => {
-//   router.push({ path: "/dashboard" });
-// };
-
-// const toTrend = () => {
-//   router.push({ path: "/followTrend" });
-// };
-
-// const toMessage = () => {
-//   router.push({ path: "/message" });
-// };
-
-// const toUser = () => {
-//   router.push({ path: "/user" });
-// };
-// const toPush = () => {
-//   router.push({ path: "/push" });
-// };
-
-const close = (val: boolean) => {
-  console.log(val);
-  c.value = val;
+const toConversation = () => {
+  router.push({ name: 'conversation' });
+  activeChannel.value = 'conversation';
+};
+const toEasy = () => {
+  router.push({ name: 'easy1' });
+  activeChannel.value = 'easy';
 };
 
-function toggleMoreInfoState() {
+const togglePhotoshop = () => {
+  activeChannel.value = activeChannel.value === 'photoshop' ? null : 'photoshop';
+};
+
+const toggleMoreInfoState = () => {
   let div = document.getElementById('more-info');
-  console.log(div);
   if (div.style.visibility === 'hidden') {
     div.style.visibility = 'visible';
   } else {
@@ -207,6 +185,32 @@ store.commit("setCurUserID",localStorage.getItem("user")?localStorage.getItem("u
 </script>
 
 <style lang="less" scoped>
+.sub-menu {
+  padding-left: 20px;  /* 保持适当的缩进 */
+  background-color: rgba(255, 255, 255, 0);
+  border-radius:  999px;;
+  margin-top: 0px;
+  min-height: 48px; 
+  
+}
+
+.channel-list > li {
+  position: relative;  /* 确保设置了定位上下文 */
+}
+
+.sub-menu li {
+  padding: 8px 16px;  /* 子菜单项的内边距 */
+  white-space: nowrap;  /* 防止文本换行 */
+  cursor: pointer;
+  height: 40px;  /* Explicit height for each submenu item */
+}
+
+.sub-menu li:hover {
+  background-color:  rgba(0, 0, 0, 0.03);
+  border-radius: 999px;
+  
+}
+
 .container {
   max-width: 1728px;
   background-color: #fff;
@@ -349,10 +353,15 @@ store.commit("setCurUserID",localStorage.getItem("user")?localStorage.getItem("u
       position: fixed;
       overflow: visible;
 
+      .channel-list > li {
+        position: relative;  /* Ensuring that the positioning context is set */
+      }
+
       .channel-list {
         min-height: auto;
         -webkit-user-select: none;
         user-select: none;
+        
 
         .active-channel {
           background-color: rgba(0, 0, 0, 0.03);
@@ -382,6 +391,7 @@ store.commit("setCurUserID",localStorage.getItem("user")?localStorage.getItem("u
           font-weight: 600;
           margin-left: 12px;
           color: #333;
+          white-space: nowrap;  /* 防止文本换行 */
         }
       }
 
@@ -449,7 +459,7 @@ store.commit("setCurUserID",localStorage.getItem("user")?localStorage.getItem("u
                 .multistage-toggle {
                   position: relative;
                   background: rgba(0, 0, 0, 0.03);
-                  display: flex();
+                  display: flex;
                   padding: 2px;
                   border-radius: 999px;
                   cursor: pointer;
@@ -494,6 +504,7 @@ store.commit("setCurUserID",localStorage.getItem("user")?localStorage.getItem("u
           font-weight: 600;
           align-items: center;
           border-radius: 999px;
+          padding: 0 16px;
         }
       }
     }
