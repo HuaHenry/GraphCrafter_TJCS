@@ -1417,6 +1417,7 @@ def postnotes():
 
 # 后端调用修图指令
 # 参数：img_url(原图URL) + img_select(对应的模板url，用于寻找prompt)
+# 本地调试请注释该函数！！！！！！！
 @app.route('/api/call_P2P', methods=['GET', 'POST'])
 def call_P2P():
     img_old = request.json.get('img_url')
@@ -1424,7 +1425,7 @@ def call_P2P():
     user_id = request.json.get('userId')
     # 查询Picture数据表，找到对应的prompt
     prompt = Picture.query.filter_by(id=img_select).first().prompt
-    if prompt is None:
+    if prompt is None:      
         print("prompt is None")
         return jsonify({'img': 'Prompt not found'})
     # 调用修图指令
