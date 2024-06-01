@@ -261,6 +261,13 @@ const limitCountImg=1;
 const imgname_tmp = ref('');
 const fileList = ref([]);
 const current_pic = ref();
+const client = new OSS({
+      region: "oss-cn-beijing",
+      accessKeyId: "LTAI5tR1c1uhFRfWxjq8BWT4",
+      accessKeySecret: "BdN5OIEdet7IO6KWOq7TJiivHOsC5B",
+      bucket: "graphcrafter",
+  });
+
 
 //=============================================================================
 // 一键导入模板
@@ -307,10 +314,10 @@ const putObject = async (data,that,file) => {
         //存储图片的url至本地消息中
         const imgURL = "https://graphcrafter.oss-cn-beijing.aliyuncs.com/" + imgName;
         console.log(imgURL);
-        that.push_fileList.push(imgURL);
-        console.log(that.push_fileList);
-        that.imgname_tmp = imgURL;
-        console.log("imgname_tmp_in", that.imgname_tmp)
+        push_fileList.value.push(imgURL);
+        console.log(push_fileList.value);
+        imgname_tmp.value = imgURL;
+        console.log("imgname_tmp_in", imgname_tmp.value)
         file.name = imgURL;
     } catch (e) {
         console.log(e);
@@ -322,13 +329,7 @@ const fileToBlob = (file) => {
 }
 
 const upclick_click = (file, fileList) => {
-  const client = new OSS({
-      region: "oss-cn-beijing",
-      accessKeyId: "LTAI5tR1c1uhFRfWxjq8BWT4",
-      accessKeySecret: "BdN5OIEdet7IO6KWOq7TJiivHOsC5B",
-      bucket: "graphcrafter",
-  });
-
+  
   console.log("upload image ...");
 
   const arr = Array.from(Object.entries(file));
@@ -531,6 +532,11 @@ const submitComment = async () => {
   try {
     const post_id = route.query.id;
     console.log(post_id);
+    console.log(userId);
+    if(userId==null){
+      ElMessage.error('请先登录！');
+      return;
+    }
     const response = await axios.post('/api/submit_comment', {
       content: com_content.value,
       postId: post_id,
