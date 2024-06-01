@@ -44,6 +44,7 @@ import { Search } from "@element-plus/icons-vue";
 import { LazyImg, Waterfall } from "vue-waterfall-plugin-next";
 import "vue-waterfall-plugin-next/dist/style.css";
 import { useRouter } from "vue-router";
+import { ElMessage } from 'element-plus';
 import store from "../../store/index";
 import axios from "axios";
 import { ref , onMounted } from "vue";
@@ -106,6 +107,10 @@ const fetchFollowData = async () => {
     // console.log(result);
   } catch (error) {
     console.error('Error fetching data:', error);
+    ElMessage.error({
+      message: "请先登陆！",
+      duration: 1500 // Set the duration to 3000 milliseconds (3 seconds)
+    });
   }
 };
 
