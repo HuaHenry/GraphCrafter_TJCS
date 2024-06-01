@@ -10,7 +10,9 @@ from sqlalchemy.orm import relationship
 from flask_socketio import SocketIO, emit, join_room
 from datetime import datetime
 
-# 后端上传阿里云图床
+
+
+# 后端上传阿里云图床    
 import oss2
 import os
 from oss2.credentials import EnvironmentVariableCredentialsProvider
@@ -1424,6 +1426,9 @@ def call_P2P():
     img_select = request.json.get('img_select')
     user_id = request.json.get('userId')
     # 查询Picture数据表，找到对应的prompt
+    pic_tmp = Picture(id=img_select, prompt='turn it yellow')
+    db.session.add(pic_tmp)
+    db.session.commit()
     prompt = Picture.query.filter_by(id=img_select).first().prompt
     if prompt is None:      
         print("prompt is None")

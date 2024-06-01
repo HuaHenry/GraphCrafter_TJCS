@@ -71,6 +71,7 @@
                         >
                         <el-form-item>
                         <el-upload
+                            drag
                             :class="{uoloadSty:showBtnDealImg,disUoloadSty:noneBtnImg}"
                             ref="upload"
                             action=""
@@ -98,6 +99,7 @@
                       </el-form>
                     </div>
                     <el-button type="primary" @click="submitForm('ruleF')" id="submit_button">确认图片</el-button>
+                    <img id="returnPic" src="" alt="" style="width: 100%;height: 100%" />
                     <!-- <input type="file" @change="handleFileUpload"/> -->
                   </div>
                 </div>
@@ -261,6 +263,13 @@ const limitCountImg=1;
 const imgname_tmp = ref('');
 const fileList = ref([]);
 const current_pic = ref();
+const client = new OSS({
+      region: "oss-cn-beijing",
+      accessKeyId: "LTAI5tR1c1uhFRfWxjq8BWT4",
+      accessKeySecret: "BdN5OIEdet7IO6KWOq7TJiivHOsC5B",
+      bucket: "graphcrafter",
+  });
+
 
 //=============================================================================
 // 一键导入模板
@@ -307,10 +316,10 @@ const putObject = async (data,that,file) => {
         //存储图片的url至本地消息中
         const imgURL = "https://graphcrafter.oss-cn-beijing.aliyuncs.com/" + imgName;
         console.log(imgURL);
-        that.push_fileList.push(imgURL);
-        console.log(that.push_fileList);
-        that.imgname_tmp = imgURL;
-        console.log("imgname_tmp_in", that.imgname_tmp)
+        push_fileList.value.push(imgURL);
+        console.log(push_fileList.value);
+        imgname_tmp.value = imgURL;
+        console.log("imgname_tmp_in", imgname_tmp.value)
         file.name = imgURL;
     } catch (e) {
         console.log(e);
@@ -322,13 +331,7 @@ const fileToBlob = (file) => {
 }
 
 const upclick_click = (file, fileList) => {
-  const client = new OSS({
-      region: "oss-cn-beijing",
-      accessKeyId: "LTAI5tR1c1uhFRfWxjq8BWT4",
-      accessKeySecret: "BdN5OIEdet7IO6KWOq7TJiivHOsC5B",
-      bucket: "graphcrafter",
-  });
-
+  
   console.log("upload image ...");
 
   const arr = Array.from(Object.entries(file));
@@ -343,17 +346,36 @@ const upclick_click = (file, fileList) => {
 const handleCarouselChange = (index) => {
 
   // console.log('handleCarouselChange called');
-  // console.log('当前显示的图片是：', ImageList.value[index]);
+  console.log('当前显示的图片是：', ImageList.value[index]);
   current_pic.value = ImageList.value[index];
 };
 
-const submitForm = () => {
+const submitForm = async () => {
   //获取内容
   try {
     //待写
     //当前图片链接：current_pic.value
     //传到后端，查找prompt，调用模型返回结果
-    
+    if(userId==null){
+      ElMessage.error('请先登录！');
+      return;
+    }
+    if(ImageList.value.length==1){
+      current_pic.value=ImageList.value[0];
+    }
+    console.log("img_url:",push_fileList.value[0]);
+    console.log("current_pic:",current_pic.value);
+    console.log("user_id:",userId);
+
+    const response = await axios.post('/api/call_P2P', {
+      img_url:push_fileList.value[0],
+      img_select:current_pic.value,
+      user_id:userId
+      // date: date.toLocaleString()
+    });
+    console.log(response);
+    //在页面上显示返回的图片
+    document.getElementById("returnPic").src = response.data.img;
   } catch(error) {
     console.error('Error adding like:', error);
   }  
@@ -531,6 +553,11 @@ const submitComment = async () => {
   try {
     const post_id = route.query.id;
     console.log(post_id);
+    console.log(userId);
+    if(userId==null){
+      ElMessage.error('请先登录！');
+      return;
+    }
     const response = await axios.post('/api/submit_comment', {
       content: com_content.value,
       postId: post_id,
@@ -654,6 +681,13 @@ const goBack = () => {
 
 
 <style lang="less" scoped>
+
+// .uoloadSty .el-upload--picture-card{
+//             width:200px;
+//             height:200px;
+//             line-height:110px;
+//         }
+
 .modal {
   position: fixed;
   z-index: 10;
@@ -673,6 +707,31 @@ const goBack = () => {
   border: 1px solid #888;
   width: 40%;
   border-radius: 20px;
+
+//   .upload_con{
+//      .uoloadSty .el-upload--picture-card{
+//             width:500px;
+//             height:500px;
+//             // line-height:110px;
+//         }
+//   }
+
+/deep/ .el-upload {
+    width:350PX;
+    height: 400PX;
+}
+
+.el-icon-plus:before{
+   content:'\e7c3'
+}
+
+.el-icon-plus{
+   font-size: 100px;
+   height:80%;
+}
+
+  
+
 }
 
 .close {

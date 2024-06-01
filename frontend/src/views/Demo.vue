@@ -4,7 +4,7 @@
     <header class="bg-white header root-demo">
       <div>
         <router-link to="/"
-          ><img src="../assets/img/logo/LOGO2.gif" alt="图匠" class="logo"
+          ><img src="https://graphcrafter.oss-cn-beijing.aliyuncs.com/LOGO.gif" alt="图匠" class="logo"
         /></router-link>
       </div>
 
@@ -628,7 +628,7 @@ img.image-shadow {
   }
 
   .logo {
-  width: 200px; /* 调整宽度 */
-  height: auto; /* 保持宽高比 */
+  width: 500px; /* 调整宽度 */
+//   height: 300px; /* 保持宽高比 */
 }
 </style>
