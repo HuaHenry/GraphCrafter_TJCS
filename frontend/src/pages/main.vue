@@ -101,23 +101,15 @@
                     <!-- <input type="file" @change="handleFileUpload"/> -->
                   </div>
                 </div>
-                <!-- <el-dialog :visible.sync="dialogVisible" title="Upload Image" width="30%" style="z-index:10"> -->
-                  <!-- <el-upload
-                    action="/api/upload_image"
-                    :on-success="handleUploadSuccess"
-                    :on-error="handleUploadError"
-                    :before-upload="beforeUpload"
-                    :auto-upload="false"
-                    :show-file-list="false"
-                  >
-                    <el-button slot="trigger" size="small" type="primary">Select Image</el-button>
-                    <div slot="tip" class="el-upload__tip">Only JPG/PNG files are allowed</div>
-                  </el-upload>
+                <!-- 一键导入显示结果图 -->
+                <el-dialog :visible.sync="processedVisible" width="50%">
+                  <img :src="processedImageUrl" alt="Image" style="width: 100%; height: auto;">
                   <span slot="footer" class="dialog-footer">
-                    <el-button @click="dialogVisible = false">Cancel</el-button>
-                    <el-button type="primary" @click="uploadImage">Upload</el-button>
-                  </span> -->
-                <!-- </el-dialog> -->
+                    <el-button @click="dialogVisible = false">取消</el-button>
+                    <el-button type="primary" @click="confirmImage">确认</el-button>
+                  </span>
+                </el-dialog>
+                
               </div>
               <div class="divider interaction-divider"></div>
 
@@ -212,6 +204,7 @@ import { ElMessage,ElMessageBox } from 'element-plus';
 import store from "../store/index";
 import axios from 'axios';
 import "https://gosspublic.alicdn.com/aliyun-oss-sdk-6.18.0.min.js";
+import { ElLoading } from 'element-plus';
 
 //=============================================================================
 // 变量定义
@@ -266,7 +259,9 @@ const client = new OSS({
       accessKeyId: "LTAI5tR1c1uhFRfWxjq8BWT4",
       accessKeySecret: "BdN5OIEdet7IO6KWOq7TJiivHOsC5B",
       bucket: "graphcrafter",
-  });
+});
+const processedVisible = ref(true);
+const processedImageUrl = ref('');
 
 
 //=============================================================================
@@ -365,13 +360,21 @@ const submitForm = async () => {
     console.log("current_pic:",current_pic.value);
     console.log("user_id:",userId);
 
+     // 开始加载动画
+     const loading = ElLoading.service({ fullscreen: true });
+
     const response = await axios.post('/api/call_P2P', {
       img_url:push_fileList.value[0],
       img_select:current_pic.value,
       user_id:userId
       // date: date.toLocaleString()
     });
+    // 结束加载动画
+    loading.close();
     console.log(response);
+    processedImageUrl.value = response.data.img;
+    
+    dialogVisible.value = true;
     
   } catch(error) {
     console.error('Error adding like:', error);
@@ -422,6 +425,7 @@ const fetchPost = async () => {
       collects_num: collects_num
     };
     console.log("WTFFFFFF",items.value.author_id)
+    current_pic.value = ImageList.value[0];
 
   }catch(error){
     console.error('Error fetching data:', error);
