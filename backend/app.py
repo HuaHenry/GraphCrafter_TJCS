@@ -6,6 +6,7 @@ from flask_cors import CORS, cross_origin
 from flask_sqlalchemy import SQLAlchemy  # 导入扩展类
 from sqlalchemy import func, cast, String, desc
 from sqlalchemy.orm import relationship
+from flask_bcrypt import Bcrypt     # 密码加密
 
 from flask_socketio import SocketIO, emit, join_room
 from datetime import datetime
@@ -14,6 +15,16 @@ from datetime import datetime
 import oss2
 import os
 from oss2.credentials import EnvironmentVariableCredentialsProvider
+
+# 简单图像处理
+import io
+import numpy as np
+import cv2
+from simple_image_process.image_filtering import show_filtering
+from simple_image_process.image_outline import show_outline
+from simple_image_process.image_transformation import show_transformation
+from simple_image_process.image_color import show_hsv
+from simple_image_process.image_enhancement import show_enhancement
 
 # 防止通信报错 by zyp
 # import locale
@@ -32,6 +43,16 @@ socketio = SocketIO(app, cors_allowed_origins="http://localhost:5173")
 app.config['SQLALCHEMY_DATABASE_URI'] = prefix + os.path.join(app.root_path, 'data.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # 关闭对模型修改的监控
 db = SQLAlchemy(app)  # 初始化扩展，传入程序实例 app
+
+# 阿里云OSS相关信息
+OSS_ACCESS_KEY_ID = 'LTAI5tR1c1uhFRfWxjq8BWT4'
+OSS_ACCESS_KEY_SECRET = 'BdN5OIEdet7IO6KWOq7TJiivHOsC5B'
+OSS_ENDPOINT = 'oss-cn-beijing.aliyuncs.com'
+OSS_BUCKET_NAME = 'graphcrafter'
+auth = oss2.Auth(OSS_ACCESS_KEY_ID, OSS_ACCESS_KEY_SECRET)
+bucket = oss2.Bucket(auth, OSS_ENDPOINT, OSS_BUCKET_NAME)
+bcrypt = Bcrypt(app)
+
 
 
 class User(db.Model):  # 用户
@@ -135,6 +156,14 @@ class Picture(db.Model):  # 图片
     id = db.Column(db.String(60), primary_key=True)  # 主键，即路由
     prompt = db.Column(db.Text)     # 修图的prompt，没有修图时为空
 
+
+class Opencv(db.Model):
+    id = db.Column(db.Integer, primary_key=True)  # 主键
+    description = db.Column(db.Text)  # 正文
+    image = db.Column(db.String(60)) 
+    type = db.Column(db.String(10))
+    code = db.Column(db.Text)  #代码
+
 # app = Flask(__name__)
 app.config.from_object(__name__)
 
@@ -170,18 +199,20 @@ def login():
     password = data.get('password')
     user_type = data.get('userType')
     print(username,password,user_type)
-    # 查询用户
-    user = User.query.filter_by(name=username, password=password).first()
 
-    if user:
+    # 查询用户（仅根据用户名查询）
+    user = User.query.filter_by(name=username).first()
+
+    # 加密密码匹配
+    if user and bcrypt.check_password_hash(user.password, password):
         if user_type == 'admin' and not user.is_admin:
-            return jsonify({'status': 'error', 'message': 'Unauthorized access for admin'}), 401
-        if user_type == 'premium' and not user.is_premium:
-            return jsonify({'status': 'error', 'message': 'Unauthorized access for premium user'}), 401
+            return jsonify({'status': 'error', 'message': 'Unauthorized access for admin'}), 402
         return jsonify({'status': 'success', 'message': 'Login successful',"user_id":user.id}), 200
     else:
         return jsonify({'status': 'error', 'message': 'Invalid username or password'}), 401
 
+
+# 注册
 @app.route('/register', methods=['POST', 'GET'])
 @cross_origin(supports_credentials=True)
 def register():
@@ -195,11 +226,17 @@ def register():
             email = request.form['email']
             user_type = request.form['userType']
             invite_code = None
-            if user_type == "admin":
+            if user_type == "premium":
                 invite_code = request.form['inviteCode']
+                if invite_code not in ["kjk123456", "kjk654321", "kjk666888"]:
+                    print("invalid")
+                    return "error: invite code invalid", 401
+                
+            # 加密密码
+            hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
             default_avatar_url = 'http://graphcrafter.oss-cn-beijing.aliyuncs.com/avatars/1-default.webp'
-            user_now = User(id=id, name=username, password=password, email=email, is_premium=(user_type == 'premium'),photo=default_avatar_url)
+            user_now = User(id=id, name=username, password=hashed_password, email=email, is_premium=(user_type == 'premium'),photo=default_avatar_url)
             # 用户名已占用
             users = User.query.filter_by(name=username).all()
             if users:
@@ -213,6 +250,49 @@ def register():
         # 捕获异常并记录错误信息
         app.logger.error(f"Error during registration: {e}")
         return "Internal Server Error", 500
+
+
+# @app.route('/api/opencvimages')
+# def get_images():
+    
+#     images = Opencv.query.all()
+#     response = [{
+#         'id': img.id,
+#         'description': img.description,
+#         'image': img.image,
+#         'code': img.code,
+#     } for img in images]
+#     return jsonify(response)
+
+
+@app.route('/api/opencvimages', methods=['GET'])
+def get_images():
+    opencv_imgs = Opencv.query.all()
+    print(opencv_imgs)
+
+    ids = []
+    pictures = []
+    descriptions = []
+    codes = []
+    types = []
+
+    for opencv_img in opencv_imgs:
+        ids.append(opencv_img.id)
+        pictures.append(opencv_img.image)
+        descriptions.append(opencv_img.description)
+        codes.append(opencv_img.code)
+        types.append(opencv_img.type)
+
+    response_json = jsonify({
+        'ids': ids,
+        'pictures': pictures,
+        'descriptions': descriptions,
+        'codes': codes,
+        'types': types,
+    })
+
+    return response_json
+
 
 
 # 示例用户资料
@@ -1418,7 +1498,7 @@ def postnotes():
 # 后端调用修图指令
 # 参数：img_url(原图URL) + img_select(对应的模板url，用于寻找prompt)
 # 本地调试请注释该函数！！！！！！！
-@app.route('/api/call_P2P', methods=['GET', 'POST'])
+'''@app.route('/api/call_P2P', methods=['GET', 'POST'])
 def call_P2P():
     img_old = request.json.get('img_url')
     img_select = request.json.get('img_select')
@@ -1452,7 +1532,7 @@ def call_P2P():
         return jsonify({'img': "https://graphcrafter.oss-cn-beijing.aliyuncs.com/"+ bucket_url})
     
     return jsonify({'img': None})
-
+'''
 # 删除帖子的接口
 @app.route('/api/delete-post/<int:post_id>', methods=['DELETE'])
 def delete_post(post_id):
@@ -1473,6 +1553,61 @@ def delete_post(post_id):
 
     return jsonify({'message': 'Post deleted successfully'}), 200
 
+# 基本图像处理
+@app.route('/api/simple-image-process', methods=['POST'])
+def process_image_simple():
+    print(request.files)
+    print("form:",request.form)
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file uploaded'}), 400
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({'error': 'No selected file'}), 400
+
+    # 读取参数
+    user_id = request.form.get('user_id')
+    process_category = request.form.get('process_category') # 处理的类别 eg.图像色彩，图像变换...
+    process_type = request.form.get('process_type') #具体的处理类型 eg.色调
+
+    if not user_id or not process_category or not process_type:
+        return jsonify({'error': 'Missing processing parameters'}), 400
+
+    # 读取图片文件
+    file_stream = io.BytesIO(file.read())
+    file_bytes = np.frombuffer(file_stream.read(), np.uint8)
+    origin = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
+    height, width, channels = origin.shape
+    img_size = [width,height]
+    print("image size:",height,width)
+
+    if origin is None:
+        return jsonify({'error': 'Failed to read the uploaded image'}), 500
+
+    # 进行图像处理
+    # 处理后的图片暂存为tmp.png
+    if process_category == "color":
+        show_hsv(origin,process_type,img_size)
+    elif process_category == "transform":
+        show_transformation(origin,process_type,img_size)
+    elif process_category == "filter":
+        show_filtering(origin,process_type,img_size)
+    elif process_category == "outline":
+        show_outline(origin,process_type,img_size)
+    elif process_category == "enhance":
+        show_enhancement(origin,process_type,img_size)
+    else:
+        return jsonify({'error': 'Process category chosen does not exits'}), 400
+
+    # 上传到阿里云OSS
+    tmp_file_path = './img_tmp/tmp.png'
+    current_time = datetime.now().strftime('%Y%m%d%H%M%S')
+    oss_file_path = f'simple_image_process/{user_id}-{current_time}.png'
+    with open(tmp_file_path, 'rb') as file:
+        bucket.put_object(oss_file_path, file)
+    img_url = f'http://{OSS_BUCKET_NAME}.{OSS_ENDPOINT}/{oss_file_path}'
+    print(img_url)
+
+    return jsonify({'imgUrl': img_url})
 
 if __name__ == '__main__':
     config = dict(

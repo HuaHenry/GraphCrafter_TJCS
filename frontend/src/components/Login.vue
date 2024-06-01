@@ -12,8 +12,7 @@
       </div>
       <div class="form-group user-type">
         <el-radio-group v-model="userType" class="ml-4">
-          <el-radio value="normal" size="large">Normal User</el-radio>
-          <el-radio value="premium" size="large">Premium User</el-radio>
+          <el-radio value="user" size="large">User</el-radio>
           <el-radio value="admin" size="large">Admin</el-radio>
         </el-radio-group>
       </div>
@@ -30,13 +29,14 @@ import axios from 'axios';
 import qs from 'qs';
 import {mapActions } from 'vuex';
 import store from "../store/index";
+import { ElMessage } from 'element-plus';
 
 export default {
   data() {
     return {
       username: '',
       password: '',
-      userType: 'normal' // Default user type is normal
+      userType: 'user' // Default user type is user
     };
   },
   methods: {
@@ -57,6 +57,10 @@ export default {
           console.log("登录成功");
           store.commit("setCurUserID",res.data.user_id);
           localStorage.setItem("user",res.data.user_id);
+          ElMessage.success({
+            message: "登录成功",
+            duration: 1500
+          });
           if(this.userType === "admin"){
             this.$router.push("/manager");
           }
@@ -70,10 +74,36 @@ export default {
               return;
         }
         })
-        .catch(() => {
-          console.log("登录失败");
-        })
-        },
+        .catch(error => {
+          if (error.response)
+          {
+            if (error.response.status === 401) {
+              ElMessage.error({
+                message: "用户名或密码错误",
+                duration: 1500
+              });
+            }
+            else if (error.response.status === 402){
+              ElMessage.error({
+                message: "您不是系统管理员",
+                duration: 1500
+              });
+            }
+            else {
+              ElMessage.error({
+                message: "登录失败：未知错误",
+                duration: 1500
+              });
+            }
+          }
+          else {
+            ElMessage.error({
+              message: "登录失败：数据库密码未更新，待解决",
+              duration: 1500
+            });
+          }
+        });
+    },
   }
 };
 </script>
