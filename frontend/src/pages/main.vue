@@ -57,7 +57,7 @@
                   <span class="date">{{ items.date }}</span>
                 </div>
                 <div class="buttons" style="display: flex; justify-content: center; margin-top: 2ch">
-                  <el-button @click="showModal = true" type="danger" size="medium" style="width: 100%; height:40px; border-radius: 10px;">一键使用模板</el-button>
+                  <el-button @click=loadButtonClick type="danger" size="medium" style="width: 100%; height:40px; border-radius: 10px;">一键使用模板</el-button>
                 </div>
                 <!-- 一键导入上传图 -->
                 <div v-if="showModal" class="modal">
@@ -83,8 +83,12 @@
                             :limit="1"
                             :file-list="fileList"
                             :auto-upload="false"
+
                         >
-                          <i class="el-icon-plus"></i>
+                          <!-- <i class="el-icon-plus">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" ><path fill="currentColor" d="M273.536 736H800a64 64 0 0 0 64-64V256a64 64 0 0 0-64-64H224a64 64 0 0 0-64 64v570.88zM296 800 147.968 918.4A32 32 0 0 1 96 893.44V256a128 128 0 0 1 128-128h576a128 128 0 0 1 128 128v416a128 128 0 0 1-128 128z"></path></svg>
+                          </i> -->
+                          <svg style="width:40px;color:gray" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" ><path fill="currentColor" d="M512 128a384 384 0 1 0 0 768 384 384 0 0 0 0-768m0-64a448 448 0 1 1 0 896 448 448 0 0 1 0-896"></path><path fill="currentColor" d="M640 288q64 0 64 64t-64 64q-64 0-64-64t64-64M214.656 790.656l-45.312-45.312 185.664-185.6a96 96 0 0 1 123.712-10.24l138.24 98.688a32 32 0 0 0 39.872-2.176L906.688 422.4l42.624 47.744L699.52 693.696a96 96 0 0 1-119.808 6.592l-138.24-98.752a32 32 0 0 0-41.152 3.456l-185.664 185.6z"></path></svg>
                           <template #tip>
                             <!-- <div style="font-size: 12px;color: #919191;">
                               单次限制上传一张图片
@@ -98,26 +102,19 @@
                       </el-form>
                     </div>
                     <el-button type="primary" @click="submitForm('ruleF')" id="submit_button">确认图片</el-button>
+                    <img id="returnPic" src="" alt="" style="width: 100%;height: 100%" />
                     <!-- <input type="file" @change="handleFileUpload"/> -->
                   </div>
                 </div>
-                <!-- <el-dialog :visible.sync="dialogVisible" title="Upload Image" width="30%" style="z-index:10"> -->
-                  <!-- <el-upload
-                    action="/api/upload_image"
-                    :on-success="handleUploadSuccess"
-                    :on-error="handleUploadError"
-                    :before-upload="beforeUpload"
-                    :auto-upload="false"
-                    :show-file-list="false"
-                  >
-                    <el-button slot="trigger" size="small" type="primary">Select Image</el-button>
-                    <div slot="tip" class="el-upload__tip">Only JPG/PNG files are allowed</div>
-                  </el-upload>
+                <!-- 一键导入显示结果图 -->
+                <el-dialog :visible.sync="processedVisible" width="50%">
+                  <img :src="processedImageUrl" alt="Image" style="width: 100%; height: auto;">
                   <span slot="footer" class="dialog-footer">
-                    <el-button @click="dialogVisible = false">Cancel</el-button>
-                    <el-button type="primary" @click="uploadImage">Upload</el-button>
-                  </span> -->
-                <!-- </el-dialog> -->
+                    <el-button @click="dialogVisible = false,showModal=true,showModal=true">取消</el-button>
+                    <el-button type="primary" @click="confirmImage">确认</el-button>
+                  </span>
+                </el-dialog>
+                
               </div>
               <div class="divider interaction-divider"></div>
 
@@ -212,6 +209,7 @@ import { ElMessage,ElMessageBox } from 'element-plus';
 import store from "../store/index";
 import axios from 'axios';
 import "https://gosspublic.alicdn.com/aliyun-oss-sdk-6.18.0.min.js";
+import { ElLoading } from 'element-plus';
 
 //=============================================================================
 // 变量定义
@@ -266,12 +264,20 @@ const client = new OSS({
       accessKeyId: "LTAI5tR1c1uhFRfWxjq8BWT4",
       accessKeySecret: "BdN5OIEdet7IO6KWOq7TJiivHOsC5B",
       bucket: "graphcrafter",
-  });
+});
+const processedVisible = ref(true);
+const processedImageUrl = ref('');
 
 
 //=============================================================================
 // 一键导入模板
 //=============================================================================
+const loadButtonClick = () => {
+  showModal.value = true;
+  push_fileList.value=[];
+  fileList.value=[];
+  noneBtnImg.value=false;
+};
 //预览图片功能
 const handlePictureCardPreview = (file) => {
     console.log(file.url);
@@ -344,21 +350,55 @@ const upclick_click = (file, fileList) => {
 const handleCarouselChange = (index) => {
 
   // console.log('handleCarouselChange called');
-  // console.log('当前显示的图片是：', ImageList.value[index]);
+  console.log('当前显示的图片是：', ImageList.value[index]);
   current_pic.value = ImageList.value[index];
 };
 
-const submitForm = () => {
+const submitForm = async () => {
   //获取内容
   try {
     //待写
     //当前图片链接：current_pic.value
     //传到后端，查找prompt，调用模型返回结果
+    if(userId==null){
+      ElMessage.error('请先登录！');
+      return;
+    }
+    if(ImageList.value.length==1){
+      current_pic.value=ImageList.value[0];
+    }
+    console.log("img_url:",push_fileList.value[0]);
+    console.log("current_pic:",current_pic.value);
+    console.log("user_id:",userId);
+
+     // 开始加载动画
+     const loading = ElLoading.service({ fullscreen: true });
+
+    const response = await axios.post('/api/call_P2P', {
+      img_url:push_fileList.value[0],
+      img_select:current_pic.value,
+      user_id:userId
+      // date: date.toLocaleString()
+    });
+    // 结束加载动画
+    loading.close();
+    console.log(response);
+    //在页面上显示返回的图片
+    // document.getElementById("returnPic").src = response.data.img;
     
+
   } catch(error) {
     console.error('Error adding like:', error);
   }  
 };
+
+const confirmImage = () => {
+  // 在这里添加你确认图片后的操作
+  console.log('Image confirmed');
+  dialogVisible.value = false;
+  
+};
+
 
 //=============================================================================
 // 页面跳转
@@ -404,6 +444,7 @@ const fetchPost = async () => {
       collects_num: collects_num
     };
     console.log("WTFFFFFF",items.value.author_id)
+    current_pic.value = ImageList.value[0];
 
   }catch(error){
     console.error('Error fetching data:', error);
@@ -660,6 +701,13 @@ const goBack = () => {
 
 
 <style lang="less" scoped>
+
+// .uoloadSty .el-upload--picture-card{
+//             width:200px;
+//             height:200px;
+//             line-height:110px;
+//         }
+
 .modal {
   position: fixed;
   z-index: 10;
@@ -679,6 +727,35 @@ const goBack = () => {
   border: 1px solid #888;
   width: 40%;
   border-radius: 20px;
+
+//   .upload_con{
+//      .uoloadSty .el-upload--picture-card{
+//             width:500px;
+//             height:500px;
+//             // line-height:110px;
+//         }
+//   }
+
+// /deep/ .el-upload {
+//     width:350PX;
+//     height: 400PX;
+// }
+
+/deep/ .disUoloadSty .el-upload--picture-card{
+     display:none;   
+    }
+
+.el-icon-plus:before{
+   content:''
+}
+
+.el-icon-plus{
+   font-size: 30px;
+//    height:80%;
+}
+
+  
+
 }
 
 .close {
