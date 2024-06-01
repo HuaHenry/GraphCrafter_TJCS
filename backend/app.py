@@ -1935,6 +1935,45 @@ def register():
 #     return jsonify(response)
 
 
+# 广场页模糊搜索帖子
+@app.route('/api/posts/search', methods=['GET'])
+@cross_origin(supports_credentials=True)
+def search_posts():
+    query = request.args.get('query', '')
+    if not query:
+        return jsonify({'posts': []})
+
+    posts = db.session.query(
+        Post.id,
+        Post.picture1,
+        Post.title,
+        User.name,
+        User.photo,
+        func.count(Like.id).label('like')
+    ).join(User, Post.author_id == User.id) \
+        .outerjoin(Like, Post.id == Like.post_id) \
+        .filter(Post.title.ilike(f'%{query}%')) \
+        .group_by(Post.picture1,
+                  Post.title,
+                  User.name,
+                  User.photo,
+                  Post.id) \
+        .all()
+
+    results = [{
+        'id': post[0],
+        'picture1': post[1],
+        'title': post[2],
+        'author': post[3],
+        'avatar': post[4],
+        'likes': post[5]
+    } for post in posts]
+
+    print(results)
+
+    return jsonify({'posts': results})
+
+
 @app.route('/api/opencvimages', methods=['GET'])
 def get_images():
     opencv_imgs = Opencv.query.all()

@@ -107,10 +107,10 @@
                   </div>
                 </div>
                 <!-- 一键导入显示结果图 -->
-                <el-dialog :visible.sync="processedVisible" width="50%">
+                <el-dialog v-model="processedVisible" width="50%" style="z-index:200">
                   <img :src="processedImageUrl" alt="Image" style="width: 100%; height: auto;">
                   <span slot="footer" class="dialog-footer">
-                    <el-button @click="dialogVisible = false,showModal=true">取消</el-button>
+                    <el-button @click="processedVisible = false,showModal=true">取消</el-button>
                     <el-button type="primary" @click="confirmImage">暂存</el-button>
                   </span>
                 </el-dialog>
@@ -265,7 +265,7 @@ const client = new OSS({
       accessKeySecret: "BdN5OIEdet7IO6KWOq7TJiivHOsC5B",
       bucket: "graphcrafter",
 });
-const processedVisible = ref(true);
+const processedVisible = ref(false);
 const processedImageUrl = ref('');
 
 
@@ -383,6 +383,10 @@ const submitForm = async () => {
     // 结束加载动画
     loading.close();
     console.log(response);
+    showModal.value = false;
+    processedVisible.value = true;
+    processedImageUrl.value = response.data.img;
+
     //在页面上显示返回的图片
     // document.getElementById("returnPic").src = response.data.img;
     
@@ -396,7 +400,7 @@ const confirmImage = async () => {
   try{
     // 在这里添加你确认图片后的操作
     console.log('Image confirmed');
-    dialogVisible.value = false;
+    processedVisible.value = false;
 
     await axios.post('/api/post_draft/', {
       img:processedImageUrl.value,
@@ -404,6 +408,7 @@ const confirmImage = async () => {
       label:'指令修图'
       // date: date.toLocaleString()
     });
+    ElMessage.success('图片已保存至草稿箱！');
   }catch(error) {
     console.error('Error saving Picture:', error);
   }  
@@ -696,6 +701,7 @@ const toggleCollect = async () => {
 }
 
 onMounted(async () => {
+  getStatus();
   await fetchPost();  //做的比较慢 要确保得到了想要的数据
   console.log("WTF",items.value.author_id)
   await checkFollowStatus();
