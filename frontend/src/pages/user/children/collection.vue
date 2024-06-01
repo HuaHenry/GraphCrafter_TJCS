@@ -26,6 +26,7 @@
 // import { Star } from "@element-plus/icons-vue";
 import { Search } from "@element-plus/icons-vue";
 import { LazyImg, Waterfall } from "vue-waterfall-plugin-next";
+import { ElMessage } from 'element-plus';
 import "vue-waterfall-plugin-next/dist/style.css";
 import store from "../../../store/index";
 // import { ref } from "vue";
@@ -88,7 +89,9 @@ const fetchData = async () => {
     console.error('Error fetching data:', error);
   }
 };
+
 onMounted(() => {
+  // checkLogin();
   fetchData(); // Call fetchData function when the component is mounted
 });
 </script>
