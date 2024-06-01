@@ -58,9 +58,9 @@ export default {
           store.commit("setCurUserID",res.data.user_id);
           localStorage.setItem("user",res.data.user_id);
           ElMessage.success({
-                        message: "登录成功",
-                        duration: 1500
-                      });
+            message: "登录成功",
+            duration: 1500
+          });
           if(this.userType === "admin"){
             this.$router.push("/manager");
           }
@@ -75,17 +75,32 @@ export default {
         }
         })
         .catch(error => {
-          if (error.response && error.response.status === 401) {
-                    ElMessage.error({
-                      message: "用户名或密码错误",
-                      duration: 1500
-                    });
-                  }
-          else if (error.response.status === 402){
+          if (error.response)
+          {
+            if (error.response.status === 401) {
+              ElMessage.error({
+                message: "用户名或密码错误",
+                duration: 1500
+              });
+            }
+            else if (error.response.status === 402){
+              ElMessage.error({
+                message: "您不是系统管理员",
+                duration: 1500
+              });
+            }
+            else {
+              ElMessage.error({
+                message: "登录失败：未知错误",
+                duration: 1500
+              });
+            }
+          }
+          else {
             ElMessage.error({
-                      message: "您不是系统管理员",
-                      duration: 1500
-                    });
+              message: "登录失败：数据库密码未更新，待解决",
+              duration: 1500
+            });
           }
         });
     },
