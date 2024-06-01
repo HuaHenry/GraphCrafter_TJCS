@@ -85,6 +85,7 @@ import { ref, onMounted } from 'vue';
 import axios from 'axios';
 const router = useRouter();
 import store from "../../store/index";
+import { ElMessage } from "element-plus";
 
 //const userId = 1;
 
@@ -172,8 +173,16 @@ const fetchUserStats = async () => {
     }
 };
 
+const checkLogin = () => {
+  if (!store.state.isLoggedIn){
+    router.push({path:'/login'});
+    ElMessage.error("请先登录");
+  }
+};
+
 // 组件加载时调用
 onMounted(()=>{
+  checkLogin();
   fetchUserStats();
   toCollection();
   loadUserProfile();

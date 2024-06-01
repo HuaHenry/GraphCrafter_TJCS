@@ -36,6 +36,7 @@
 import axios from 'axios';
 import qs from 'qs';
 import { mapActions } from 'vuex';
+import { ElMessage } from 'element-plus';
 
 export default {
   data() {
@@ -49,7 +50,27 @@ export default {
   },
   methods: {
     ...mapActions(['login']),
+    validatePassword(password) {
+      const minLength = 6;
+      const hasUpperCase = /[A-Z]/.test(password);
+      const hasLowerCase = /[a-z]/.test(password);
+      const hasNumber = /[0-9]/.test(password);
+
+      return password.length >= minLength &&
+        ((hasUpperCase && hasLowerCase) ||
+         (hasUpperCase && hasNumber) ||
+         (hasLowerCase && hasNumber));
+    },
+
     handleRegister() {
+            if (!this.validatePassword(this.password)) {
+              ElMessage.error({
+                message: "密码长度必须至少为6位，且包含大小写字母和数字中的至少两种",
+                duration: 1500
+              });
+              return;
+            }
+
             let postData = qs.stringify({
                 username: this.username,
                 email: this.email,
@@ -64,32 +85,36 @@ export default {
                     headers: {'Content-Type':'application/x-www-form-urlencoded'}
                 })
                 .then(res => {
+                    console.log(res.status);
                     if (res.status === 200 && res.data=="success") {
-                        //this.showTips("注册成功！", "success")
+                      ElMessage.success({
+                        message: "注册成功",
+                        duration: 1500
+                      });
                         this.$router.push("/login")
-                    } else if (res.data === 'error') {
-                        //this.showTips("该用户名已被注册！", "danger")
-                    }
-                }).catch(() => {
-                    //this.showTips("注册失败")
+                    } 
                 })
-
+                .catch(error => {
+                  if (error.response && error.response.status === 401) {
+                    ElMessage.error({
+                      message: "邀请码错误",
+                      duration: 1500
+                    });
+                  }
+                  else if (error.response.status === 400){
+                    ElMessage.error({
+                      message: "用户名已占用，请选择其他用户名",
+                      duration: 1500
+                    });
+                  }
+                  else {
+                    ElMessage.error({
+                      message: "注册失败",
+                      duration: 1500
+                    });
+                  }
+                });
         }
-
-    // async handleRegister() {
-    //   try {
-    //     const response = await axios.post('http://127.0.0.1:5000/register', {
-    //       username: this.username,
-    //       email: this.email,
-    //       password: this.password,
-    //       userType: this.userType,
-    //       inviteCode: this.inviteCode
-    //     });
-    //     alert(response.data.message);
-    //   } catch (error) {
-    //     alert(error.response.data.message || 'An error occurred');
-    //   }
-    // }
   }
 };
 </script>

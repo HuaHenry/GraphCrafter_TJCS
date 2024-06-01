@@ -4,7 +4,11 @@
     <header class="bg-white header root-demo">
       <div>
         <router-link to="/"
+<<<<<<< HEAD
           ><img src="https://graphcrafter.oss-cn-beijing.aliyuncs.com/LOGO.gif" alt="图匠" class="logo"
+=======
+          ><img src="../assets/img/logo/LOGO2.gif" alt="图匠" class="logo" style="width:100%;position: relative; top:20px; left:-50px; z-index: -1;"
+>>>>>>> 343c8037e60043acc908bf44ac0b7719b2cd02ad
         /></router-link>
       </div>
 
@@ -61,10 +65,10 @@
         <div class="row">
           <div class="col-lg-4 col-md-6 col-sm-12" v-for="(item, i) in demoContent" :key="i">
             <div class="demo-item">
-              <a :href="item.href" target="_blank">
+<!--              <a :href="item.href" target="_blank">-->
                 <img :src="item.src" alt="Main Demo" class="image-shadow"/>
                 <span class="title-style">{{ item.title }}</span>
-              </a>
+<!--              </a>-->
             </div>
           </div>
         </div>
@@ -88,17 +92,17 @@
       return {
         menuContent: [
           {
-            src: new URL("@/assets/img/menu/oceantown.jpg", import.meta.url).href,
+            src: new URL("@/assets/img/menu/edit.jpg", import.meta.url).href,
             title: "图像处理",
-            href: "/",
+            href: "/easy1",
           },
           {
-            src:  new URL("@/assets/img/menu/flower.jpg", import.meta.url).href,
+            src:  new URL("@/assets/img/menu/share.jpg", import.meta.url).href,
             title: "分享广场",
             href: "/index",
           },
           {
-            src:  new URL("../assets/img/menu/person.jpg", import.meta.url).href,
+            src:  new URL("../assets/img/menu/me.jpg", import.meta.url).href,
             title: "个人中心",
             href: "/collection",
           },
@@ -374,6 +378,7 @@ img.image-shadow {
 }
   .image-shadow {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); /* X偏移量, Y偏移量, 模糊半径, 扩展半径, 颜色 */
+    border-radius: 15px; /* 添加圆角 */
   }
   .title-style {
     font-family: 'STZhongsong', '华文中宋', serif; /* 设置字体族 */

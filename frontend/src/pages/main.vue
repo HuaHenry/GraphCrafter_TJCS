@@ -374,8 +374,12 @@ const submitForm = async () => {
       // date: date.toLocaleString()
     });
     console.log(response);
+<<<<<<< HEAD
     //在页面上显示返回的图片
     document.getElementById("returnPic").src = response.data.img;
+=======
+    
+>>>>>>> 343c8037e60043acc908bf44ac0b7719b2cd02ad
   } catch(error) {
     console.error('Error adding like:', error);
   }  
