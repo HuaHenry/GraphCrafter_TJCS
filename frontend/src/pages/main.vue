@@ -726,7 +726,7 @@ const goBack = () => {
 }
 
 .el-icon-plus{
-   font-size: 100px;
+   font-size: 30px;
    height:80%;
 }
 
