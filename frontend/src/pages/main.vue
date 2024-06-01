@@ -754,8 +754,6 @@ const goBack = () => {
 //    height:80%;
 }
 
-  
-
 }
 
 .close {
