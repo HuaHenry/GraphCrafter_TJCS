@@ -8,7 +8,7 @@ import Manage from "@/pages/manager/Manage.vue";
 import Demo from "@/views/Demo.vue";
 import Login from "@/components/Login.vue";
 import Register from "@/components/Register.vue";
-
+import SearchBoard from '@/pages/dashboard/searchboard.vue';
 export const routes = [
  
   {
@@ -50,6 +50,12 @@ export const routes = [
         path: "/dashboard",
         component: Dashboard,
         name: "dashboard", // 用于 keep-alive, 必须与SFC自动推导或者显示声明的组件name一致
+      },
+      {
+        path: '/searchboard',
+        name: 'SearchBoard',
+        component: SearchBoard,
+        props: route => ({ query: route.query.query })
       },
       {
         path: "/followTrend",
