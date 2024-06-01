@@ -10,6 +10,11 @@ from sqlalchemy.orm import relationship
 from flask_socketio import SocketIO, emit, join_room
 from datetime import datetime
 
+# 后端上传阿里云图床
+import oss2
+import os
+from oss2.credentials import EnvironmentVariableCredentialsProvider
+
 # 防止通信报错 by zyp
 # import locale
 # locale.setlocale(locale.LC_CTYPE,"chinese")
@@ -1416,8 +1421,36 @@ def postnotes():
 def call_P2P():
     img_old = request.json.get('img_url')
     img_select = request.json.get('img_select')
-    return jsonify({'img': 'Post created successfully'})
-
+    user_id = request.json.get('userId')
+    # 查询Picture数据表，找到对应的prompt
+    prompt = Picture.query.filter_by(id=img_select).first().prompt
+    if prompt is None:
+        print("prompt is None")
+        return jsonify({'img': 'Prompt not found'})
+    # 调用修图指令
+    # img_new = os.system("python /root/Code/Models/P2P/P2P.py --img_url "+img_old+" --prompt "+prompt)
+    # 函数调用修图命令，存储为/mod/{prompt+"_modify_"+img_old}
+    sys.path.append(r'/root/Code/Models/P2P')
+    import P2P
+    modify_pic(img_old, prompt)
+    # 上传阿里云图床
+    # OSS_ACCESS_KEY_ID = "LTAI5tR1c1uhFRfWxjq8BWT4"
+    # OSS_ACCESS_KEY_SECRET = "BdN5OIEdet7IO6KWOq7TJiivHOsC5B"
+    auth = oss2.ProviderAuth(EnvironmentVariableCredentialsProvider())
+    bucket = oss2.Bucket(
+        auth, 'https://oss-cn-beijing.aliyuncs.com', 'graphcrafter')
+    # /root/Code/Models/P2P/weights
+    mod_img_url = '/root/Code/Models/P2P/mod/' + prompt + "_modify_" + img_old.split("/")[-1]
+    with open(mod_img_url) as fileobj:
+        fileobj.seek(0, os.SEEK_SET)
+        current = fileobj.tell()
+        bucket_url = user_id+'/'+prompt + "_modify_" + img_old.split("/")[-1]
+        bucket.put_object(user_id + '/' + bucket_url, fileobj)
+        # 删除文件夹中的图片
+        os.remove(mod_img_url)
+        return jsonify({'img': "https://graphcrafter.oss-cn-beijing.aliyuncs.com/"+ bucket_url})
+    
+    return jsonify({'img': None})
 
 # 删除帖子的接口
 @app.route('/api/delete-post/<int:post_id>', methods=['DELETE'])
