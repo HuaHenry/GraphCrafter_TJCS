@@ -110,8 +110,8 @@
                 <el-dialog :visible.sync="processedVisible" width="50%">
                   <img :src="processedImageUrl" alt="Image" style="width: 100%; height: auto;">
                   <span slot="footer" class="dialog-footer">
-                    <el-button @click="dialogVisible = false,showModal=true,showModal=true">取消</el-button>
-                    <el-button type="primary" @click="confirmImage">确认</el-button>
+                    <el-button @click="dialogVisible = false,showModal=true">取消</el-button>
+                    <el-button type="primary" @click="confirmImage">暂存</el-button>
                   </span>
                 </el-dialog>
                 
@@ -392,11 +392,21 @@ const submitForm = async () => {
   }  
 };
 
-const confirmImage = () => {
-  // 在这里添加你确认图片后的操作
-  console.log('Image confirmed');
-  dialogVisible.value = false;
-  
+const confirmImage = async () => {
+  try{
+    // 在这里添加你确认图片后的操作
+    console.log('Image confirmed');
+    dialogVisible.value = false;
+
+    await axios.post('/api/post_draft/', {
+      img:processedImageUrl.value,
+      user_id:userId,
+      label:'指令修图'
+      // date: date.toLocaleString()
+    });
+  }catch(error) {
+    console.error('Error saving Picture:', error);
+  }  
 };
 
 
