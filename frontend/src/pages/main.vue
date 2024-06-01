@@ -344,16 +344,34 @@ const upclick_click = (file, fileList) => {
 const handleCarouselChange = (index) => {
 
   // console.log('handleCarouselChange called');
-  // console.log('当前显示的图片是：', ImageList.value[index]);
+  console.log('当前显示的图片是：', ImageList.value[index]);
   current_pic.value = ImageList.value[index];
 };
 
-const submitForm = () => {
+const submitForm = async () => {
   //获取内容
   try {
     //待写
     //当前图片链接：current_pic.value
     //传到后端，查找prompt，调用模型返回结果
+    if(userId==null){
+      ElMessage.error('请先登录！');
+      return;
+    }
+    if(ImageList.value.length==1){
+      current_pic.value=ImageList.value[0];
+    }
+    console.log("img_url:",push_fileList.value[0]);
+    console.log("current_pic:",current_pic.value);
+    console.log("user_id:",userId);
+
+    const response = await axios.post('/api/call_P2P', {
+      img_url:push_fileList.value[0],
+      img_select:current_pic.value,
+      user_id:userId
+      // date: date.toLocaleString()
+    });
+    console.log(response);
     
   } catch(error) {
     console.error('Error adding like:', error);
