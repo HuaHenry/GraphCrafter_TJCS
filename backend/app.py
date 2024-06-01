@@ -175,13 +175,13 @@ def login():
 
     if user:
         if user_type == 'admin' and not user.is_admin:
-            return jsonify({'status': 'error', 'message': 'Unauthorized access for admin'}), 401
-        if user_type == 'premium' and not user.is_premium:
-            return jsonify({'status': 'error', 'message': 'Unauthorized access for premium user'}), 401
+            return jsonify({'status': 'error', 'message': 'Unauthorized access for admin'}), 402
         return jsonify({'status': 'success', 'message': 'Login successful',"user_id":user.id}), 200
     else:
         return jsonify({'status': 'error', 'message': 'Invalid username or password'}), 401
 
+
+# 注册
 @app.route('/register', methods=['POST', 'GET'])
 @cross_origin(supports_credentials=True)
 def register():
@@ -195,8 +195,11 @@ def register():
             email = request.form['email']
             user_type = request.form['userType']
             invite_code = None
-            if user_type == "admin":
+            if user_type == "premium":
                 invite_code = request.form['inviteCode']
+                if (invite_code != "kjk123456" and invite_code != "kjk654321" and invite_code != "kjk666888"):
+                    print("invalid")
+                    return "error: invite code invalid", 401
 
             default_avatar_url = 'http://graphcrafter.oss-cn-beijing.aliyuncs.com/avatars/1-default.webp'
             user_now = User(id=id, name=username, password=password, email=email, is_premium=(user_type == 'premium'),photo=default_avatar_url)
