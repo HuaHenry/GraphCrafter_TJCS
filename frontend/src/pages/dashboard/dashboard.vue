@@ -12,7 +12,7 @@
     </div>
     <div class="loading-container"></div>
     <div class="feeds-container">
-      <Waterfall :list="list" :width="220" :hasAroundGutter="false" style="max-width: 1260px">
+      <Waterfall :list="list" :width="242" :hasAroundGutter="false" style="max-width: 1260px">
       <template #item="{item}">
         <div class="card">
           <LazyImg :url="item.pictures" style="border-radius: 8px"  @click="toMain(item.ids)" />

@@ -11,6 +11,8 @@ from flask_bcrypt import Bcrypt     # 密码加密
 from flask_socketio import SocketIO, emit, join_room
 from datetime import datetime
 
+# 用于数据库一键初始化 by hzq
+from flask_migrate import Migrate
 
 
 # 后端上传阿里云图床    
@@ -45,6 +47,8 @@ socketio = SocketIO(app, cors_allowed_origins="http://localhost:5173")
 app.config['SQLALCHEMY_DATABASE_URI'] = prefix + os.path.join(app.root_path, 'data.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # 关闭对模型修改的监控
 db = SQLAlchemy(app)  # 初始化扩展，传入程序实例 app
+migrate = Migrate(app, db)
+
 
 # 阿里云OSS相关信息
 OSS_ACCESS_KEY_ID = 'LTAI5tR1c1uhFRfWxjq8BWT4'
@@ -157,6 +161,7 @@ class Draft(db.Model):  # 草稿箱
 class Picture(db.Model):  # 图片
     id = db.Column(db.String(60), primary_key=True)  # 主键，即路由
     prompt = db.Column(db.Text)     # 修图的prompt，没有修图时为空
+    Ptype = db.Column(db.Integer)   # 图片类型，0是原图，1是简单修图，2是对话修图
 
 
 class Opencv(db.Model):

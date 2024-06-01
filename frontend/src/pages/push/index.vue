@@ -76,8 +76,9 @@
             line-height:110px;
         }
 
-        .disUoloadSty .el-upload--picture-card{
-            display:none;   /* 上传按钮隐藏 */
+        /deep/ .disUoloadSty .el-upload--picture-card{
+            // display:none;   /* 上传按钮隐藏 */
+            background-color: chartreuse
         }
 
         .files{
@@ -151,6 +152,10 @@
         margin: 0 auto;
         // background-color:rgb(157,13,67);
 
+    }
+
+    /deep/ .disUoloadSty .el-upload--picture-card{
+        display:none;   
     }
 </style>
 
@@ -284,13 +289,17 @@ export default {
             }
 
             console.log("upload image ...");
-
+            if(fileList.length >= this.limitCountImg){
+                this.showBtnDealImg = false;
+            }
             const arr = Array.from(Object.entries(file));
             const arrayBuffer = new Uint8Array(arr).buffer;
             const data = (arrayBuffer);
             console.log(data.type);
-            putObject(fileToBlob(file.raw),this,file);
+            putObject(fileToBlob(file.raw), this, file);
+            console.log(fileList.length,this.limitCountImg)
             this.noneBtnImg = fileList.length >= this.limitCountImg;
+            console.log(this.noneBtnImg)
             console.log("imgname_tmp",this.imgname_tmp)
             // if (this.imgname_tmp) {
             //     file.name = this.imgname_tmp;
@@ -324,16 +333,21 @@ export default {
                 const title = document.getElementById("title").value;
                 const description = document.getElementById("description").value;
                 const ruleForm = this.ruleForm
-                if(ruleForm.name == '' || ruleForm.summary == ''){
-                    alert("标题和内容不能为空！")
-                    return
+                if (ruleForm.name == '' || ruleForm.summary == '') {
+                    //设置显示时间
+                    
+                    ElMessage.error('标题和内容不能为空');
+                    // setTimeout(() => {
+                    //     this.$message.close();
+                    // }, 100);
+                    return;
                 }
                 console.log(title, description)
                 console.log(this.reluForm)
                 const userId = store.state.user_id
                 console.log(userId)
                 if(userId==null){
-                    alert("请先登录！")
+                    ElMessage.error('请先登录！');
                     // location.href = "/login";
                     return;
                 }

@@ -383,17 +383,6 @@ const submitForm = async () => {
     // 结束加载动画
     loading.close();
     console.log(response);
-
-
-    processedImageUrl.value = response.data.img;
-    
-    showModal.value = false;
-    dialogVisible.value = true;
-
-
-    processedImageUrl.value = response.data.img;
-    dialogVisible.value = true;
-
     //在页面上显示返回的图片
     // document.getElementById("returnPic").src = response.data.img;
     
@@ -774,8 +763,6 @@ const goBack = () => {
    font-size: 30px;
 //    height:80%;
 }
-
-  
 
 }
 

@@ -16,7 +16,7 @@
     </div>
     <div class="loading-container"></div>
     <div class="feeds-container">
-      <Waterfall :list="list" :width="220" :hasAroundGutter="false" style="max-width: 1260px">
+      <Waterfall :list="list" :width="242" :hasAroundGutter="false" style="max-width: 1260px">
         <template #item="{ item }">
           <div class="card">
             <div class="image-container" >
@@ -24,7 +24,7 @@
               <div class="hover-button" @click="() => useNow(item.descriptions, item.types)">立即使用</div>
             </div>
             <div class="footer">
-              <a class="title"><span>{{ item.descriptions }}</span></a>
+              <a class="title" ><span>{{ truncatedText(item.descriptions) }}</span></a>
             </div>
           </div>
         </template>
@@ -55,13 +55,9 @@
         </div>
       </div>
     </el-dialog>
-
   </div>
 
-  
 </template>
-
-
 
 
 <script lang="ts" setup>
@@ -128,6 +124,7 @@ onMounted(() => {
 const handleChannelClick = (index: number) => {
   activeChannel.value = index;
   fetchData();
+  dealTitleLength();
 };
 
 const useNow = (description, type) => {
@@ -210,6 +207,13 @@ const PreviewImg = (event) => {
   {
     isProcessedImgOpen.value = false;
   }
+// 处理方法的名称最多只显示20个字
+function truncatedText(text) {
+  if (text.length > 24) {
+    return text.substring(0, 21) + '...';
+  }
+  return text;
+}
 </script>
 
 
