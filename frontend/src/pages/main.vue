@@ -71,6 +71,7 @@
                         >
                         <el-form-item>
                         <el-upload
+                            drag
                             :class="{uoloadSty:showBtnDealImg,disUoloadSty:noneBtnImg}"
                             ref="upload"
                             action=""
@@ -98,6 +99,7 @@
                       </el-form>
                     </div>
                     <el-button type="primary" @click="submitForm('ruleF')" id="submit_button">确认图片</el-button>
+                    <img id="returnPic" src="" alt="" style="width: 100%;height: 100%" />
                     <!-- <input type="file" @change="handleFileUpload"/> -->
                   </div>
                 </div>
@@ -344,17 +346,40 @@ const upclick_click = (file, fileList) => {
 const handleCarouselChange = (index) => {
 
   // console.log('handleCarouselChange called');
-  // console.log('当前显示的图片是：', ImageList.value[index]);
+  console.log('当前显示的图片是：', ImageList.value[index]);
   current_pic.value = ImageList.value[index];
 };
 
-const submitForm = () => {
+const submitForm = async () => {
   //获取内容
   try {
     //待写
     //当前图片链接：current_pic.value
     //传到后端，查找prompt，调用模型返回结果
+    if(userId==null){
+      ElMessage.error('请先登录！');
+      return;
+    }
+    if(ImageList.value.length==1){
+      current_pic.value=ImageList.value[0];
+    }
+    console.log("img_url:",push_fileList.value[0]);
+    console.log("current_pic:",current_pic.value);
+    console.log("user_id:",userId);
+
+    const response = await axios.post('/api/call_P2P', {
+      img_url:push_fileList.value[0],
+      img_select:current_pic.value,
+      user_id:userId
+      // date: date.toLocaleString()
+    });
+    console.log(response);
+<<<<<<< HEAD
+    //在页面上显示返回的图片
+    document.getElementById("returnPic").src = response.data.img;
+=======
     
+>>>>>>> 343c8037e60043acc908bf44ac0b7719b2cd02ad
   } catch(error) {
     console.error('Error adding like:', error);
   }  
@@ -660,6 +685,13 @@ const goBack = () => {
 
 
 <style lang="less" scoped>
+
+// .uoloadSty .el-upload--picture-card{
+//             width:200px;
+//             height:200px;
+//             line-height:110px;
+//         }
+
 .modal {
   position: fixed;
   z-index: 10;
@@ -679,6 +711,31 @@ const goBack = () => {
   border: 1px solid #888;
   width: 40%;
   border-radius: 20px;
+
+//   .upload_con{
+//      .uoloadSty .el-upload--picture-card{
+//             width:500px;
+//             height:500px;
+//             // line-height:110px;
+//         }
+//   }
+
+/deep/ .el-upload {
+    width:350PX;
+    height: 400PX;
+}
+
+.el-icon-plus:before{
+   content:'\e7c3'
+}
+
+.el-icon-plus{
+   font-size: 30px;
+   height:80%;
+}
+
+  
+
 }
 
 .close {

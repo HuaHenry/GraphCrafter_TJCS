@@ -51,7 +51,7 @@
         <img :src="processedImg " class="avatar-preview" alt="修改图片" />
         <div class="avatar-actions">
           <el-button class="primary-button" type="primary" @click="">保存</el-button>
-          <el-button class="secondary-button" @click="">取消</el-button>
+          <el-button class="secondary-button" @click="cancelSaveImage">取消</el-button>
         </div>
       </div>
     </el-dialog>
@@ -72,7 +72,7 @@ import { ref, onMounted } from "vue";
 import store from "@/store/index";
 import axios from "axios";
 
-let current_type = ref('')
+let current_category =''
 let current_description = ref('')
 
 const router = useRouter();
@@ -84,23 +84,27 @@ const fileInput = ref(null);
 
 const isAvatarEditorOpen = ref(false);
 const isProcessedImgOpen = ref(false);
-const channels = ref([
-  { name: '图像色彩', path: '/easy1' },
-  { name: '图像变换', path: '/easy2' },
-  { name: '图像过滤', path: '/easy3' },
-  { name: '提取轮廓', path: '/easy4' },
-  { name: '图像增强', path: '/easy5' },
-]);
+const channels = [
+  { name: '图像色彩', backendName: 'color' },
+  { name: '图像变换', backendName: 'transform'  },
+  { name: '图像过滤',  backendName: 'filter' },
+  { name: '提取轮廓', backendName: 'contour' },
+  { name: '图像增强', backendName: 'enhance' },
+];
 
 const activeChannel = ref(0); // 默认激活第一个频道
 
 const fetchData = async () => {
+  list.value.splice(0, list.value.length);//清空列表
+  current_category = channels[activeChannel.value].name;
+  let current_category_backend = channels[activeChannel.value].backendName;
   try {
-    const data = await fetch('http://127.0.0.1:8080/api/opencvimages');
-    const result = await data.json();
+    const response = await axios.get('/api/opencvimages');
+    const result = response.data;
     const { ids, pictures, descriptions, codes, types } = result;
+
     for (let i = 0; i < ids.length; i++) {
-      if(types[i] === 'color'){
+      if(types[i] === current_category_backend){
         const item = {
           ids: ids[i],
           pictures: pictures[i],
@@ -110,7 +114,6 @@ const fetchData = async () => {
         };
         list.value.push(item);
       }
-      
     }
   } catch (error) {
     console.error('Error fetching data:', error);
@@ -124,17 +127,15 @@ onMounted(() => {
 
 const handleChannelClick = (index: number) => {
   activeChannel.value = index;
-  const path = channels.value[index].path;
-  router.push({ path });
+  fetchData();
 };
 
 const useNow = (description, type) => {
-  
   triggerFileInput();
   console.log("Description:", description);
   console.log("Type:", type);
   current_description =description;
-  current_type = type;
+  current_category = type;
   
 };
 
@@ -165,25 +166,21 @@ const PreviewImg = (event) => {
       
     }
   };
-
-
     // 关闭头像编辑器并取消修改
     const cancelAvatarEdit = () => {
     isAvatarEditorOpen.value = false;
-    
-  
   };
 
 
-  //上传要修改的图片
+  //上传要修改的图片，并获得结果
   const uploadImg = async () => {
     const file = fileInput.value.files[0];
-    console.log(file,current_type,current_description);
+    console.log(file,current_category,current_description);
     const userId = store.state.user_id;
 
     const formData = new FormData();
     formData.append('user_id', userId);
-    formData.append('process_category', current_type);
+    formData.append('process_category', current_category);
     formData.append('process_type', current_description);
     formData.append('file', file);
 
@@ -209,7 +206,10 @@ const PreviewImg = (event) => {
     }
 };
 
-
+  function cancelSaveImage()
+  {
+    isProcessedImgOpen.value = false;
+  }
 </script>
 
 
