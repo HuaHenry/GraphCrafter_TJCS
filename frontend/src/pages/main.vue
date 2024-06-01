@@ -374,18 +374,10 @@ const submitForm = async () => {
     // 结束加载动画
     loading.close();
     console.log(response);
-<<<<<<< HEAD
     processedImageUrl.value = response.data.img;
-    
     dialogVisible.value = true;
-=======
-<<<<<<< HEAD
     //在页面上显示返回的图片
     document.getElementById("returnPic").src = response.data.img;
-=======
->>>>>>> efd6b243915d2a24d44a3fe8c0bd6875398e0274
-    
->>>>>>> 343c8037e60043acc908bf44ac0b7719b2cd02ad
   } catch(error) {
     console.error('Error adding like:', error);
   }  
