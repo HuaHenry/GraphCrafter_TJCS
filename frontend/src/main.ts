@@ -14,7 +14,6 @@ app.use(ElementPlus);
 app.use(store);
 app.mount("#app");
 
-
 import axios from 'axios';
 
 // 设置后端服务器的基准 URL
