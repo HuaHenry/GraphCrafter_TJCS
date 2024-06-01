@@ -34,6 +34,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # 关闭对模型修改的
 db = SQLAlchemy(app)  # 初始化扩展，传入程序实例 app
 
 
+
+
 class User(db.Model):  # 用户
     id = db.Column(db.Integer, primary_key=True)  # 主键，账号
     name = db.Column(db.String(20))  # 名字
@@ -135,6 +137,14 @@ class Picture(db.Model):  # 图片
     id = db.Column(db.String(60), primary_key=True)  # 主键，即路由
     prompt = db.Column(db.Text)     # 修图的prompt，没有修图时为空
 
+
+class Opencv(db.Model):
+    id = db.Column(db.Integer, primary_key=True)  # 主键
+    description = db.Column(db.Text)  # 正文
+    image = db.Column(db.String(60)) 
+    type = db.Column(db.String(10)) 
+    code = db.Column(db.Text)  #代码
+
 # app = Flask(__name__)
 app.config.from_object(__name__)
 
@@ -175,13 +185,13 @@ def login():
 
     if user:
         if user_type == 'admin' and not user.is_admin:
-            return jsonify({'status': 'error', 'message': 'Unauthorized access for admin'}), 401
-        if user_type == 'premium' and not user.is_premium:
-            return jsonify({'status': 'error', 'message': 'Unauthorized access for premium user'}), 401
+            return jsonify({'status': 'error', 'message': 'Unauthorized access for admin'}), 402
         return jsonify({'status': 'success', 'message': 'Login successful',"user_id":user.id}), 200
     else:
         return jsonify({'status': 'error', 'message': 'Invalid username or password'}), 401
 
+
+# 注册
 @app.route('/register', methods=['POST', 'GET'])
 @cross_origin(supports_credentials=True)
 def register():
@@ -195,8 +205,11 @@ def register():
             email = request.form['email']
             user_type = request.form['userType']
             invite_code = None
-            if user_type == "admin":
+            if user_type == "premium":
                 invite_code = request.form['inviteCode']
+                if (invite_code != "kjk123456" and invite_code != "kjk654321" and invite_code != "kjk666888"):
+                    print("invalid")
+                    return "error: invite code invalid", 401
 
             default_avatar_url = 'http://graphcrafter.oss-cn-beijing.aliyuncs.com/avatars/1-default.webp'
             user_now = User(id=id, name=username, password=password, email=email, is_premium=(user_type == 'premium'),photo=default_avatar_url)
@@ -213,6 +226,49 @@ def register():
         # 捕获异常并记录错误信息
         app.logger.error(f"Error during registration: {e}")
         return "Internal Server Error", 500
+
+
+# @app.route('/api/opencvimages')
+# def get_images():
+    
+#     images = Opencv.query.all()
+#     response = [{
+#         'id': img.id,
+#         'description': img.description,
+#         'image': img.image,
+#         'code': img.code,
+#     } for img in images]
+#     return jsonify(response)
+
+
+@app.route('/api/opencvimages', methods=['GET'])
+def get_images():
+    opencv_imgs = Opencv.query.all()
+    print(opencv_imgs)
+
+    ids = []
+    pictures = []
+    descriptions = []
+    codes = []
+    types = []
+
+    for opencv_img in opencv_imgs:
+        ids.append(opencv_img.id)
+        pictures.append(opencv_img.image)
+        descriptions.append(opencv_img.description)
+        codes.append(opencv_img.code)
+        types.append(opencv_img.type)
+
+    response_json = jsonify({
+        'ids': ids,
+        'pictures': pictures,
+        'descriptions': descriptions,
+        'codes': codes,
+        'types': types,
+    })
+
+    return response_json
+
 
 
 # 示例用户资料
