@@ -207,8 +207,8 @@ def register():
             invite_code = None
             if user_type == "premium":
                 invite_code = request.form['inviteCode']
-                if (invite_code != "kjk123456" and invite_code != "kjk654321" and invite_code != "kjk666888"):
-                    print("invalid")
+                valid_codes = ["kjk123456", "kjk654321", "kjk666888"]
+                if invite_code not in valid_codes:
                     return "error: invite code invalid", 401
 
             default_avatar_url = 'http://graphcrafter.oss-cn-beijing.aliyuncs.com/avatars/1-default.webp'

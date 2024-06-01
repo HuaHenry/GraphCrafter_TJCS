@@ -343,8 +343,14 @@ export default {
                     description: description,
                     userId: userId
                 });
-                alert("发布成功！")
-                location.href = "/dashboard";
+                ElMessage.success({
+                  message: "发布成功",
+                  duration: 1500
+                });
+                // 使用setTimeout延迟1秒后执行页面跳转
+                setTimeout(() => {
+                  location.href = "/dashboard";
+                }, 800);  // 延时800毫秒
                 // var that = this
                 // axios.post('/api/postnotes', {
                 //     pics: that.ruleForm,
