@@ -25,19 +25,19 @@
           </li>
           <li :class="{ 'active-channel': activeChannel === 'photoshop' || activeChannel === 'easy' || activeChannel === 'conversation' }">
             <a class="link-wrapper" @click="togglePhotoshop">
-              <House style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel">修图</span>
+              <Brush style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel">修图</span>
             </a>
           </li>
 
           <ul v-if="activeChannel === 'photoshop' || activeChannel === 'easy' || activeChannel === 'conversation'" class="sub-menu">
               <li :class="{ 'active-channel': activeChannel === ' conversation ' }" @click="toConversation">
                 <a class="link-wrapper">
-                  <House style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel">对话</span>
+                  <ChatSquare style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel">对话</span>
                 </a>
               </li>
               <li :class="{ 'active-channel': activeChannel === 'easy' }" @click="toEasy">
                 <a class="link-wrapper">
-                  <House style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel">简单</span>
+                  <MagicStick style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel">简单</span>
                 </a>
               </li>
             </ul>
@@ -121,6 +121,9 @@ import {
   ArrowRight,
   More,
   CirclePlus,
+  Brush,
+  MagicStick,
+  ChatSquare
 } from "@element-plus/icons-vue";
 import { useRouter } from "vue-router";
 import { ref } from "vue";
