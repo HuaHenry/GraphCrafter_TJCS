@@ -45,6 +45,17 @@
         </div>
     </el-dialog>
 
+    <!-- 处理结果 -->
+    <el-dialog title="处理结果" v-model="isProcessedImgOpen" width="30%" :custom-class="'rounded-dialog'">
+      <div class="avatar-editor">
+        <img :src="processedImg " class="avatar-preview" alt="修改图片" />
+        <div class="avatar-actions">
+          <el-button class="primary-button" type="primary" @click="">保存</el-button>
+          <el-button class="secondary-button" @click="">取消</el-button>
+        </div>
+      </div>
+    </el-dialog>
+
   </div>
 
   
@@ -58,6 +69,8 @@ import { LazyImg, Waterfall } from "vue-waterfall-plugin-next";
 import "vue-waterfall-plugin-next/dist/style.css";
 import { useRouter } from "vue-router";
 import { ref, onMounted } from "vue";
+import store from "@/store/index";
+import axios from "axios";
 
 let current_type = ref('')
 let current_description = ref('')
@@ -66,14 +79,16 @@ const router = useRouter();
 
 const list = ref([]);
 const uploadedAvatar = ref('');
+const processedImg = ref('');
 const fileInput = ref(null);
 
 const isAvatarEditorOpen = ref(false);
+const isProcessedImgOpen = ref(false);
 const channels = ref([
   { name: '图像色彩', path: '/easy1' },
   { name: '图像变换', path: '/easy2' },
   { name: '图像过滤', path: '/easy3' },
-  { name: '提取直线、轮廓、区域', path: '/easy4' },
+  { name: '提取轮廓', path: '/easy4' },
   { name: '图像增强', path: '/easy5' },
 ]);
 
@@ -81,7 +96,7 @@ const activeChannel = ref(0); // 默认激活第一个频道
 
 const fetchData = async () => {
   try {
-    const data = await fetch('http://127.0.0.1:8080/api/opencvimages'); // Replace URL with your endpoint
+    const data = await fetch('http://127.0.0.1:8080/api/opencvimages');
     const result = await data.json();
     const { ids, pictures, descriptions, codes, types } = result;
     for (let i = 0; i < ids.length; i++) {
@@ -163,8 +178,35 @@ const PreviewImg = (event) => {
   //上传要修改的图片
   const uploadImg = async () => {
     const file = fileInput.value.files[0];
-    console.log(file,current_type,current_description)
-    
+    console.log(file,current_type,current_description);
+    const userId = store.state.user_id;
+
+    const formData = new FormData();
+    formData.append('user_id', userId);
+    formData.append('process_category', current_type);
+    formData.append('process_type', current_description);
+    formData.append('file', file);
+
+    try {
+      const response = await axios.post('/api/simple-image-process', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      const data = response.data;
+      if (data.error) {
+        alert('Error: ' + data.error);
+        return;
+      }
+      const newImageUrl = data.imgUrl;
+
+      processedImg.value = newImageUrl;
+      isAvatarEditorOpen.value = false;
+      isProcessedImgOpen.value = true;
+    } catch (error) {
+      console.error('There was an error processing the image:', error);
+      alert('Network response was not ok');
+    }
 };
 
 

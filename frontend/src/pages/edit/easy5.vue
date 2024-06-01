@@ -73,7 +73,7 @@ const channels = ref([
   { name: '图像色彩', path: '/easy1' },
   { name: '图像变换', path: '/easy2' },
   { name: '图像过滤', path: '/easy3' },
-  { name: '提取直线、轮廓、区域', path: '/easy4' },
+  { name: '提取轮廓', path: '/easy4' },
   { name: '图像增强', path: '/easy5' },
 ]);
 

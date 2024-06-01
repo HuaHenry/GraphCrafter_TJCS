@@ -15,6 +15,16 @@ import oss2
 import os
 from oss2.credentials import EnvironmentVariableCredentialsProvider
 
+# 简单图像处理
+import io
+import numpy as np
+import cv2
+from simple_image_process.image_filtering import show_filtering
+from simple_image_process.image_outline import show_outline
+from simple_image_process.image_transformation import show_transformation
+from simple_image_process.image_color import show_hsv
+from simple_image_process.image_enhancement import show_enhancement
+
 # 防止通信报错 by zyp
 # import locale
 # locale.setlocale(locale.LC_CTYPE,"chinese")
@@ -33,6 +43,13 @@ app.config['SQLALCHEMY_DATABASE_URI'] = prefix + os.path.join(app.root_path, 'da
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # 关闭对模型修改的监控
 db = SQLAlchemy(app)  # 初始化扩展，传入程序实例 app
 
+# 阿里云OSS相关信息
+OSS_ACCESS_KEY_ID = 'LTAI5tR1c1uhFRfWxjq8BWT4'
+OSS_ACCESS_KEY_SECRET = 'BdN5OIEdet7IO6KWOq7TJiivHOsC5B'
+OSS_ENDPOINT = 'oss-cn-beijing.aliyuncs.com'
+OSS_BUCKET_NAME = 'graphcrafter'
+auth = oss2.Auth(OSS_ACCESS_KEY_ID, OSS_ACCESS_KEY_SECRET)
+bucket = oss2.Bucket(auth, OSS_ENDPOINT, OSS_BUCKET_NAME)
 
 
 
@@ -142,7 +159,7 @@ class Opencv(db.Model):
     id = db.Column(db.Integer, primary_key=True)  # 主键
     description = db.Column(db.Text)  # 正文
     image = db.Column(db.String(60)) 
-    type = db.Column(db.String(10)) 
+    type = db.Column(db.String(10))
     code = db.Column(db.Text)  #代码
 
 # app = Flask(__name__)
@@ -1474,7 +1491,7 @@ def postnotes():
 # 后端调用修图指令
 # 参数：img_url(原图URL) + img_select(对应的模板url，用于寻找prompt)
 # 本地调试请注释该函数！！！！！！！
-@app.route('/api/call_P2P', methods=['GET', 'POST'])
+'''@app.route('/api/call_P2P', methods=['GET', 'POST'])
 def call_P2P():
     img_old = request.json.get('img_url')
     img_select = request.json.get('img_select')
@@ -1508,7 +1525,7 @@ def call_P2P():
         return jsonify({'img': "https://graphcrafter.oss-cn-beijing.aliyuncs.com/"+ bucket_url})
     
     return jsonify({'img': None})
-
+'''
 # 删除帖子的接口
 @app.route('/api/delete-post/<int:post_id>', methods=['DELETE'])
 def delete_post(post_id):
@@ -1529,6 +1546,61 @@ def delete_post(post_id):
 
     return jsonify({'message': 'Post deleted successfully'}), 200
 
+# 基本图像处理
+@app.route('/api/simple-image-process', methods=['POST'])
+def process_image_simple():
+    print(request.files)
+    print("form:",request.form)
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file uploaded'}), 400
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({'error': 'No selected file'}), 400
+
+    # 读取参数
+    user_id = request.form.get('user_id')
+    process_category = request.form.get('process_category') # 处理的类别 eg.图像色彩，图像变换...
+    process_type = request.form.get('process_type') #具体的处理类型 eg.色调
+
+    if not user_id or not process_category or not process_type:
+        return jsonify({'error': 'Missing processing parameters'}), 400
+
+    # 读取图片文件
+    file_stream = io.BytesIO(file.read())
+    file_bytes = np.frombuffer(file_stream.read(), np.uint8)
+    origin = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
+    height, width, channels = origin.shape
+    img_size = [width,height]
+    print("image size:",height,width)
+
+    if origin is None:
+        return jsonify({'error': 'Failed to read the uploaded image'}), 500
+
+    # 进行图像处理
+    # 处理后的图片暂存为tmp.png
+    if process_category == "color":
+        show_hsv(origin,process_type,img_size)
+    elif process_category == "transform":
+        show_transformation(origin,process_type,img_size)
+    elif process_category == "filter":
+        show_filtering(origin,process_type,img_size)
+    elif process_category == "outline":
+        show_outline(origin,process_type,img_size)
+    elif process_category == "enhance":
+        show_enhancement(origin,process_type,img_size)
+    else:
+        return jsonify({'error': 'Process category chosen does not exits'}), 400
+
+    # 上传到阿里云OSS
+    tmp_file_path = './img_tmp/tmp.png'
+    current_time = datetime.now().strftime('%Y%m%d%H%M%S')
+    oss_file_path = f'simple_image_process/{user_id}-{current_time}.png'
+    with open(tmp_file_path, 'rb') as file:
+        bucket.put_object(oss_file_path, file)
+    img_url = f'http://{OSS_BUCKET_NAME}.{OSS_ENDPOINT}/{oss_file_path}'
+    print(img_url)
+
+    return jsonify({'imgUrl': img_url})
 
 if __name__ == '__main__':
     config = dict(
