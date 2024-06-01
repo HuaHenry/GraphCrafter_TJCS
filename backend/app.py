@@ -615,11 +615,12 @@ def del_draft(post_id):
 
 # 暂存草稿
 @cross_origin()
-@app.route('/api/post_draft/', methods=['GET'])
-def post_draft(post_id):
+@app.route('/api/post_draft/', methods=['POST'])
+def post_draft():
     img=request.json.get('img')
     user_id=request.json.get('user_id')
     label=request.json.get('label')
+    print(img)
     from datetime import datetime
     date = datetime.now()
     if img:
