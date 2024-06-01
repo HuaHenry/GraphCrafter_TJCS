@@ -92,14 +92,27 @@ const fetchData = async () => {
   }
 };
 
-const deleteItem = async (id) => {
-  try {
-    await axios.delete(`/api/items/${id}`); // 假设的API端点
-    list.value = list.value.filter(item => item.ids !== id); // 从视图中移除
-  } catch (error) {
-    console.error("Error deleting item:", error);
+const deleteItem = async (id: number) => {
+  // 弹出确认对话框
+  if (confirm("是否确认删除?")) {
+    try {
+      await axios.delete(`/api/delete-post/${id}`);
+      list.value = list.value.filter(item => item.id !== id);
+      // 显示删除成功的消息
+      alert('删除成功');
+      //console.log('删除成功');
+      window.location.reload(); // 刷新页面
+    } catch (error) {
+      // 处理删除失败的情况
+      console.error('Error deleting post:', error);
+      alert('删除失败');  // 可以选择在这里显示更多错误信息
+    }
+  } else {
+    // 用户取消了删除操作
+    console.log('Delete operation canceled');
   }
 };
+
 
 
 onMounted(() => {

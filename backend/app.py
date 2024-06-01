@@ -126,6 +126,10 @@ class Draft(db.Model):  # 草稿箱
     picture = db.Column(db.String(60))     # 图片
     label = db.Column(db.Text)  # 标签
 
+class Picture(db.Model):  # 图片
+    id = db.Column(db.String(60), primary_key=True)  # 主键，即路由
+    prompt = db.Column(db.Text)     # 修图的prompt，没有修图时为空
+
 # app = Flask(__name__)
 app.config.from_object(__name__)
 
@@ -1413,6 +1417,28 @@ def call_P2P():
     img_old = request.json.get('img_url')
     img_select = request.json.get('img_select')
     return jsonify({'img': 'Post created successfully'})
+
+
+# 删除帖子的接口
+@app.route('/api/delete-post/<int:post_id>', methods=['DELETE'])
+def delete_post(post_id):
+    post = Post.query.get_or_404(post_id)
+
+    # 删除相关的评论
+    Comment.query.filter_by(post_id=post_id).delete()
+
+    # 删除相关的点赞
+    Like.query.filter_by(post_id=post_id).delete()
+
+    # 删除相关的收藏
+    Collect.query.filter_by(post_id=post_id).delete()
+
+    # 删除帖子
+    db.session.delete(post)
+    db.session.commit()
+
+    return jsonify({'message': 'Post deleted successfully'}), 200
+
 
 if __name__ == '__main__':
     config = dict(
