@@ -44,7 +44,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = prefix + os.path.join(app.root_path, 'da
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # 关闭对模型修改的监控
 db = SQLAlchemy(app)  # 初始化扩展，传入程序实例 app
 
-<<<<<<< HEAD
 # 阿里云OSS相关信息
 OSS_ACCESS_KEY_ID = 'LTAI5tR1c1uhFRfWxjq8BWT4'
 OSS_ACCESS_KEY_SECRET = 'BdN5OIEdet7IO6KWOq7TJiivHOsC5B'
@@ -52,10 +51,7 @@ OSS_ENDPOINT = 'oss-cn-beijing.aliyuncs.com'
 OSS_BUCKET_NAME = 'graphcrafter'
 auth = oss2.Auth(OSS_ACCESS_KEY_ID, OSS_ACCESS_KEY_SECRET)
 bucket = oss2.Bucket(auth, OSS_ENDPOINT, OSS_BUCKET_NAME)
-=======
 bcrypt = Bcrypt(app)
-
->>>>>>> 7ba18c658dafe356367f8f78fd56848004310442
 
 
 
