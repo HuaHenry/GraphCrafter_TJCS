@@ -107,7 +107,7 @@
                 <el-dialog :visible.sync="processedVisible" width="50%">
                   <img :src="processedImageUrl" alt="Image" style="width: 100%; height: auto;">
                   <span slot="footer" class="dialog-footer">
-                    <el-button @click="dialogVisible = false">取消</el-button>
+                    <el-button @click="dialogVisible = false,showModal=true">取消</el-button>
                     <el-button type="primary" @click="confirmImage">确认</el-button>
                   </span>
                 </el-dialog>
@@ -374,22 +374,28 @@ const submitForm = async () => {
     // 结束加载动画
     loading.close();
     console.log(response);
-<<<<<<< HEAD
+
     processedImageUrl.value = response.data.img;
     
+    showModal.value = false;
     dialogVisible.value = true;
-=======
-<<<<<<< HEAD
+
     //在页面上显示返回的图片
-    document.getElementById("returnPic").src = response.data.img;
-=======
->>>>>>> efd6b243915d2a24d44a3fe8c0bd6875398e0274
+    // document.getElementById("returnPic").src = response.data.img;
     
->>>>>>> 343c8037e60043acc908bf44ac0b7719b2cd02ad
+
   } catch(error) {
     console.error('Error adding like:', error);
   }  
 };
+
+const confirmImage = () => {
+  // 在这里添加你确认图片后的操作
+  console.log('Image confirmed');
+  dialogVisible.value = false;
+  
+};
+
 
 //=============================================================================
 // 页面跳转
