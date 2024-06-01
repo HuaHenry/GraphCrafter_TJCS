@@ -3,12 +3,7 @@
     <!-- Header -->
     <header class="bg-white header root-demo">
       <div>
-        <router-link to="/"
-<<<<<<< HEAD
-          ><img src="https://graphcrafter.oss-cn-beijing.aliyuncs.com/LOGO.gif" alt="图匠" class="logo"
-=======
-          ><img src="../assets/img/logo/LOGO2.gif" alt="图匠" class="logo" style="width:100%;position: relative; top:20px; left:-50px; z-index: -1;"
->>>>>>> 343c8037e60043acc908bf44ac0b7719b2cd02ad
+        <router-link to="/"><img src="https://graphcrafter.oss-cn-beijing.aliyuncs.com/LOGO.gif" alt="图匠" class="logo"
         /></router-link>
       </div>
 
