@@ -1407,11 +1407,11 @@ def postnotes():
     return jsonify({'message': 'Post created successfully'})
 
 # 后端调用修图指令
-# 参数：img_url(原图URL) + prompt(修图prompt)
+# 参数：img_url(原图URL) + img_select(对应的模板url，用于寻找prompt)
 @app.route('/api/call_P2P', methods=['GET', 'POST'])
 def call_P2P():
     img_old = request.json.get('img_url')
-    prompt = request.json.get('prompt')
+    img_select = request.json.get('img_select')
     return jsonify({'img': 'Post created successfully'})
 
 if __name__ == '__main__':
