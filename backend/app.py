@@ -29,6 +29,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # 关闭对模型修改的
 db = SQLAlchemy(app)  # 初始化扩展，传入程序实例 app
 
 
+
+
 class User(db.Model):  # 用户
     id = db.Column(db.Integer, primary_key=True)  # 主键，账号
     name = db.Column(db.String(20))  # 名字
@@ -130,6 +132,14 @@ class Picture(db.Model):  # 图片
     id = db.Column(db.String(60), primary_key=True)  # 主键，即路由
     prompt = db.Column(db.Text)     # 修图的prompt，没有修图时为空
 
+
+class Opencv(db.Model):
+    id = db.Column(db.Integer, primary_key=True)  # 主键
+    description = db.Column(db.Text)  # 正文
+    image = db.Column(db.String(60)) 
+    type = db.Column(db.String(10)) 
+    code = db.Column(db.Text)  #代码
+
 # app = Flask(__name__)
 app.config.from_object(__name__)
 
@@ -208,6 +218,49 @@ def register():
         # 捕获异常并记录错误信息
         app.logger.error(f"Error during registration: {e}")
         return "Internal Server Error", 500
+
+
+# @app.route('/api/opencvimages')
+# def get_images():
+    
+#     images = Opencv.query.all()
+#     response = [{
+#         'id': img.id,
+#         'description': img.description,
+#         'image': img.image,
+#         'code': img.code,
+#     } for img in images]
+#     return jsonify(response)
+
+
+@app.route('/api/opencvimages', methods=['GET'])
+def get_images():
+    opencv_imgs = Opencv.query.all()
+    print(opencv_imgs)
+
+    ids = []
+    pictures = []
+    descriptions = []
+    codes = []
+    types = []
+
+    for opencv_img in opencv_imgs:
+        ids.append(opencv_img.id)
+        pictures.append(opencv_img.image)
+        descriptions.append(opencv_img.description)
+        codes.append(opencv_img.code)
+        types.append(opencv_img.type)
+
+    response_json = jsonify({
+        'ids': ids,
+        'pictures': pictures,
+        'descriptions': descriptions,
+        'codes': codes,
+        'types': types,
+    })
+
+    return response_json
+
 
 
 # 示例用户资料
