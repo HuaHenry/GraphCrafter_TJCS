@@ -6,6 +6,7 @@ from flask_cors import CORS, cross_origin
 from flask_sqlalchemy import SQLAlchemy  # 导入扩展类
 from sqlalchemy import func, cast, String, desc
 from sqlalchemy.orm import relationship
+from flask_bcrypt import Bcrypt     # 密码加密
 
 from flask_socketio import SocketIO, emit, join_room
 from datetime import datetime
@@ -43,6 +44,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = prefix + os.path.join(app.root_path, 'da
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # 关闭对模型修改的监控
 db = SQLAlchemy(app)  # 初始化扩展，传入程序实例 app
 
+<<<<<<< HEAD
 # 阿里云OSS相关信息
 OSS_ACCESS_KEY_ID = 'LTAI5tR1c1uhFRfWxjq8BWT4'
 OSS_ACCESS_KEY_SECRET = 'BdN5OIEdet7IO6KWOq7TJiivHOsC5B'
@@ -50,6 +52,10 @@ OSS_ENDPOINT = 'oss-cn-beijing.aliyuncs.com'
 OSS_BUCKET_NAME = 'graphcrafter'
 auth = oss2.Auth(OSS_ACCESS_KEY_ID, OSS_ACCESS_KEY_SECRET)
 bucket = oss2.Bucket(auth, OSS_ENDPOINT, OSS_BUCKET_NAME)
+=======
+bcrypt = Bcrypt(app)
+
+>>>>>>> 7ba18c658dafe356367f8f78fd56848004310442
 
 
 
@@ -197,10 +203,12 @@ def login():
     password = data.get('password')
     user_type = data.get('userType')
     print(username,password,user_type)
-    # 查询用户
-    user = User.query.filter_by(name=username, password=password).first()
 
-    if user:
+    # 查询用户（仅根据用户名查询）
+    user = User.query.filter_by(name=username).first()
+
+    # 加密密码匹配
+    if user and bcrypt.check_password_hash(user.password, password):
         if user_type == 'admin' and not user.is_admin:
             return jsonify({'status': 'error', 'message': 'Unauthorized access for admin'}), 402
         return jsonify({'status': 'success', 'message': 'Login successful',"user_id":user.id}), 200
@@ -224,12 +232,15 @@ def register():
             invite_code = None
             if user_type == "premium":
                 invite_code = request.form['inviteCode']
-                if (invite_code != "kjk123456" and invite_code != "kjk654321" and invite_code != "kjk666888"):
+                if invite_code not in ["kjk123456", "kjk654321", "kjk666888"]:
                     print("invalid")
                     return "error: invite code invalid", 401
+                
+            # 加密密码
+            hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
             default_avatar_url = 'http://graphcrafter.oss-cn-beijing.aliyuncs.com/avatars/1-default.webp'
-            user_now = User(id=id, name=username, password=password, email=email, is_premium=(user_type == 'premium'),photo=default_avatar_url)
+            user_now = User(id=id, name=username, password=hashed_password, email=email, is_premium=(user_type == 'premium'),photo=default_avatar_url)
             # 用户名已占用
             users = User.query.filter_by(name=username).all()
             if users:

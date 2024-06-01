@@ -37,6 +37,7 @@ import { ref, onMounted } from "vue";
 import axios from 'axios';
 
 import { useRouter } from "vue-router";
+import {ElMessage} from "element-plus";
 const router = useRouter();
 const toMain = (id: number) => {
   router.push({ path: "/main", query: { id: id } });
@@ -99,9 +100,15 @@ const deleteItem = async (id: number) => {
       await axios.delete(`/api/delete-post/${id}`);
       list.value = list.value.filter(item => item.id !== id);
       // 显示删除成功的消息
-      alert('删除成功');
+      ElMessage.success({
+        message: "删除成功",
+        duration: 1500
+      });
       //console.log('删除成功');
-      window.location.reload(); // 刷新页面
+      setTimeout(() => {
+        location.href = "/note";
+      }, 800);  // 延时800毫秒
+      //window.location.reload(); // 刷新页面
     } catch (error) {
       // 处理删除失败的情况
       console.error('Error deleting post:', error);
