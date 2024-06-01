@@ -608,6 +608,22 @@ def del_draft(post_id):
     db.session.commit()
     return jsonify({'message': 'Delete successfully'})
 
+# 暂存草稿
+@cross_origin()
+@app.route('/api/post_draft/', methods=['GET'])
+def post_draft(post_id):
+    img=request.json.get('img')
+    user_id=request.json.get('user_id')
+    label=request.json.get('label')
+    from datetime import datetime
+    date = datetime.now()
+    if img:
+        new_draft=Draft(user_id=user_id,picture=img,date=date,label='1')
+        db.session.add(new_draft)
+        db.session.commit()
+    return jsonify({'message': 'Post draft successfully'})
+
+
 # 上传头像
 @app.route('/api/upload-avatar', methods=['POST'])
 def upload_avatar():
