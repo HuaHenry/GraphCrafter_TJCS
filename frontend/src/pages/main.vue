@@ -57,7 +57,7 @@
                   <span class="date">{{ items.date }}</span>
                 </div>
                 <div class="buttons" style="display: flex; justify-content: center; margin-top: 2ch">
-                  <el-button @click="showModal = true" type="danger" size="medium" style="width: 100%; height:40px; border-radius: 10px;">一键使用模板</el-button>
+                  <el-button @click=loadButtonClick type="danger" size="medium" style="width: 100%; height:40px; border-radius: 10px;">一键使用模板</el-button>
                 </div>
                 <!-- 一键导入上传图 -->
                 <div v-if="showModal" class="modal">
@@ -110,7 +110,7 @@
                 <el-dialog :visible.sync="processedVisible" width="50%">
                   <img :src="processedImageUrl" alt="Image" style="width: 100%; height: auto;">
                   <span slot="footer" class="dialog-footer">
-                    <el-button @click="dialogVisible = false,showModal=true">取消</el-button>
+                    <el-button @click="dialogVisible = false,showModal=true,showModal=true">取消</el-button>
                     <el-button type="primary" @click="confirmImage">确认</el-button>
                   </span>
                 </el-dialog>
@@ -272,6 +272,12 @@ const processedImageUrl = ref('');
 //=============================================================================
 // 一键导入模板
 //=============================================================================
+const loadButtonClick = () => {
+  showModal.value = true;
+  push_fileList.value=[];
+  fileList.value=[];
+  noneBtnImg.value=false;
+};
 //预览图片功能
 const handlePictureCardPreview = (file) => {
     console.log(file.url);
@@ -377,17 +383,6 @@ const submitForm = async () => {
     // 结束加载动画
     loading.close();
     console.log(response);
-<<<<<<< HEAD
-
-    processedImageUrl.value = response.data.img;
-    
-    showModal.value = false;
-    dialogVisible.value = true;
-
-=======
-    processedImageUrl.value = response.data.img;
-    dialogVisible.value = true;
->>>>>>> b250f4eb287d8ccb86e9e0630282272aa4d5301d
     //在页面上显示返回的图片
     // document.getElementById("returnPic").src = response.data.img;
     
