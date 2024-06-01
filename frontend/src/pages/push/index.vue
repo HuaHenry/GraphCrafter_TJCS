@@ -152,6 +152,10 @@
         // background-color:rgb(157,13,67);
 
     }
+
+    // /deep/ .disUoloadSty .el-upload--picture-card{
+    //  display:none;   
+    // }
 </style>
 
 <script>

@@ -57,7 +57,7 @@
                   <span class="date">{{ items.date }}</span>
                 </div>
                 <div class="buttons" style="display: flex; justify-content: center; margin-top: 2ch">
-                  <el-button @click="showModal = true" type="danger" size="medium" style="width: 100%; height:40px; border-radius: 10px;">一键使用模板</el-button>
+                  <el-button @click=loadButtonClick type="danger" size="medium" style="width: 100%; height:40px; border-radius: 10px;">一键使用模板</el-button>
                 </div>
                 <!-- 一键导入上传图 -->
                 <div v-if="showModal" class="modal">
@@ -71,7 +71,6 @@
                         >
                         <el-form-item>
                         <el-upload
-                            drag
                             :class="{uoloadSty:showBtnDealImg,disUoloadSty:noneBtnImg}"
                             ref="upload"
                             action=""
@@ -84,8 +83,12 @@
                             :limit="1"
                             :file-list="fileList"
                             :auto-upload="false"
+
                         >
-                          <i class="el-icon-plus"></i>
+                          <!-- <i class="el-icon-plus">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" ><path fill="currentColor" d="M273.536 736H800a64 64 0 0 0 64-64V256a64 64 0 0 0-64-64H224a64 64 0 0 0-64 64v570.88zM296 800 147.968 918.4A32 32 0 0 1 96 893.44V256a128 128 0 0 1 128-128h576a128 128 0 0 1 128 128v416a128 128 0 0 1-128 128z"></path></svg>
+                          </i> -->
+                          <svg style="width:40px;color:gray" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" ><path fill="currentColor" d="M512 128a384 384 0 1 0 0 768 384 384 0 0 0 0-768m0-64a448 448 0 1 1 0 896 448 448 0 0 1 0-896"></path><path fill="currentColor" d="M640 288q64 0 64 64t-64 64q-64 0-64-64t64-64M214.656 790.656l-45.312-45.312 185.664-185.6a96 96 0 0 1 123.712-10.24l138.24 98.688a32 32 0 0 0 39.872-2.176L906.688 422.4l42.624 47.744L699.52 693.696a96 96 0 0 1-119.808 6.592l-138.24-98.752a32 32 0 0 0-41.152 3.456l-185.664 185.6z"></path></svg>
                           <template #tip>
                             <!-- <div style="font-size: 12px;color: #919191;">
                               单次限制上传一张图片
@@ -107,7 +110,7 @@
                 <el-dialog :visible.sync="processedVisible" width="50%">
                   <img :src="processedImageUrl" alt="Image" style="width: 100%; height: auto;">
                   <span slot="footer" class="dialog-footer">
-                    <el-button @click="dialogVisible = false">取消</el-button>
+                    <el-button @click="dialogVisible = false,showModal=true,showModal=true">取消</el-button>
                     <el-button type="primary" @click="confirmImage">确认</el-button>
                   </span>
                 </el-dialog>
@@ -269,6 +272,12 @@ const processedImageUrl = ref('');
 //=============================================================================
 // 一键导入模板
 //=============================================================================
+const loadButtonClick = () => {
+  showModal.value = true;
+  push_fileList.value=[];
+  fileList.value=[];
+  noneBtnImg.value=false;
+};
 //预览图片功能
 const handlePictureCardPreview = (file) => {
     console.log(file.url);
@@ -374,22 +383,22 @@ const submitForm = async () => {
     // 结束加载动画
     loading.close();
     console.log(response);
-<<<<<<< HEAD
-    processedImageUrl.value = response.data.img;
-    
-    dialogVisible.value = true;
-=======
-<<<<<<< HEAD
     //在页面上显示返回的图片
-    document.getElementById("returnPic").src = response.data.img;
-=======
->>>>>>> efd6b243915d2a24d44a3fe8c0bd6875398e0274
+    // document.getElementById("returnPic").src = response.data.img;
     
->>>>>>> 343c8037e60043acc908bf44ac0b7719b2cd02ad
+
   } catch(error) {
     console.error('Error adding like:', error);
   }  
 };
+
+const confirmImage = () => {
+  // 在这里添加你确认图片后的操作
+  console.log('Image confirmed');
+  dialogVisible.value = false;
+  
+};
+
 
 //=============================================================================
 // 页面跳转
@@ -727,18 +736,22 @@ const goBack = () => {
 //         }
 //   }
 
-/deep/ .el-upload {
-    width:350PX;
-    height: 400PX;
-}
+// /deep/ .el-upload {
+//     width:350PX;
+//     height: 400PX;
+// }
+
+/deep/ .disUoloadSty .el-upload--picture-card{
+     display:none;   
+    }
 
 .el-icon-plus:before{
-   content:'\e7c3'
+   content:''
 }
 
 .el-icon-plus{
    font-size: 30px;
-   height:80%;
+//    height:80%;
 }
 
   
