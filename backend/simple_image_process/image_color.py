@@ -11,9 +11,10 @@ def show_hsv(src, type,size):
     # 转换成HSV色彩空间
     hsv = cv.cvtColor(src, cv.COLOR_BGR2HSV)
     h, s, v = cv.split(hsv)
-
+    
     if type == "Hue":
         # 色度/色调
+        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
         plt_save(image=h, title='Hue',width_pixels=width,height_pixels=height)
     elif type == "Saturation":
         # 饱和度
