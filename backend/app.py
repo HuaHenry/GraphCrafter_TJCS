@@ -1678,8 +1678,8 @@ from simple_image_process.image_color import show_hsv
 from simple_image_process.image_enhancement import show_enhancement
 
 # 防止通信报错 by zyp
-# import locale
-# locale.setlocale(locale.LC_CTYPE,"chinese")
+import locale
+locale.setlocale(locale.LC_CTYPE,"chinese")
 
 WIN = sys.platform.startswith('win')
 if WIN:  # 如果是 Windows 系统，使用三个斜线

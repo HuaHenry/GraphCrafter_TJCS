@@ -4,7 +4,7 @@ import Dashboard from "@/pages/dashboard/dashboard.vue";
 import easy1 from "@/pages/edit/easy1.vue";
 import Manage from "@/pages/manager/Manage.vue";
 import conversation from "@/pages/gpt.vue";
-
+import p2p from "@/pages/p2p.vue";
 import Demo from "@/views/Demo.vue";
 import Login from "@/components/Login.vue";
 import Register from "@/components/Register.vue";
@@ -45,6 +45,11 @@ export const routes = [
         name: "conversation",
         path: "/conversation",
         component: conversation,
+      },
+      {
+        name: "p2p",
+        path: "/p2p",
+        component: p2p,
       },
       {
         name: "easy1",

@@ -2,7 +2,7 @@
   <div class="custom-box">
     <!--顶栏-->
     <div class="header">
-      <div class="room-info">图像评估建议专家</div>
+      <div class="room-info">对话修图模型</div>
     </div>
     <!--对话框-->
     <div ref="content" class="message-container">
@@ -188,31 +188,16 @@ export default {
       });
     }
     async function sendMsg(){
-      // 使用FormData传参数和文件
-      var form = new FormData();
-      console.log(file.value);
-      const config = {
-        headers:{'Content-Type':'multipart/form-data'}
-      };
-      form.append("file", file.value);
-      form.append("question",text.value);
-      form.append("img_url",img_url.value);
-      // form.append("billBillType", this.edit_id);
-      axios.post(`/gpt/${store.state.user_id}`,form,config).then(function (response) {
-        text.value='';
-        // 清空 messages
-        messages.value = [];
-        // 重新获取消息
-        axios.get(`/api/getmsg/${store.state.user_id}`).then(function (response) {
-          messages.value = response.data["data"];
-          console.log(messages);
+      const response_img=axios.post('/api/chat_P2P',{
+        img_url:img_url.value,
+        prompt:text.value,
+        user_id:store.state.user_id,
+      }).then(function (response) {
+          console.log(response);
         }).catch(function (error) {
           console.log(error);
         });
-        console.log(response);
-      }).catch(function (error) {
-        console.log(error);
-      });
+      console.log(response_img.data["img"]);
     }
 
 
