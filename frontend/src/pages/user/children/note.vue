@@ -132,7 +132,7 @@ onMounted(() => {
   position: absolute;
   top: 10px; // 调整位置以适应你的设计
   right: 10px;
-  background: #ff4d4f;
+  background: #DE124A;
   border: none;
   border-radius: 50%;
   color: white;
@@ -141,7 +141,7 @@ onMounted(() => {
   font-size: 14px;
 
   &:hover {
-    background: #ff7875;
+    background: #cd1546c3;
   }
 }
 
