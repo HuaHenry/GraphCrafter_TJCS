@@ -40,7 +40,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
 import { LazyImg, Waterfall } from "vue-waterfall-plugin-next";
@@ -74,10 +74,11 @@ const fetchSearchResults = async () => {
     }
 };
 
+// 监视路由查询参数的变化
+watch(() => route.query.query, () => {
+    fetchSearchResults();
+});
 onMounted(fetchSearchResults);
-// const toMain = (id: number) => {
-//   router.push({ path: "/main" });
-// };
 const toMain = (id: number) => {
   router.push({ path: "/main", query: { id: id } });
 };
