@@ -1713,6 +1713,7 @@ def postnotes():
 # 参数：img_url(原图URL) + img_select(对应的模板url，用于寻找prompt)
 # 本地调试请注释该函数！！！！！！！
 @app.route('/api/call_P2P', methods=['GET', 'POST'])
+@app.route('/api/call_P2P', methods=['GET', 'POST'])
 def call_P2P():
     img_old = request.json.get('img_url')
     img_select = request.json.get('img_select')
@@ -1750,52 +1751,12 @@ def call_P2P():
         bucket.put_object(bucket_url, fileobj)
         # 删除文件夹中的图片
         os.remove(mod_img_url)
-        print("https://graphcrafter.oss-cn-beijing.aliyuncs.com/" + bucket_url)
-        return jsonify({'img': "https://graphcrafter.oss-cn-beijing.aliyuncs.com/" + bucket_url})
-    return jsonify({'img': None})
-
-# 对话修图指令
-@app.route('/api/chat_P2P', methods=['GET', 'POST'])
-def chat_P2P():
-    img_old = request.json.get('img_url')
-    # img_select = request.json.get('img_select')
-    prompt = request.json.get('prompt')
-    user_id = request.json.get('user_id')
-    # print(img_old, img_select, user_id)
-    if img_old is None or prompt is None or user_id is None:
-        return jsonify({'img': 'Invalid data provided'}), 400
-    # 查询Picture数据表，找到对应的prompt
-    # pic_tmp = Picture(id=img_select, prompt='turn it yellow.')
-    # db.session.add(pic_tmp)
-    # db.session.commit()
-    # prompt = Picture.query.filter_by(id=img_select).first().prompt
-    # if prompt is None:
-    #     print("prompt is None")
-    #     return jsonify({'img': 'Prompt not found'})
-    # 调用修图指令
-    # img_new = os.system("python /root/Code/Models/P2P/P2P.py --img_url "+img_old+" --prompt "+prompt)
-    # 函数调用修图命令，存储为/mod/{prompt+"_modify_"+img_old}
-    sys.path.append(r'/root/Code/Models/P2P')
-    import P2P
-    P2P.modify_pic(img_old, prompt)
-    # 上传阿里云图床
-    # OSS_ACCESS_KEY_ID = "LTAI5tR1c1uhFRfWxjq8BWT4"
-    # OSS_ACCESS_KEY_SECRET = "BdN5OIEdet7IO6KWOq7TJiivHOsC5B"
-    auth = oss2.ProviderAuth(EnvironmentVariableCredentialsProvider())
-    bucket = oss2.Bucket(
-        auth, 'https://oss-cn-beijing.aliyuncs.com', 'graphcrafter')
-    # /root/Code/Models/P2P/weights
-    prompt = prompt.replace(" ", "")
-    mod_img_url = prompt + "_modify_" + img_old.split("/")[-1]
-    with open(mod_img_url, mode="rb") as fileobj:
-        fileobj.seek(0, os.SEEK_SET)
-        current = fileobj.tell()
-        bucket_url = user_id+'/'+prompt + "_modify_" + img_old.split("/")[-1]
-        bucket.put_object(bucket_url, fileobj)
-        # 删除文件夹中的图片
-        os.remove(mod_img_url)
-        print("https://graphcrafter.oss-cn-beijing.aliyuncs.com/" + bucket_url)
-        return jsonify({'img': "https://graphcrafter.oss-cn-beijing.aliyuncs.com/" + bucket_url})
+        current_url = 'https://graphcrafter.oss-cn-beijing.aliyuncs.com/' + bucket_url
+        new_pic = Picture(id=current_url, prompt=prompt,Ptype=2)
+        db.session.add(new_pic)
+        db.session.commit()        
+        return jsonify({'img': "https://graphcrafter.oss-cn-beijing.aliyuncs.com/"+ bucket_url})
+    
     return jsonify({'img': None})
 
 # 删除帖子的接口
