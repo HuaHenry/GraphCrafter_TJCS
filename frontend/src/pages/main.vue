@@ -12,6 +12,8 @@
               style="width: 100%; height: 100%"
               fit="cover"
             />
+            <!-- 给图片加个角标 -->
+            <div class="pic_tab">{{ Ptab }}</div>
             <!-- <img :src="item" alt=""  style="width: 100%"/> -->
           </el-carousel-item>
         </el-carousel>
@@ -228,6 +230,8 @@ const isCollected=ref();
 const showModal = ref(false);
 const isFollowed = ref(false);
 const followStatus = ref(0);  // 0: 单独关注, 1: 互相关注
+const Ptab = ref('');          // 图片角标        
+const picurl_PtabList = ref([]); // 图片角标列表
 const rules = ref({
   name: [
   {
@@ -350,7 +354,25 @@ const upclick_click = (file, fileList) => {
 const handleCarouselChange = (index) => {
 
   // console.log('handleCarouselChange called');
-  console.log('当前显示的图片是：', ImageList.value[index]);
+    console.log('当前显示的图片是：', ImageList.value[index]);
+    // TODO:图片切换角标内容切换
+    const tmp_id = picurl_PtabList.value[index];
+    if (tmp_id == -1) {
+        Ptab.value = '原 图';
+    }
+    else if(tmp_id == 0){
+        Ptab.value = '原 图';
+    }
+    else if(tmp_id == 1){
+        Ptab.value = '简单修图';
+    }
+    else if (tmp_id == 2) {
+        Ptab.value = '指令修图';
+    }
+    else{
+        Ptab.value = '无信息';
+    }
+    console.log('当前显示的角标是：', Ptab.value);
   current_pic.value = ImageList.value[index];
 };
 
@@ -438,12 +460,17 @@ const fetchPost = async () => {
     // const data = await fetch('http://127.0.0.1:5000/api/post_content/${post_id}'); 
     const result = response.data;
     // 解构出各个属性数组
-    const { pictures,date,title,body,author,avatar,author_id,likes_num,comments_num,collects_num } = result;
+    const { pictures,date,title,body,author,avatar,author_id,likes_num,comments_num,collects_num,pic_tabs } = result;
     //author_id =  response.data.author_id;
     // 遍历数组，构建每个对象并添加到数组中
     for (let i = 0; i < pictures.length; i++) {
       ImageList.value.push(pictures[i]);
-    }
+      }
+    //构建每个tab添加到数组中
+    for(let i = 0; i < pic_tabs.length; i++){
+      picurl_PtabList.value.push(pic_tabs[i]);
+      }
+    console.log(picurl_PtabList.value)
     // ImageList.value= pictures;
     items.value = {
       pictures: pictures, // 使用对应索引的图片 URL 作为 src 属性
@@ -459,8 +486,24 @@ const fetchPost = async () => {
       collects_num: collects_num
     };
     console.log("WTFFFFFF",items.value.author_id)
-    current_pic.value = ImageList.value[0];
-
+      current_pic.value = ImageList.value[0];
+    // 初始化图片角标
+    const tmp_id = picurl_PtabList.value[0];
+    if (tmp_id == -1) {
+        Ptab.value = '原 图';
+    }
+    else if(tmp_id == 0){
+        Ptab.value = '原 图';
+    }
+    else if(tmp_id == 1){
+        Ptab.value = '简单修图';
+    }
+    else if (tmp_id == 2) {
+        Ptab.value = '指令修图';
+    }
+    else{
+        Ptab.value = '无信息';
+    }
   }catch(error){
     console.error('Error fetching data:', error);
   }
@@ -863,6 +906,26 @@ const goBack = () => {
       height: 100%;
       object-fit: contain;
       min-width: 440px;
+
+        .pic_tab{
+            position: fixed; 
+            z-index: 1000; 
+            top:10px; 
+            right:10px; 
+            height:30px;
+            width:60px;
+            background-color: rgb(169, 0, 34);
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: bolder;
+            color: whitesmoke;
+            //文字水平垂直居中
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+        }
+
     }
 
     .interaction-container {
