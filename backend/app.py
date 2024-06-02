@@ -1522,7 +1522,7 @@ def postnotes():
 # 后端调用修图指令
 # 参数：img_url(原图URL) + img_select(对应的模板url，用于寻找prompt)
 # 本地调试请注释该函数！！！！！！！
-'''@app.route('/api/call_P2P', methods=['GET', 'POST'])
+@app.route('/api/call_P2P', methods=['GET', 'POST'])
 def call_P2P():
     img_old = request.json.get('img_url')
     img_select = request.json.get('img_select')
@@ -1556,10 +1556,14 @@ def call_P2P():
         bucket.put_object(user_id + '/' + bucket_url, fileobj)
         # 删除文件夹中的图片
         os.remove(mod_img_url)
+        current_url = 'https://graphcrafter.oss-cn-beijing.aliyuncs.com/' + bucket_url
+        new_pic = Picture(id=current_url, prompt=prompt,Ptype=2)
+        db.session.add(new_pic)
+        db.session.commit()        
         return jsonify({'img': "https://graphcrafter.oss-cn-beijing.aliyuncs.com/"+ bucket_url})
     
     return jsonify({'img': None})
-'''
+
 # 删除帖子的接口
 @app.route('/api/delete-post/<int:post_id>', methods=['DELETE'])
 def delete_post(post_id):
