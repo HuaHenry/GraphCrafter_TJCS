@@ -50,7 +50,7 @@
       <div class="avatar-editor">
         <img :src="processedImg " class="avatar-preview" alt="修改图片" />
         <div class="avatar-actions">
-          <el-button class="primary-button" type="primary" @click="">保存</el-button>
+          <el-button class="primary-button" type="primary" @click="saveProcessedImage">保存</el-button>
           <el-button class="secondary-button" @click="cancelSaveImage">取消</el-button>
         </div>
       </div>
@@ -124,7 +124,6 @@ onMounted(() => {
 const handleChannelClick = (index: number) => {
   activeChannel.value = index;
   fetchData();
-  dealTitleLength();
 };
 
 const useNow = (description, type) => {
@@ -203,10 +202,23 @@ const PreviewImg = (event) => {
     }
 };
 
-  function cancelSaveImage()
-  {
-    isProcessedImgOpen.value = false;
-  }
+function cancelSaveImage()
+{
+  isProcessedImgOpen.value = false;
+}
+
+async function saveProcessedImage()
+{
+  isProcessedImgOpen.value = false;
+  const userId = store.state.user_id;
+  const picInfo = {
+    img: processedImg.value,
+    user_id: userId,
+    label: channels[activeChannel.value].name,
+  };
+  await axios.post('/api/post_draft/', picInfo);
+}
+
 // 处理方法的名称最多只显示20个字
 function truncatedText(text) {
   if (text.length > 24) {

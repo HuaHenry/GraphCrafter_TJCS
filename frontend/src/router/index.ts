@@ -89,11 +89,6 @@ export const routes = [
             name: "feedback",
           },
           {
-            path: "/agreeCollection",
-            component: () => import("@/pages/message/children/agree-collection.vue"),
-            name: "agreeCollection", // 用于 keep-alive, 必须与SFC自动推导或者显示声明的组件name一致
-          },
-          {
             path: "/follower",
             component: () => import("@/pages/message/children/follower.vue"),
             name: "follower", // 用于 keep-alive, 必须与SFC自动推导或者显示声明的组件name一致

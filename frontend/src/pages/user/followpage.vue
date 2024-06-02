@@ -12,7 +12,7 @@
         <img :src="following.avatar" class="user-avatar" alt="User Avatar" @click="ToOther(following.id)">
         <div class="user-details">
           <div class="user-name">{{ following.name }}</div>
-          <div class="user-stats">{{ following.followers }} 粉丝   {{ following.posts }} 发帖</div>
+          <div class="user-stats">{{ following.followers }} 粉丝 · {{ following.posts }} 发帖</div>
         </div>
         <el-button type="danger" size="large" round @click="handleClick(following.id)" class="custom-danger-button">
           {{ following.buttonText }}
