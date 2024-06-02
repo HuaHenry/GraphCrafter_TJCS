@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 0f25b49a6ff5
+Revision ID: 888964675a08
 Revises: 
-Create Date: 2024-06-01 22:22:05.331121
+Create Date: 2024-06-02 16:18:37.267713
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '0f25b49a6ff5'
+revision = '888964675a08'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -24,49 +24,50 @@ def upgrade():
     sa.Column('Ptype', sa.Integer(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
-    op.drop_table('_message_old_20240527')
-    op.drop_table('_opencv_old_20240601_3')
-    op.drop_table('_opencv_old_20240601_2')
-    op.drop_table('_opencv_old_20240601_1')
-    op.drop_table('_user_old_20240526')
-    op.drop_table('_opencv_old_20240601_4')
-    op.drop_table('_opencv_old_20240601_6')
-    op.drop_table('_opencv_old_20240601')
-    op.drop_table('_user_old_20240507_1')
-    op.drop_table('_user_old_20240524')
-    op.drop_table('_user_old_20240507')
-    op.drop_table('_opencv_old_20240601_5')
-    op.drop_table('_user_old_20240524_2')
-    op.drop_table('_message_old_20240527_1')
-    op.drop_table('_post_old_20240524')
-    op.drop_table('_user_old_20240524_1')
-    with op.batch_alter_table('chat', schema=None) as batch_op:
-        batch_op.alter_column('id',
-               existing_type=sa.NUMERIC(),
-               type_=sa.Integer(),
-               nullable=False,
-               autoincrement=True)
-        batch_op.alter_column('last_time',
-               existing_type=sa.TIMESTAMP(),
-               type_=sa.DateTime(),
-               existing_nullable=True)
-        batch_op.drop_constraint(None, type_='foreignkey')
-        batch_op.drop_constraint(None, type_='foreignkey')
+    # op.drop_table('_opencv_old_20240601_3')
+    # op.drop_table('_opencv_old_20240601')
+    # op.drop_table('_opencv_old_20240601_2')
+    # op.drop_table('_message_old_20240527_1')
+    # op.drop_table('_opencv_old_20240601_6')
+    # op.drop_table('_user_old_20240507_1')
+    # op.drop_table('_post_old_20240524')
+    # op.drop_table('_user_old_20240524_2')
+    # op.drop_table('_user_old_20240524_1')
+    # op.drop_table('_message_old_20240527')
+    # op.drop_table('_user_old_20240526')
+    # op.drop_table('_opencv_old_20240601_4')
+    # op.drop_table('_user_old_20240524')
+    # op.drop_table('history')
+    # op.drop_table('_opencv_old_20240601_5')
+    # op.drop_table('_opencv_old_20240601_1')
+    # op.drop_table('_user_old_20240507')
+    # with op.batch_alter_table('chat', schema=None) as batch_op:
+    #     batch_op.alter_column('id',
+    #            existing_type=sa.NUMERIC(),
+    #            type_=sa.Integer(),
+    #            nullable=False,
+    #            autoincrement=True)
+    #     batch_op.alter_column('last_time',
+    #            existing_type=sa.TIMESTAMP(),
+    #            type_=sa.DateTime(),
+    #            existing_nullable=True)
+    #     batch_op.drop_constraint(None, type_='foreignkey')
+    #     batch_op.drop_constraint(None, type_='foreignkey')
 
-    with op.batch_alter_table('message', schema=None) as batch_op:
-        batch_op.alter_column('id',
-               existing_type=sa.NUMERIC(),
-               type_=sa.Integer(),
-               nullable=False,
-               autoincrement=True)
-        batch_op.alter_column('time',
-               existing_type=sa.TIMESTAMP(),
-               type_=sa.DateTime(),
-               existing_nullable=True)
-        batch_op.drop_constraint(None, type_='foreignkey')
-        batch_op.drop_constraint(None, type_='foreignkey')
-        batch_op.create_foreign_key(None, 'chat', ['chat_id'], ['id'])
-        batch_op.create_foreign_key(None, 'user', ['user_id'], ['id'])
+    # with op.batch_alter_table('message', schema=None) as batch_op:
+    #     batch_op.alter_column('id',
+    #            existing_type=sa.NUMERIC(),
+    #            type_=sa.Integer(),
+    #            nullable=False,
+    #            autoincrement=True)
+    #     batch_op.alter_column('time',
+    #            existing_type=sa.TIMESTAMP(),
+    #            type_=sa.DateTime(),
+    #            existing_nullable=True)
+    #     batch_op.drop_constraint(None, type_='foreignkey')
+    #     batch_op.drop_constraint(None, type_='foreignkey')
+    #     batch_op.create_foreign_key(None, 'chat', ['chat_id'], ['id'])
+    #     batch_op.create_foreign_key(None, 'user', ['user_id'], ['id'])
 
     # ### end Alembic commands ###
 
@@ -101,7 +102,7 @@ def downgrade():
                nullable=True,
                autoincrement=True)
 
-    op.create_table('_user_old_20240524_1',
+    op.create_table('_user_old_20240507',
     sa.Column('id', sa.INTEGER(), nullable=False),
     sa.Column('name', sa.VARCHAR(length=20), nullable=True),
     sa.Column('password', sa.VARCHAR(length=20), nullable=True),
@@ -110,47 +111,11 @@ def downgrade():
     sa.Column('age', sa.INTEGER(), nullable=True),
     sa.Column('sex', sa.BOOLEAN(), nullable=True),
     sa.Column('senior', sa.BOOLEAN(), nullable=True),
-    sa.Column('description', sa.VARCHAR(length=100), nullable=True),
-    sa.Column('status', sa.BOOLEAN(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('_post_old_20240524',
+    op.create_table('_opencv_old_20240601_1',
     sa.Column('id', sa.INTEGER(), nullable=False),
-    sa.Column('author_id', sa.INTEGER(), nullable=True),
-    sa.Column('date', sa.DATETIME(), nullable=True),
-    sa.Column('picture1', sa.VARCHAR(length=60), nullable=True),
-    sa.Column('picture2', sa.VARCHAR(length=60), nullable=True),
-    sa.Column('picture3', sa.VARCHAR(length=60), nullable=True),
-    sa.Column('picture4', sa.VARCHAR(length=60), nullable=True),
-    sa.Column('picture5', sa.VARCHAR(length=60), nullable=True),
-    sa.Column('title', sa.VARCHAR(length=60), nullable=True),
-    sa.Column('body', sa.TEXT(), nullable=True),
-    sa.Column('model', sa.INTEGER(), nullable=True),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table('_message_old_20240527_1',
-    sa.Column('id', sa.NUMERIC(), nullable=True),
-    sa.Column('type', sa.VARCHAR(length=60), nullable=True),
-    sa.Column('time', sa.TIMESTAMP(), nullable=True),
-    sa.Column('content', sa.TEXT(), nullable=True),
-    sa.Column('user_id', sa.INTEGER(), nullable=True),
-    sa.Column('chat_id', sa.INTEGER(), nullable=True),
-    sa.Column('show_time', sa.BOOLEAN(), nullable=True),
-    sa.ForeignKeyConstraint(['chat_id'], ['Chat.id'], ),
-    sa.ForeignKeyConstraint(['user_id'], ['User.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table('_user_old_20240524_2',
-    sa.Column('id', sa.INTEGER(), nullable=False),
-    sa.Column('name', sa.VARCHAR(length=20), nullable=True),
-    sa.Column('status', sa.BOOLEAN(), nullable=True),
-    sa.Column('password', sa.VARCHAR(length=20), nullable=True),
-    sa.Column('photo', sa.VARCHAR(length=60), nullable=True),
-    sa.Column('email', sa.VARCHAR(length=254), nullable=True),
-    sa.Column('age', sa.INTEGER(), nullable=True),
-    sa.Column('sex', sa.BOOLEAN(), nullable=True),
-    sa.Column('senior', sa.BOOLEAN(), nullable=True),
-    sa.Column('description', sa.VARCHAR(length=100), nullable=True),
+    sa.Column('desciption', sa.TEXT(), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('_opencv_old_20240601_5',
@@ -161,15 +126,13 @@ def downgrade():
     sa.Column('code', sa.TEXT(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('_user_old_20240507',
-    sa.Column('id', sa.INTEGER(), nullable=False),
-    sa.Column('name', sa.VARCHAR(length=20), nullable=True),
-    sa.Column('password', sa.VARCHAR(length=20), nullable=True),
-    sa.Column('photo', sa.VARCHAR(length=60), nullable=True),
-    sa.Column('email', sa.VARCHAR(length=254), nullable=True),
-    sa.Column('age', sa.INTEGER(), nullable=True),
-    sa.Column('sex', sa.BOOLEAN(), nullable=True),
-    sa.Column('senior', sa.BOOLEAN(), nullable=True),
+    op.create_table('history',
+    sa.Column('id', sa.INTEGER(), nullable=True),
+    sa.Column('role', sa.VARCHAR(length=60), nullable=True),
+    sa.Column('time', sa.TIMESTAMP(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
+    sa.Column('content', sa.TEXT(), nullable=True),
+    sa.Column('user_id', sa.INTEGER(), nullable=True),
+    sa.Column('picture', sa.VARCHAR(length=60), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('_user_old_20240524',
@@ -182,30 +145,6 @@ def downgrade():
     sa.Column('sex', sa.BOOLEAN(), nullable=True),
     sa.Column('senior', sa.BOOLEAN(), nullable=True),
     sa.Column('description', sa.VARCHAR(length=100), nullable=True),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table('_user_old_20240507_1',
-    sa.Column('id', sa.INTEGER(), nullable=False),
-    sa.Column('name', sa.VARCHAR(length=20), nullable=True),
-    sa.Column('password', sa.VARCHAR(length=20), nullable=True),
-    sa.Column('photo', sa.VARCHAR(length=60), nullable=True),
-    sa.Column('email', sa.VARCHAR(length=254), nullable=True),
-    sa.Column('age', sa.INTEGER(), nullable=True),
-    sa.Column('sex', sa.BOOLEAN(), nullable=True),
-    sa.Column('senior', sa.BOOLEAN(), nullable=True),
-    sa.Column('description', sa.TEXT(length=100), nullable=True),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table('_opencv_old_20240601',
-    sa.Column('id', sa.INTEGER(), nullable=False),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table('_opencv_old_20240601_6',
-    sa.Column('id', sa.INTEGER(), nullable=False),
-    sa.Column('desciption', sa.TEXT(), nullable=True),
-    sa.Column('image', sa.VARCHAR(length=60), nullable=True),
-    sa.Column('type', sa.VARCHAR(length=10), nullable=True),
-    sa.Column('code', sa.TEXT(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('_opencv_old_20240601_4',
@@ -229,23 +168,6 @@ def downgrade():
     sa.Column('status', sa.BOOLEAN(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('_opencv_old_20240601_1',
-    sa.Column('id', sa.INTEGER(), nullable=False),
-    sa.Column('desciption', sa.TEXT(), nullable=False),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table('_opencv_old_20240601_2',
-    sa.Column('id', sa.INTEGER(), nullable=False),
-    sa.Column('desciption', sa.TEXT(), nullable=True),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table('_opencv_old_20240601_3',
-    sa.Column('id', sa.INTEGER(), nullable=False),
-    sa.Column('desciption', sa.TEXT(), nullable=False),
-    sa.Column('image', sa.VARCHAR(), nullable=False),
-    sa.Column('type', sa.VARCHAR(), nullable=False),
-    sa.PrimaryKeyConstraint('id')
-    )
     op.create_table('_message_old_20240527',
     sa.Column('id', sa.NUMERIC(), nullable=True),
     sa.Column('type', sa.VARCHAR(length=60), nullable=True),
@@ -255,6 +177,94 @@ def downgrade():
     sa.Column('chat_id', sa.INTEGER(), nullable=True),
     sa.ForeignKeyConstraint(['chat_id'], ['Chat.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['User.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('_user_old_20240524_1',
+    sa.Column('id', sa.INTEGER(), nullable=False),
+    sa.Column('name', sa.VARCHAR(length=20), nullable=True),
+    sa.Column('password', sa.VARCHAR(length=20), nullable=True),
+    sa.Column('photo', sa.VARCHAR(length=60), nullable=True),
+    sa.Column('email', sa.VARCHAR(length=254), nullable=True),
+    sa.Column('age', sa.INTEGER(), nullable=True),
+    sa.Column('sex', sa.BOOLEAN(), nullable=True),
+    sa.Column('senior', sa.BOOLEAN(), nullable=True),
+    sa.Column('description', sa.VARCHAR(length=100), nullable=True),
+    sa.Column('status', sa.BOOLEAN(), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('_user_old_20240524_2',
+    sa.Column('id', sa.INTEGER(), nullable=False),
+    sa.Column('name', sa.VARCHAR(length=20), nullable=True),
+    sa.Column('status', sa.BOOLEAN(), nullable=True),
+    sa.Column('password', sa.VARCHAR(length=20), nullable=True),
+    sa.Column('photo', sa.VARCHAR(length=60), nullable=True),
+    sa.Column('email', sa.VARCHAR(length=254), nullable=True),
+    sa.Column('age', sa.INTEGER(), nullable=True),
+    sa.Column('sex', sa.BOOLEAN(), nullable=True),
+    sa.Column('senior', sa.BOOLEAN(), nullable=True),
+    sa.Column('description', sa.VARCHAR(length=100), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('_post_old_20240524',
+    sa.Column('id', sa.INTEGER(), nullable=False),
+    sa.Column('author_id', sa.INTEGER(), nullable=True),
+    sa.Column('date', sa.DATETIME(), nullable=True),
+    sa.Column('picture1', sa.VARCHAR(length=60), nullable=True),
+    sa.Column('picture2', sa.VARCHAR(length=60), nullable=True),
+    sa.Column('picture3', sa.VARCHAR(length=60), nullable=True),
+    sa.Column('picture4', sa.VARCHAR(length=60), nullable=True),
+    sa.Column('picture5', sa.VARCHAR(length=60), nullable=True),
+    sa.Column('title', sa.VARCHAR(length=60), nullable=True),
+    sa.Column('body', sa.TEXT(), nullable=True),
+    sa.Column('model', sa.INTEGER(), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('_user_old_20240507_1',
+    sa.Column('id', sa.INTEGER(), nullable=False),
+    sa.Column('name', sa.VARCHAR(length=20), nullable=True),
+    sa.Column('password', sa.VARCHAR(length=20), nullable=True),
+    sa.Column('photo', sa.VARCHAR(length=60), nullable=True),
+    sa.Column('email', sa.VARCHAR(length=254), nullable=True),
+    sa.Column('age', sa.INTEGER(), nullable=True),
+    sa.Column('sex', sa.BOOLEAN(), nullable=True),
+    sa.Column('senior', sa.BOOLEAN(), nullable=True),
+    sa.Column('description', sa.TEXT(length=100), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('_opencv_old_20240601_6',
+    sa.Column('id', sa.INTEGER(), nullable=False),
+    sa.Column('desciption', sa.TEXT(), nullable=True),
+    sa.Column('image', sa.VARCHAR(length=60), nullable=True),
+    sa.Column('type', sa.VARCHAR(length=10), nullable=True),
+    sa.Column('code', sa.TEXT(), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('_message_old_20240527_1',
+    sa.Column('id', sa.NUMERIC(), nullable=True),
+    sa.Column('type', sa.VARCHAR(length=60), nullable=True),
+    sa.Column('time', sa.TIMESTAMP(), nullable=True),
+    sa.Column('content', sa.TEXT(), nullable=True),
+    sa.Column('user_id', sa.INTEGER(), nullable=True),
+    sa.Column('chat_id', sa.INTEGER(), nullable=True),
+    sa.Column('show_time', sa.BOOLEAN(), nullable=True),
+    sa.ForeignKeyConstraint(['chat_id'], ['Chat.id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['User.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('_opencv_old_20240601_2',
+    sa.Column('id', sa.INTEGER(), nullable=False),
+    sa.Column('desciption', sa.TEXT(), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('_opencv_old_20240601',
+    sa.Column('id', sa.INTEGER(), nullable=False),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('_opencv_old_20240601_3',
+    sa.Column('id', sa.INTEGER(), nullable=False),
+    sa.Column('desciption', sa.TEXT(), nullable=False),
+    sa.Column('image', sa.VARCHAR(), nullable=False),
+    sa.Column('type', sa.VARCHAR(), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
     op.drop_table('picture')

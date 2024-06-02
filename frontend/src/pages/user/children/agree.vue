@@ -7,7 +7,7 @@
       :label="item"
       :value="item">
     </el-option>
-  </el-select><el-button type="primary"  @click="labelSearch" style="margin-left: 20px;">搜索</el-button></div>
+  </el-select><el-button type="primary"  @click="labelSearch" style="margin-left: 20px;background-color: #000C42; color: white; border-color: #000C42;">搜索</el-button></div>
     <Waterfall :list="list" :width="220" :hasAroundGutter="false" style="max-width: 1260px">
       <template #item="{item}">
         <div class="card" :key="componentKey">
