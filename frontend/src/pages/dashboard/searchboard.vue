@@ -15,7 +15,14 @@
         <ul class="user-list">
           <li v-for="user in list" :key="user.id" class="user-item">
             <img :src="user.photo" class="user-avatar" alt="User photo" @click="toOther(user.id)">
-            <div class="user-name">{{ user.name }}</div>
+            <div class="user-details">
+              <div class="user-name">{{ user.name }}</div>
+              <div class="user-stats">{{ user.followers }} 粉丝 · {{ user.posts }} 发帖</div>
+            </div>
+            <el-button :type="user.is_followed ? 'danger' : 'primary'" size="large" round @click="handleUserClick(user.id)">
+              {{ user.buttonText }}
+            </el-button>
+
           </li>
         </ul>
       </div>
@@ -56,30 +63,39 @@ import axios from 'axios';
 import { LazyImg, Waterfall } from "vue-waterfall-plugin-next";
 import "vue-waterfall-plugin-next/dist/style.css";
 import store from "../../store/index";
+import { ElMessage, ElMessageBox } from 'element-plus';
 
 const route = useRoute();
 const router = useRouter();
 
 const list = ref([]);
 const activeChannel = ref('帖子'); // 初始频道设为“推荐”
+const curuserId = store.state.user_id;  // 从 Vuex store 获取当前用户 ID
 // 获取搜索结果
 const fetchSearchResults = async () => {
     const query = route.query.query;
+
     if (!query) {
         list.value = [];
         return;
     }
     try {
         let url = '/api/posts/search';
-      if (activeChannel.value === '用户') {
+        if (activeChannel.value === '用户') {
             url = '/api/users/search';
         }
-        const response = await axios.get(url, { params: { query } });
+        const response = await axios.get(url, { params: { query, userId: curuserId} });
         if (activeChannel.value === '用户') {
             list.value = response.data.users.map(user => ({
                 id: user.id,
                 name: user.name,
-                photo: user.photo
+                photo: user.photo,
+                followers: user.followers,
+                posts: user.posts,
+                is_followed: user.is_followed,
+                is_follower: user.is_follower,
+                buttonText: createButtonLabel(user)
+
             }));
         } else {
             list.value = response.data.posts.map(post => ({
@@ -102,6 +118,7 @@ watch(() => route.query.query, () => {
     fetchSearchResults();
 });
 onMounted(fetchSearchResults);
+
 const toMain = (id: number) => {
   router.push({ path: "/main", query: { id: id } });
 };
@@ -110,9 +127,107 @@ const toOther = (id) => {
   router.push({ path: "/other", query: { id } });
 };
 
-const handleUserClick = () => {
-  // Add follow/unfollow logic here
+const followUser = async (followingId) => {
+  console.log(store.state.user_id); // 查看 Vuex store 的当前状态
+  console.log(followingId); // 查看 Vuex store 的当前状态
+
+  if (store.state.user_id == followingId) {
+    ElMessage.error('您不能关注自己。');
+    return;
+  }
+  try {
+
+    const response = await axios.post('/api/follow', {
+      follower_id: store.state.user_id,
+      followed_id: followingId
+    });
+    if (response.status === 200) {
+      ElMessage.success('关注成功！');
+      updateFollowingState(followingId);
+    }
+  } catch (error) {
+    ElMessage.error('关注失败，请稍后再试。');
+  }
 };
+
+const unfollowUser = async (followingId) => {
+  try {
+    const response = await axios.post('/api/unfollow', {
+      follower_id: store.state.user_id,
+      followed_id: followingId
+    });
+
+    if (response.status === 200) {
+      ElMessage.success('取消关注成功！');
+      // 更新 followings 数组，移除已取消关注的用户
+      updateFollowingState(followingId);
+    }
+  } catch (error) {
+    ElMessage.error('取消关注失败，请稍后再试。');
+  }
+};
+const checkFollowStatus = async (followingId) => {
+  try {
+    const response = await axios.get(`/api/check-follow/${store.state.user_id}/${followingId}`);
+    return {
+      isFollowed: response.data.isFollowed,
+      status: response.data.status
+    };
+  } catch (error) {
+    console.error('Error checking follow status:', error);
+    return { isFollowed: false, status: 0 };
+  }
+};
+
+const updateFollowingState = async (followingId) => {
+  const index = list.value.findIndex(f => f.id === followingId);
+  if (index !== -1) {
+    const statusDetails = await checkFollowStatus(followingId);
+    list.value[index].is_followed = statusDetails.isFollowed;
+    list.value[index].is_follower = statusDetails.status;
+    list.value[index].buttonText = createButtonLabel(list.value[index]);
+  }
+};
+
+const createButtonLabel = (user) => {
+  let label: string; // 默认标签
+  if (user.is_follower  && user.is_followed ) {
+    label = '互相关注';
+  } else if (user.is_followed) {
+    label = '已关注';
+  } else {
+    label = '关注';
+  }
+  console.log(user.is_follower);
+  console.log(user.is_followed);
+  console.log(`Creating label for user ${user.id}: ${label}`); // 输出标签创建情况
+  return label;
+};
+
+const handleUserClick = async (userId) => {
+  const userIndex = list.value.findIndex(user => user.id === userId);
+  if (userIndex !== -1) {
+    const user = list.value[userIndex];
+    if (user.is_followed) {
+      try {
+        // Confirm unfollow action
+        await ElMessageBox.confirm('您确定要取消关注吗？', '确认信息', {
+          confirmButtonText: '确认',
+          cancelButtonText: '取消',
+          type: 'warning'
+        });
+        // API call to unfollow the user
+        await unfollowUser(userId);
+      } catch (error) {
+        // Handling the case where the user cancels the operation
+        ElMessage.info('已取消操作');
+      }
+    } else {
+      await followUser(userId);
+      }
+  }
+};
+
 
 </script>
 
@@ -125,8 +240,11 @@ const handleUserClick = () => {
 .user-item {
   display: flex;
   align-items: center;
+  justify-content: space-between; /* Keeps elements justified but can be adjusted */
+  gap: 10px; /* Reduces the gap between elements in the flex container */
   margin-bottom: 16px;
 }
+
 
 .user-avatar {
   width: 48px;
@@ -136,10 +254,17 @@ const handleUserClick = () => {
   cursor: pointer;
 }
 
+.user-details {
+  flex-grow: 1;
+  margin-right: 0px; /* Adjust or remove if unnecessary */
+}
 .user-name {
   font-weight: bold;
 }
-
+.user-stats {
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 14px;
+}
 .static-channel {
   padding: 8px 16px;
   background-color: #f0f0f0;

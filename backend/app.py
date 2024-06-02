@@ -1982,28 +1982,32 @@ def search_posts():
     return jsonify({'posts': results})
 
 
+# 广场页模糊搜索用户
 @app.route('/api/users/search', methods=['GET'])
 @cross_origin(supports_credentials=True)
 def search_users():
     query = request.args.get('query', '')
+    current_user_id = request.args.get('userId')  # 获取前端传来的当前用户 ID
     if not query:
         return jsonify({'users': []})
 
-    # Search for users by name or email that includes the query string
-    users = User.query.filter((User.name.ilike(f'%{query}%'))).all()
+    users = User.query.filter(User.name.ilike(f'%{query}%')).all()
+    results = []
 
-    results = [{
-        'id': user.id,
-        'name': user.name,
-        'photo': user.photo,
-        'email': user.email,
-        'age': user.age,
-        'sex': 'Male' if user.sex else 'Female',
-        'is_admin': user.is_admin,
-        'is_premium': user.is_premium,
-        'description': user.description,
-        'status': 'Active' if user.status else 'Banned'
-    } for user in users]
+    for user in users:
+        is_followed = Follow.query.filter_by(follower_id=current_user_id, followed_id=user.id).first() is not None
+        followers_count = Follow.query.filter_by(followed_id=user.id).count()
+        posts_count = Post.query.filter_by(author_id=user.id).count()
+        is_follower = Follow.query.filter_by(followed_id=current_user_id, follower_id=user.id).first() is not None
+        results.append({
+            'id': user.id,
+            'name': user.name,
+            'photo': user.photo,
+            'followers': followers_count,
+            'posts': posts_count,
+            'is_followed': is_followed,
+            'is_follower': is_follower
+        })
     print(results)
     return jsonify({'users': results})
 
@@ -3020,7 +3024,9 @@ def follow_user():
     data = request.get_json()
     follower_id = data.get('follower_id')
     followed_id = data.get('followed_id')
-    # print(follower_id)
+    print(follower_id)
+    print(followed_id)
+
     if follower_id == followed_id:
         return jsonify({'error': 'Cannot follow yourself'}), 400
 
