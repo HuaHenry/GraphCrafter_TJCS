@@ -6,10 +6,12 @@
           
         <div class="tool-box"></div>
         <div class="input-box">
-          <input type="text" class="search-input" placeholder="搜索" />
+          <input type="text" class="search-input" placeholder="搜索" v-model="searchQuery"  />
           <div class="input-button">
-            <div class="close-icon"><Close style="width: 1em; height: 1em; margin-right: 8px" /></div>
-            <div class="search-icon"><Search style="width: 1em; height: 1em; margin-right: 8px" /></div>
+            <div class="close-icon" @click="clearSearch">
+              <Close class="icon-hover" style="width: 1em; height: 1em; margin-right: 8px" /></div>
+            <div class="search-icon" @click="searchPosts">
+              <Search class="icon-hover" style="width: 1em; height: 1em; margin-right: 8px" /></div>
           </div>
         </div>
         <div class="right"></div>
@@ -29,15 +31,20 @@
             </a>
           </li>
 
-          <ul v-if="activeChannel === 'photoshop' || activeChannel === 'easy' || activeChannel === 'conversation'" class="sub-menu">
-              <li :class="{ 'active-channel': activeChannel === ' conversation ' }" @click="toConversation">
+          <ul v-if="activeChannel === 'photoshop' || activeChannel === 'easy' || activeChannel === 'conversation'|| activeChannel === 'p2p'" class="sub-menu">
+              <li :class="{ 'active-channel': activeChannel === 'conversation' }" @click="toConversation">
                 <a class="link-wrapper">
-                  <ChatSquare style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel">对话</span>
+                  <DataAnalysis style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel">图像评估</span>
                 </a>
               </li>
               <li :class="{ 'active-channel': activeChannel === 'easy' }" @click="toEasy">
                 <a class="link-wrapper">
-                  <MagicStick style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel">简单</span>
+                  <MagicStick style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel">简单修图</span>
+                </a>
+              </li>
+              <li :class="{ 'active-channel': activeChannel === 'p2p' }" @click="top2p">
+                <a class="link-wrapper">
+                  <ChatDotRound style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel">对话修图</span>
                 </a>
               </li>
             </ul>
@@ -123,11 +130,35 @@ import {
   CirclePlus,
   Brush,
   MagicStick,
-  ChatSquare
+  ChatDotRound,
+  ChatSquare,
+  DataAnalysis
 } from "@element-plus/icons-vue";
 import { useRouter } from "vue-router";
 import { ref } from "vue";
 import store from "../store/index";
+import axios from "axios";
+
+/* 搜索 */
+const searchQuery = ref("");
+
+const searchPosts = async () => {
+  try {
+    await axios.get('/api/posts/search', {
+      params: {
+        query: searchQuery.value
+      }
+    });
+    router.push({ name: 'SearchBoard', query: { query: searchQuery.value } });
+  } catch (error) {
+    console.error("Error fetching posts:", error);
+  }
+};
+
+const clearSearch = () => {
+  searchQuery.value = "";
+  router.push('/dashboard'); // 跳转到 dashboard 页面
+};
 
 const toDemo = () => {
   router.push({ name: 'Demo' });  // 确保这里的路由名称与你的routes配置中的主页名称相匹配
@@ -164,9 +195,15 @@ const toEasy = () => {
   activeChannel.value = 'easy';
 };
 
+const top2p = () => {
+  router.push({ name: 'p2p' });
+  activeChannel.value = 'p2p';
+};
+
 const togglePhotoshop = () => {
   activeChannel.value = activeChannel.value === 'photoshop' ? null : 'photoshop';
 };
+
 
 const toggleMoreInfoState = () => {
   let div = document.getElementById('more-info');
@@ -188,6 +225,21 @@ store.commit("setCurUserID",localStorage.getItem("user")?localStorage.getItem("u
 </script>
 
 <style lang="less" scoped>
+
+// /deep/ div#app{
+//   height: 100px;
+// }
+
+.icon-hover {
+  cursor: pointer; /* 使鼠标悬浮时变为手型 */
+  transition: transform 0.3s ease; /* 过渡效果，可以添加其他视觉效果，如轻微放大 */
+}
+
+.icon-hover:hover {
+  transform: scale(1.1); /* 轻微放大图标 */
+}
+
+
 .sub-menu {
   padding-left: 20px;  /* 保持适当的缩进 */
   background-color: rgba(255, 255, 255, 0);

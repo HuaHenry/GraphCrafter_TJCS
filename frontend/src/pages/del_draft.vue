@@ -10,7 +10,7 @@
             <el-image
               :src="items.pictures"
               style="width: 100%; height: 100%"
-              fit="scale-down"
+              fit="contain"
             />
           <!-- </el-carousel-item> -->
         </el-carousel>
@@ -220,8 +220,9 @@ const goBack = () => {
       0 8px 64px 0 rgba(0, 0, 0, 0.04),
       0 1px 4px 0 rgba(0, 0, 0, 0.02);
     border-radius: 20px;
-    background: #895454;
+    background: #fcfcfc;
     transform-origin: left top;
+    border:#fcfcfc 3px solid;
 
     .media-container {
       width: 68%;
@@ -608,7 +609,7 @@ const goBack = () => {
 
           .submit {
             margin-left: 80px;
-            width: 160px;
+            width: 150px;
             height: 50px;
             display: flex;
             align-items: center;
@@ -617,14 +618,14 @@ const goBack = () => {
             font-weight: 600;
             cursor: pointer;
             flex-shrink: 0;
-            background:red;
+            background:#DE124A;
             border-radius: 44px;
-            font-size: 16px;
+            font-size: 15px;
           }
 
           .down {
-            margin-left: 40px;
-            width: 160px;
+            margin-left: 20px;
+            width: 150px;
             height: 50px;
             display: flex;
             align-items: center;
@@ -633,9 +634,9 @@ const goBack = () => {
             font-weight: 600;
             cursor: pointer;
             flex-shrink: 0;
-            background: #3d8af5;
+            background: #000C42;
             border-radius: 44px;
-            font-size: 16px;
+            font-size: 15px;
           }
 
 

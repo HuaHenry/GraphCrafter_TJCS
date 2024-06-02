@@ -15,7 +15,7 @@ from datetime import datetime
 from flask_migrate import Migrate
 
 
-# 后端上传阿里云图床    
+# 后端上传阿里云图床
 import oss2
 import os
 from oss2.credentials import EnvironmentVariableCredentialsProvider
@@ -31,8 +31,8 @@ from simple_image_process.image_color import show_hsv
 from simple_image_process.image_enhancement import show_enhancement
 
 # 防止通信报错 by zyp
-# import locale
-# locale.setlocale(locale.LC_CTYPE,"chinese")
+import locale
+locale.setlocale(locale.LC_CTYPE,"chinese")
 
 WIN = sys.platform.startswith('win')
 if WIN:  # 如果是 Windows 系统，使用三个斜线
@@ -40,12 +40,14 @@ if WIN:  # 如果是 Windows 系统，使用三个斜线
 else:  # 否则使用四个斜线
     prefix = 'sqlite:////'
 
-app = Flask(__name__, static_url_path='/', static_folder='./../frontend/dist', template_folder='./../frontend/dist')
+app = Flask(__name__, static_url_path='/',
+            static_folder='./../frontend/dist', template_folder='./../frontend/dist')
 socketio = SocketIO(app, cors_allowed_origins="http://localhost:5173")
 
 # 创建数据库
-app.config['SQLALCHEMY_DATABASE_URI'] = prefix + os.path.join(app.root_path, 'data.db')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # 关闭对模型修改的监控
+app.config['SQLALCHEMY_DATABASE_URI'] = prefix + \
+    os.path.join(app.root_path, 'data.db')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True  # 关闭对模型修改的监控
 db = SQLAlchemy(app)  # 初始化扩展，传入程序实例 app
 migrate = Migrate(app, db)
 
@@ -60,20 +62,20 @@ bucket = oss2.Bucket(auth, OSS_ENDPOINT, OSS_BUCKET_NAME)
 bcrypt = Bcrypt(app)
 
 
-
 class User(db.Model):  # 用户
     id = db.Column(db.Integer, primary_key=True)  # 主键，账号
     name = db.Column(db.String(20))  # 名字
-    password=db.Column(db.String(20))  # 密码
+    password = db.Column(db.String(20))  # 密码
     photo = db.Column(db.String(60))  # 头像
     email = db.Column(db.String(254))  # 邮箱
     age = db.Column(db.Integer)  # 年龄
     sex = db.Column(db.Boolean)  # 性别，1是男0是女
     is_admin = db.Column(db.Boolean, default=False)
     is_premium = db.Column(db.Boolean, default=False)
-    description = db.Column(db.String(100))  #一句话介绍自己
+    description = db.Column(db.String(100))  # 一句话介绍自己
     status = db.Column(db.Boolean)  # 是否正常 0正常 1被封
-    
+
+
 class Post(db.Model):  # 帖子
     id = db.Column(db.Integer, primary_key=True)  # 主键
     author_id = db.Column(db.Integer)      # 作者id
@@ -88,6 +90,7 @@ class Post(db.Model):  # 帖子
     model = db.Column(db.Integer)  # 模型参数id
     status = db.Column(db.Boolean)  # 状态，0是正常 1是被禁
 
+
 class Comment(db.Model):  # 评论
     id = db.Column(db.Integer, primary_key=True)  # 主键
     date = db.Column(db.DateTime)     # 日期
@@ -95,23 +98,27 @@ class Comment(db.Model):  # 评论
     author_id = db.Column(db.Integer)      # 作者id
     post_id = db.Column(db.Integer)      # 文章id
 
+
 class Like(db.Model):  # 点赞
     id = db.Column(db.Integer, primary_key=True)  # 主键
     date = db.Column(db.DateTime)     # 日期
     author_id = db.Column(db.Integer)      # 点赞者id
     post_id = db.Column(db.Integer)      # 文章id
 
-class Collect( db.Model):  # 收藏
+
+class Collect(db.Model):  # 收藏
     id = db.Column(db.Integer, primary_key=True)  # 主键
     date = db.Column(db.DateTime)     # 日期
     user_id = db.Column(db.Integer)      # 作者id
     post_id = db.Column(db.Integer)      # 文章id
+
 
 class Follow(db.Model):  # 关注
     id = db.Column(db.Integer, primary_key=True)  # 主键
     follower_id = db.Column(db.Integer)      # 粉丝id
     followed_id = db.Column(db.Integer)      # 被关注者id
     status = db.Column(db.Integer)      # 关注状态,0表示单独关注，1表示互相关注
+
 
 class FeedBack(db.Model):  # 用户反馈
     id = db.Column(db.Integer, primary_key=True)  # 主键
@@ -120,6 +127,7 @@ class FeedBack(db.Model):  # 用户反馈
     content = db.Column(db.Text)  # 正文
     processed = db.Column(db.Boolean)  # 是否已处理
     back_content = db.Column(db.Text)  # 反馈内容
+
 
 class ModifyHistory(db.Model):  # 修图历史
     id = db.Column(db.Integer, primary_key=True)  # 主键
@@ -130,15 +138,17 @@ class ModifyHistory(db.Model):  # 修图历史
     prompt = db.Column(db.Text)  # 提示
     model_id = db.Column(db.Integer)  # 模型参数
 
+
 class Message(db.Model):  # 单条消息记录
     __tablename__ = 'message'
     id = db.Column(db.Integer, primary_key=True)  # 主键
     type = db.Column(db.String(60))  # 消息的类型
     time = db.Column(db.DateTime)  # 发送时间
-    show_time = db.Column(db.Boolean) # 该条消息的时间是否显示
+    show_time = db.Column(db.Boolean)  # 该条消息的时间是否显示
     content = db.Column(db.Text)  # 内容
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))  # 发送的用户id
     chat_id = db.Column(db.Integer, db.ForeignKey('chat.id'))  # 关联Chat模型的id
+
 
 class Chat(db.Model):  # 会话
     __tablename__ = 'chat'
@@ -148,7 +158,9 @@ class Chat(db.Model):  # 会话
     unread_sender = db.Column(db.Boolean)  # 发起者是否已经阅读
     unread_receiver = db.Column(db.Boolean)  # 接收者是否已经阅读
     last_time = db.Column(db.DateTime)  # 最后一条消息的时间
-    messages = relationship("Message", backref="chat", cascade="all, delete-orphan") # 包含的消息 一对多
+    messages = relationship("Message", backref="chat",
+                            cascade="all, delete-orphan")  # 包含的消息 一对多
+
 
 class Draft(db.Model):  # 草稿箱
     __tablename__ = 'Draft'
@@ -157,6 +169,7 @@ class Draft(db.Model):  # 草稿箱
     user_id = db.Column(db.Integer)      # 用户id
     picture = db.Column(db.String(60))     # 图片
     label = db.Column(db.Text)  # 标签
+
 
 class Picture(db.Model):  # 图片
     id = db.Column(db.String(60), primary_key=True)  # 主键，即路由
@@ -167,27 +180,36 @@ class Picture(db.Model):  # 图片
 class Opencv(db.Model):
     id = db.Column(db.Integer, primary_key=True)  # 主键
     description = db.Column(db.Text)  # 正文
-    image = db.Column(db.String(60)) 
+    image = db.Column(db.String(60))
     type = db.Column(db.String(10))
-    code = db.Column(db.Text)  #代码
+    code = db.Column(db.Text)  # 代码
+
+class History(db.Model):  # 图像评估聊天历史
+    __tablename__ = 'history'
+    id = db.Column(db.Integer, primary_key=True)  # 主键
+    role = db.Column(db.String(60))  # 消息方
+    time = db.Column(db.TIMESTAMP, default=func.current_timestamp())
+    content = db.Column(db.Text)  # 内容
+    user_id = db.Column(db.Integer) # 用户id
+    picture = db.Column(db.String(60)) # 图片
 
 # app = Flask(__name__)
 app.config.from_object(__name__)
 
 
 CORS(app, resources={r'/*': {'origins': '*'}})
- 
- 
+
+
 @app.route('/api/ping', methods=['GET'])
 def ping_pong():
     return jsonify('pong!')
- 
- 
+
+
 @app.route('/')
 def index():
     return render_template('index.html')
- 
- 
+
+
 @app.route('/<path:fallback>')
 def fallback(fallback):       # Vue Router 的 mode 为 'hash' 时可移除该方法
     if fallback.startswith('css/') or fallback.startswith('js/')\
@@ -205,7 +227,7 @@ def login():
     username = data.get('username')
     password = data.get('password')
     user_type = data.get('userType')
-    print(username,password,user_type)
+    print(username, password, user_type)
 
     # 查询用户（仅根据用户名查询）
     user = User.query.filter_by(name=username).first()
@@ -214,7 +236,7 @@ def login():
     if user and bcrypt.check_password_hash(user.password, password):
         if user_type == 'admin' and not user.is_admin:
             return jsonify({'status': 'error', 'message': 'Unauthorized access for admin'}), 402
-        return jsonify({'status': 'success', 'message': 'Login successful',"user_id":user.id}), 200
+        return jsonify({'status': 'success', 'message': 'Login successful', "user_id": user.id}), 200
     else:
         return jsonify({'status': 'error', 'message': 'Invalid username or password'}), 401
 
@@ -238,12 +260,14 @@ def register():
                 if invite_code not in ["kjk123456", "kjk654321", "kjk666888"]:
                     print("invalid")
                     return "error: invite code invalid", 401
-                
+
             # 加密密码
-            hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+            hashed_password = bcrypt.generate_password_hash(
+                password).decode('utf-8')
 
             default_avatar_url = 'http://graphcrafter.oss-cn-beijing.aliyuncs.com/avatars/1-default.webp'
-            user_now = User(id=id, name=username, password=hashed_password, email=email, is_premium=(user_type == 'premium'),photo=default_avatar_url)
+            user_now = User(id=id, name=username, password=hashed_password, email=email, is_premium=(
+                user_type == 'premium'), photo=default_avatar_url)
             # 用户名已占用
             users = User.query.filter_by(name=username).all()
             if users:
@@ -261,7 +285,7 @@ def register():
 
 # @app.route('/api/opencvimages')
 # def get_images():
-    
+
 #     images = Opencv.query.all()
 #     response = [{
 #         'id': img.id,
@@ -270,6 +294,71 @@ def register():
 #         'code': img.code,
 #     } for img in images]
 #     return jsonify(response)
+
+
+# 广场页模糊搜索帖子
+@app.route('/api/posts/search', methods=['GET'])
+@cross_origin(supports_credentials=True)
+def search_posts():
+    query = request.args.get('query', '')
+    if not query:
+        return jsonify({'posts': []})
+
+    posts = db.session.query(
+        Post.id,
+        Post.picture1,
+        Post.title,
+        User.name,
+        User.photo,
+        func.count(Like.id).label('like')
+    ).join(User, Post.author_id == User.id) \
+        .outerjoin(Like, Post.id == Like.post_id) \
+        .filter(Post.title.ilike(f'%{query}%')) \
+        .group_by(Post.picture1,
+                  Post.title,
+                  User.name,
+                  User.photo,
+                  Post.id) \
+        .all()
+
+    results = [{
+        'id': post[0],
+        'picture1': post[1],
+        'title': post[2],
+        'author': post[3],
+        'avatar': post[4],
+        'likes': post[5]
+    } for post in posts]
+
+    print(results)
+
+    return jsonify({'posts': results})
+
+
+@app.route('/api/users/search', methods=['GET'])
+@cross_origin(supports_credentials=True)
+def search_users():
+    query = request.args.get('query', '')
+    if not query:
+        return jsonify({'users': []})
+
+    # Search for users by name or email that includes the query string
+    users = User.query.filter((User.name.ilike(f'%{query}%'))).all()
+
+    results = [{
+        'id': user.id,
+        'name': user.name,
+        'photo': user.photo,
+        'email': user.email,
+        'age': user.age,
+        'sex': 'Male' if user.sex else 'Female',
+        'is_admin': user.is_admin,
+        'is_premium': user.is_premium,
+        'description': user.description,
+        'status': 'Active' if user.status else 'Banned'
+    } for user in users]
+    print(results)
+    return jsonify({'users': results})
 
 
 @app.route('/api/opencvimages', methods=['GET'])
@@ -301,7 +390,6 @@ def get_images():
     return response_json
 
 
-
 # 示例用户资料
 @app.route('/api/user/<int:user_id>', methods=['GET'])
 def get_user_profile(user_id):
@@ -314,15 +402,14 @@ def get_user_profile(user_id):
             'email': user.email,
             'age': user.age,
             'sex': user.sex,
-            'is_premium':user.is_premium,
-            #'senior': user.senior,
+            'is_premium': user.is_premium,
+            # 'senior': user.senior,
             'bio': user.description
         })
     return jsonify({'error': 'User not found'}), 404
 
 
-
-#显示被点赞数量
+# 显示被点赞数量
 def get_total_likes_count_for_user(user_id):
     # Query to count unique likes per post for a specific author
     likes_count = db.session.query(db.func.count(db.distinct(Like.id)))\
@@ -331,13 +418,15 @@ def get_total_likes_count_for_user(user_id):
                     .scalar()
     return likes_count
 
-#显示被收藏数量
+# 显示被收藏数量
+
+
 def get_favorites_count_for_user(user_id):
     # Query to count unique likes per post for a specific author
     favorites_count = db.session.query(db.func.count(db.distinct(Collect.id)))\
-                    .join(Post, Post.id == Collect.post_id)\
-                    .filter(Post.author_id == user_id)\
-                    .scalar()
+        .join(Post, Post.id == Collect.post_id)\
+        .filter(Post.author_id == user_id)\
+        .scalar()
     return favorites_count
 
 
@@ -345,44 +434,47 @@ def get_favorites_count_for_user(user_id):
 @app.route('/api/user-stats/<int:user_id>')
 def user_stats(user_id):
     likes_count = get_total_likes_count_for_user(user_id)
-    favorites_count = get_favorites_count_for_user(user_id)  # Assuming you implement this
+    favorites_count = get_favorites_count_for_user(
+        user_id)  # Assuming you implement this
     return jsonify({
         'likes': likes_count,
         'favorites': favorites_count
     })
 
 
-#获取关注和粉丝数量
+# 获取关注和粉丝数量
 @app.route('/api/user/<int:user_id>/counts')
 def get_follow_counts(user_id):
     # Count how many people the user is following
     following_count = Follow.query.filter_by(follower_id=user_id).count()
-    
+
     # Count how many followers the user has
     followers_count = Follow.query.filter_by(followed_id=user_id).count()
-    
+
     return jsonify({
         'following_count': following_count,
         'followers_count': followers_count
     })
 
 
-#得到我follow的人的列表
+# 得到我follow的人的列表
 @app.route('/api/followings/<int:user_id>')
 def get_followings(user_id):
     # Fetching all users that the given user_id is following
-    followings = Follow.query.join(User, Follow.followed_id == User.id).filter(Follow.follower_id == user_id).all()
+    followings = Follow.query.join(User, Follow.followed_id == User.id).filter(
+        Follow.follower_id == user_id).all()
 
     # Preparing the data to return
     following_list = []
     for following in followings:
         user = User.query.get(following.followed_id)
-        
+
         # Counting the followers of each followed user
         followers_count = Follow.query.filter_by(followed_id=user.id).count()
-        
+
         # Counting the posts for each followed user
-        posts_count = Post.query.filter_by(author_id=user.id, status=False).count()  # only counting active posts
+        posts_count = Post.query.filter_by(
+            author_id=user.id, status=False).count()  # only counting active posts
 
         following_list.append({
             'id': user.id,
@@ -395,21 +487,23 @@ def get_followings(user_id):
     return jsonify({'followings': following_list})
 
 
-#得到我follow的人的列表
+# 得到我follow的人的列表
 @app.route('/api/followers/<int:user_id>')
 def get_followers(user_id):
     # Fetching all users that are following the given user_id
-    followers = Follow.query.join(User, Follow.follower_id == User.id).filter(Follow.followed_id == user_id).all()
+    followers = Follow.query.join(User, Follow.follower_id == User.id).filter(
+        Follow.followed_id == user_id).all()
 
     # Preparing the data to return
     follower_list = []
     for follower in followers:
         user = User.query.get(follower.follower_id)
-        
+
         followers_count = Follow.query.filter_by(followed_id=user.id).count()
-        
+
         # Counting the active posts of this follower
-        posts_count = Post.query.filter_by(author_id=user.id, status=False).count()
+        posts_count = Post.query.filter_by(
+            author_id=user.id, status=False).count()
 
         follower_list.append({
             'id': user.id,
@@ -423,12 +517,14 @@ def get_followers(user_id):
 
 ###################################################################################################################################################################################################################################################################################
 # 获取用户收藏
+
+
 @cross_origin()
 @app.route('/api/collection/<int:user_id>', methods=['GET'])
 def get_collection(user_id):
-    print(user_id,type(user_id))
+    print(user_id, type(user_id))
     # user = db.session.query(Post.picture1,Post.title,User.name,User.photo,func.count(Like.id).label('like')).filter(Post.id==Collect.post_id and Collect.user_id==1 and Post.author_id==User.id and Like.post_id==Post.id).all()
-    collections=db.session.query(
+    collections = db.session.query(
         Post.picture1,
         Post.title,
         User.name,
@@ -436,12 +532,12 @@ def get_collection(user_id):
         func.count(Like.id).label('like'),
         Post.id
     ).join(Collect, Post.id == Collect.post_id).join(User, Post.author_id == User.id).outerjoin(Like, Post.id == Like.post_id).filter(Collect.user_id == user_id).group_by(Post.picture1, Post.title, User.name, User.photo).all()
-    pictures=[]
-    titles=[]
-    authors=[]
-    avatars=[]
-    likes=[]
-    ids=[]
+    pictures = []
+    titles = []
+    authors = []
+    avatars = []
+    likes = []
+    ids = []
     for collection in collections:
         pictures.append(collection[0])
         titles.append(collection[1])
@@ -455,12 +551,14 @@ def get_collection(user_id):
         'authors': authors,
         'avatars': avatars,
         'likes': likes,
-        'ids':ids
+        'ids': ids
     })
     return response_json
     # return jsonify({'error': 'collect not found'}), 404
 
 # 获取个人笔记
+
+
 @cross_origin()
 @app.route('/api/note/<int:user_id>', methods=['GET'])
 def get_note(user_id):
@@ -472,21 +570,21 @@ def get_note(user_id):
     #     User.photo,
     #     func.count(Like.id).label('like')
     # ).join(Collect, Post.id == Collect.post_id).join(User, Post.author_id == User.id).outerjoin(Like, Post.id == Like.post_id).filter(Collect.user_id == 1).group_by(Post.picture1, Post.title, User.name, User.photo).all()
-# 构建查询
+    # 构建查询
     collections = db.session.query(
-    Post.picture1,
-    Post.title,
-    User.name,
-    User.photo,
-    func.count(Like.id).label('like'),
-    Post.id
+        Post.picture1,
+        Post.title,
+        User.name,
+        User.photo,
+        func.count(Like.id).label('like'),
+        Post.id
     ).join(User, Post.author_id == User.id).filter(User.id == user_id).outerjoin(Like, Post.id == Like.post_id).group_by(Post.picture1, Post.title, User.name, User.photo).all()
-    pictures=[]
-    titles=[]
-    authors=[]
-    avatars=[]
-    likes=[]
-    ids=[]
+    pictures = []
+    titles = []
+    authors = []
+    avatars = []
+    likes = []
+    ids = []
     for collection in collections:
         pictures.append(collection[0])
         titles.append(collection[1])
@@ -500,26 +598,28 @@ def get_note(user_id):
         'authors': authors,
         'avatars': avatars,
         'likes': likes,
-        'ids':ids
+        'ids': ids
     })
     return response_json
     # return jsonify({'error': 'collect not found'}), 404
 
 # 获取草稿箱
+
+
 @cross_origin()
 @app.route('/api/drafts/<int:user_id>', methods=['GET'])
 def get_drafts(user_id):
     # user = db.session.query(Post.picture1,Post.title,User.name,User.photo,func.count(Like.id).label('like')).filter(Post.id==Collect.post_id and Collect.user_id==1 and Post.author_id==User.id and Like.post_id==Post.id).all()
-    drafts=db.session.query(
+    drafts = db.session.query(
         Draft.picture,
-        cast(Draft.date,String),
+        cast(Draft.date, String),
         Draft.label,
         Draft.id
     ).join(User, Draft.user_id == User.id).filter(User.id == user_id).all()
-    pictures=[]
-    dates=[]
-    labels=[]
-    ids=[]
+    pictures = []
+    dates = []
+    labels = []
+    ids = []
     for draft in drafts:
         pictures.append(draft[0])
         dates.append(draft[1])
@@ -529,67 +629,73 @@ def get_drafts(user_id):
         'pictures': pictures,
         'dates': dates,
         'labels': labels,
-        'ids':ids
+        'ids': ids
     })
     return response_json
     # return jsonify({'error': 'collect not found'}), 404
 
 # 获取草稿箱
+
+
 @cross_origin()
 @app.route('/api/get_draft/<int:post_id>', methods=['GET'])
 def get_draft(post_id):
     # user = db.session.query(Post.picture1,Post.title,User.name,User.photo,func.count(Like.id).label('like')).filter(Post.id==Collect.post_id and Collect.user_id==1 and Post.author_id==User.id and Like.post_id==Post.id).all()
-    draft=db.session.query(
+    draft = db.session.query(
         Draft.picture,
-        cast(Draft.date,String),
+        cast(Draft.date, String),
         Draft.label,
         Draft.id
-    ).join(User, Draft.user_id == User.id).filter(User.id == 1, Draft.id==post_id).first()
+    ).join(User, Draft.user_id == User.id).filter(User.id == 1, Draft.id == post_id).first()
     response_json = jsonify({
         'pictures': draft[0],
         'dates': draft[1],
         'labels': draft[2],
-        'ids':draft[3]
+        'ids': draft[3]
     })
     print({
         'pictures': draft[0],
         'dates': draft[1],
         'labels': draft[2],
-        'ids':draft[3]
+        'ids': draft[3]
     })
     return response_json
     # return jsonify({'error': 'collect not found'}), 404
 
 # 获取草稿箱标签
+
+
 @cross_origin()
 @app.route('/api/get_labels/<int:user_id>', methods=['GET'])
 def get_labels(user_id):
     # user = db.session.query(Post.picture1,Post.title,User.name,User.photo,func.count(Like.id).label('like')).filter(Post.id==Collect.post_id and Collect.user_id==1 and Post.author_id==User.id and Like.post_id==Post.id).all()
-    drafts=db.session.query(
+    drafts = db.session.query(
         Draft.label
     ).join(User, Draft.user_id == User.id).filter(User.id == user_id).distinct()
-    labels=[]
+    labels = []
     for draft in drafts:
         labels.append(draft[0])
     return labels
     # return jsonify({'error': 'collect not found'}), 404
 
 # 根据标签获取草稿箱
+
+
 @cross_origin()
 @app.route('/api/search_drafts/<selected_label>', methods=['GET'])
 def search_drafts(selected_label):
     print(selected_label)
     # user = db.session.query(Post.picture1,Post.title,User.name,User.photo,func.count(Like.id).label('like')).filter(Post.id==Collect.post_id and Collect.user_id==1 and Post.author_id==User.id and Like.post_id==Post.id).all()
-    drafts=db.session.query(
+    drafts = db.session.query(
         Draft.picture,
-        cast(Draft.date,String),
+        cast(Draft.date, String),
         Draft.label,
         Draft.id
-    ).join(User, Draft.user_id == User.id).filter(User.id == 1,Draft.label==selected_label).all()
-    pictures=[]
-    dates=[]
-    labels=[]
-    ids=[]
+    ).join(User, Draft.user_id == User.id).filter(User.id == 1, Draft.label == selected_label).all()
+    pictures = []
+    dates = []
+    labels = []
+    ids = []
     for draft in drafts:
         pictures.append(draft[0])
         dates.append(draft[1])
@@ -599,32 +705,35 @@ def search_drafts(selected_label):
         'pictures': pictures,
         'dates': dates,
         'labels': labels,
-        'ids':ids
+        'ids': ids
     })
     return response_json
     # return jsonify({'error': 'collect not found'}), 404
 
 # 草稿箱删除
+
+
 @cross_origin()
 @app.route('/api/del_draft/<int:post_id>', methods=['GET'])
 def del_draft(post_id):
-    draft_to_del=Draft.query.get(post_id)
+    draft_to_del = Draft.query.get(post_id)
     db.session.delete(draft_to_del)
     db.session.commit()
     return jsonify({'message': 'Delete successfully'})
 
 # 暂存草稿
+
+
 @cross_origin()
-@app.route('/api/post_draft/', methods=['POST'])
+@app.route('/api/post_draft/', methods=['POST', 'GET'])
 def post_draft():
-    img=request.json.get('img')
-    user_id=request.json.get('user_id')
-    label=request.json.get('label')
-    print(img)
+    img = request.json.get('img')
+    user_id = request.json.get('user_id')
+    label = request.json.get('label')
     from datetime import datetime
     date = datetime.now()
     if img:
-        new_draft=Draft(user_id=user_id,picture=img,date=date,label='1')
+        new_draft = Draft(user_id=user_id, picture=img, date=date, label='1')
         db.session.add(new_draft)
         db.session.commit()
     return jsonify({'message': 'Post draft successfully'})
@@ -647,17 +756,19 @@ def upload_avatar():
     photo_url = url_for('serve_avatar', filename=filename)
     return jsonify({'photo': photo_url})
 
+
 @app.route('/uploads/<filename>')
 def serve_avatar(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 
-#查看要改的用户名是否已存在，要确保所有都是unique
+# 查看要改的用户名是否已存在，要确保所有都是unique
 @app.route('/check-username', methods=['GET'])
 def check_username():
     username = request.args.get('username')
     user_id = request.args.get('user_id')
-    existing_user = User.query.filter(User.name == username, User.id != user_id).first()
+    existing_user = User.query.filter(
+        User.name == username, User.id != user_id).first()
     return jsonify(is_unique=existing_user is None)
 
 
@@ -681,6 +792,8 @@ def update_profile():
     return jsonify({'message': 'Profile updated successfully'})
 
 # 更新用户头像 URL
+
+
 @app.route('/api/update-avatar', methods=['POST'])
 def update_avatar():
     data = request.json
@@ -698,15 +811,18 @@ def update_avatar():
     return jsonify({'message': 'Avatar updated successfully'})
 
 # 转换User格式
+
+
 def transUserData(user):
     return {'id': user.id,
             'name': user.name,
             'avatar': user.photo,
             }
 
+
 @app.route('/api/get-user-info/<int:user_id>', methods=['GET'])
 def get_user_info(user_id):
-    if user_id>=0:
+    if user_id >= 0:
         user = User.query.filter_by(id=user_id).first()
         if user:
             response = {
@@ -720,21 +836,28 @@ def get_user_info(user_id):
         return jsonify({'error': 'Userid parameter is required'}), 400
 
 # 转换时间格式
+
+
 def formatDateTime(time):
     return time.strftime("%Y年%m月%d日 %H:%M:%S").replace("年0", "年").replace("月0", "月").replace("日0", "日")
+
 
 def parse_last_time(last_time_str):
     return datetime.strptime(last_time_str, '%Y年%m月%d日 %H:%M:%S')
 
 # 获取历史消息
+
+
 @app.route('/api/chat/<int:user_id>', methods=['GET'])
 def get_chats(user_id):
-    print("get chats user:",user_id)
+    print("get chats user:", user_id)
     stuff_id = 0
-    chats = Chat.query.filter((Chat.receiver == user_id) | ((Chat.sender == user_id) & (Chat.receiver != stuff_id))).all()
+    chats = Chat.query.filter((Chat.receiver == user_id) | (
+        (Chat.sender == user_id) & (Chat.receiver != stuff_id))).all()
     data = []
     for chat in chats:
-        messages = Message.query.filter_by(chat_id=chat.id).order_by(Message.id).all()
+        messages = Message.query.filter_by(
+            chat_id=chat.id).order_by(Message.id).all()
         chat_data = {
             'id': chat.id,
             'sender': transUserData(User.query.get(chat.sender)),
@@ -750,28 +873,31 @@ def get_chats(user_id):
                 'id': message.id,
                 'type': message.type,
                 'time': formatDateTime(message.time),
-                'show_time':message.show_time,
+                'show_time': message.show_time,
                 'content': message.content,
                 'user': transUserData(user)
             }
             chat_data['messages'].append(message_data)
         data.append(chat_data)
-    data.sort(key=lambda x: parse_last_time(x['last_time']), reverse=True) # 按最后一条消息的时间降序排序
+    data.sort(key=lambda x: parse_last_time(
+        x['last_time']), reverse=True)  # 按最后一条消息的时间降序排序
     print("chats data:", data)
     return jsonify(data)
 
 
 @app.route('/api/chat-feedback/<int:user_id>', methods=['GET'])
 def get_chats_feedback(user_id):
-    print("get chats user:",user_id)
+    print("get chats user:", user_id)
     stuff_id = 0
     if user_id != stuff_id:
-        chats = Chat.query.filter(((Chat.sender == user_id) & (Chat.receiver == stuff_id))).all()
+        chats = Chat.query.filter(
+            ((Chat.sender == user_id) & (Chat.receiver == stuff_id))).all()
     else:
         chats = Chat.query.filter((Chat.receiver == stuff_id)).all()
     data = []
     for chat in chats:
-        messages = Message.query.filter_by(chat_id=chat.id).order_by(Message.id).all()
+        messages = Message.query.filter_by(
+            chat_id=chat.id).order_by(Message.id).all()
         chat_data = {
             'id': chat.id,
             'sender': transUserData(User.query.get(chat.sender)),
@@ -787,17 +913,20 @@ def get_chats_feedback(user_id):
                 'id': message.id,
                 'type': message.type,
                 'time': formatDateTime(message.time),
-                'show_time':message.show_time,
+                'show_time': message.show_time,
                 'content': message.content,
                 'user': transUserData(user)
             }
             chat_data['messages'].append(message_data)
         data.append(chat_data)
-    data.sort(key=lambda x: parse_last_time(x['last_time']), reverse=True) # 按最后一条消息的时间降序排序
+    data.sort(key=lambda x: parse_last_time(
+        x['last_time']), reverse=True)  # 按最后一条消息的时间降序排序
     print("chats data:", len(data))
     return jsonify(data)
 
 # 新增会话
+
+
 @app.route('/create_chat', methods=['POST'])
 def create_chat():
     data = request.get_json()
@@ -837,6 +966,8 @@ def create_chat():
     return jsonify({"message": "Chat created successfully", "chat_id": new_id}), 201
 
 # 删除指定会话
+
+
 @app.route('/api/delete_chat/<int:chat_id>', methods=['DELETE'])
 def delete_chat(chat_id):
     chat = Chat.query.get(chat_id)
@@ -862,6 +993,8 @@ def check_empty_chat():
     return jsonify({"message": f"Deleted {len(empty_chats)} empty chats."}), 200
 
 # 新增消息
+
+
 @app.route('/api/save_message', methods=['POST'])
 def receive_messages():
     data = request.json
@@ -878,13 +1011,14 @@ def receive_messages():
 
     content = message.get('content')
     if content:
-        message_datetime = datetime.strptime(message.get('time'), '%Y年%m月%d日 %H:%M:%S')
+        message_datetime = datetime.strptime(
+            message.get('time'), '%Y年%m月%d日 %H:%M:%S')
         max_message_id = db.session.query(func.max(Message.id)).scalar() or 0
         next_message_id = max_message_id + 1
         db_message = Message(
-            id = next_message_id,
+            id=next_message_id,
             type=message.get('type'),
-            time= message_datetime,
+            time=message_datetime,
             show_time=show_time,
             content=content,
             user_id=message.get('user')["id"],
@@ -898,10 +1032,12 @@ def receive_messages():
     return jsonify({'message_id': next_message_id}), 200
 
 # 删去消息
+
+
 @app.route('/api/delete_message', methods=['POST'])
 def delete_message():
     message_id = request.json.get('message_id')
-    print("msg id:",message_id)
+    print("msg id:", message_id)
     if message_id:
         message = Message.query.get(message_id)
         if message:
@@ -914,13 +1050,17 @@ def delete_message():
         return 'No message ID provided', 400
 
 # 查询反馈
+
+
 @app.route('/api/feedback/<int:user_id>', methods=['GET'])
 def get_feedback(user_id):
-    stuff_id=0# 客服id
-    chats = Chat.query.filter((Chat.sender == user_id) & (Chat.receiver == stuff_id)).all()
+    stuff_id = 0  # 客服id
+    chats = Chat.query.filter((Chat.sender == user_id)
+                              & (Chat.receiver == stuff_id)).all()
     data = []
     for chat in chats:
-        messages = Message.query.filter_by(chat_id=chat.id).order_by(Message.id).all()
+        messages = Message.query.filter_by(
+            chat_id=chat.id).order_by(Message.id).all()
         chat_data = {
             'id': chat.id,
             'sender': transUserData(User.query.get(chat.sender)),
@@ -945,7 +1085,9 @@ def get_feedback(user_id):
     return jsonify(data)
 
 # 添加收藏
-@app.route('/api/add_collect', methods=['GET','POST'])
+
+
+@app.route('/api/add_collect', methods=['GET', 'POST'])
 def add_collect():
     post_id = request.json.get('postId')  # 获取文章 ID
     user_id = request.json.get('userId')  # 获取用户 ID
@@ -953,19 +1095,22 @@ def add_collect():
     from datetime import datetime, timezone
     date = datetime.now()
     if isAdd and post_id and user_id:
-        new_Collect = Collect(date=date,user_id=user_id,post_id=post_id)
+        new_Collect = Collect(date=date, user_id=user_id, post_id=post_id)
         db.session.add(new_Collect)
         db.session.commit()
-        return  jsonify({'message': '收藏成功'})
+        return jsonify({'message': '收藏成功'})
     elif not isAdd and post_id and user_id:
-        Collect.query.filter(Collect.post_id==post_id and Collect.user_id==user_id).delete()
+        Collect.query.filter(
+            Collect.post_id == post_id and Collect.user_id == user_id).delete()
         db.session.commit()
-        return  jsonify({'message': '取消收藏成功'})
+        return jsonify({'message': '取消收藏成功'})
     else:
         return jsonify({'message': '评论内容或文章 ID 不能为空'}), 400
 
 # 添加点赞
-@app.route('/api/add_like', methods=['GET','POST'])
+
+
+@app.route('/api/add_like', methods=['GET', 'POST'])
 def add_like():
     post_id = request.json.get('postId')  # 获取文章 ID
     user_id = request.json.get('userId')  # 获取用户 ID
@@ -973,39 +1118,42 @@ def add_like():
     from datetime import datetime, timezone
     date = datetime.now()
     if isAdd and post_id and user_id:
-        new_Like = Like(date=date,author_id=user_id,post_id=post_id)
+        new_Like = Like(date=date, author_id=user_id, post_id=post_id)
         db.session.add(new_Like)
         db.session.commit()
-        return  jsonify({'message': '点赞成功'})
+        return jsonify({'message': '点赞成功'})
     elif not isAdd and post_id and user_id:
-        Like.query.filter(Like.post_id==post_id and Like.author_id==user_id).delete()
+        Like.query.filter(
+            Like.post_id == post_id and Like.author_id == user_id).delete()
         db.session.commit()
-        return  jsonify({'message': '取消点赞成功'})
+        return jsonify({'message': '取消点赞成功'})
     else:
         return jsonify({'message': '评论内容或文章 ID 不能为空'}), 400
 
 # 获取点赞和收藏的状态
+
+
 @app.route('/api/get_status/<int:post_id>/<int:userId>', methods=['GET'])
-def get_status(post_id,userId):
+def get_status(post_id, userId):
     # post_id = request.json.get('postId')  # 获取文章 ID
     # user_id = request.json.get('userId')  # 获取用户 ID
-    print('post:{},user:{}'.format(post_id,userId))
+    print('post:{},user:{}'.format(post_id, userId))
     isLiked = db.session.query(
-                    Like.id
-                    ).filter(Like.post_id==post_id and Like.author_id==userId) \
-                    .first()
+        Like.id
+    ).filter(Like.post_id == post_id and Like.author_id == userId) \
+        .first()
     isCollected = db.session.query(
-                    Collect.id
-                    ).filter(Collect.post_id==post_id and Collect.user_id==userId) \
-                    .first()
+        Collect.id
+    ).filter(Collect.post_id == post_id and Collect.user_id == userId) \
+        .first()
     if isLiked:
-        isLiked='1'
+        isLiked = '1'
     else:
-        isLiked='0'
-    if isCollected: 
-        isCollected='1'
-    else:   
-        isCollected='0'
+        isLiked = '0'
+    if isCollected:
+        isCollected = '1'
+    else:
+        isCollected = '0'
     response_json = jsonify({
         'isLiked': isLiked,
         'isCollected': isCollected
@@ -1017,7 +1165,9 @@ def get_status(post_id,userId):
     return response_json
 
 # 提交评论
-@app.route('/api/submit_comment', methods=['GET','POST'])
+
+
+@app.route('/api/submit_comment', methods=['GET', 'POST'])
 def add_comment():
     content = request.json.get('content')
     post_id = request.json.get('postId')  # 获取文章 ID
@@ -1030,48 +1180,50 @@ def add_comment():
     # from datetime import datetime
     # date = datetime.strptime(date, "%Y/%m/%d, %H:%M:%S")
     if content and post_id:
-        new_comment = Comment(content=content, 
+        new_comment = Comment(content=content,
                               author_id=user_id,
                               post_id=post_id,
                               date=date)
         db.session.add(new_comment)
         db.session.commit()
-        newComment=db.session.query(
-                    Comment.id,
-                    # Comment.date,
-                    cast(Comment.date, String),
-                    Comment.content,
-                    User.name,
-                    User.photo
-                    ).join(User, Comment.author_id == User.id) \
-                        .outerjoin(Post, Comment.post_id == Post.id) \
-                        .filter(Post.id==post_id) \
-                        .order_by(desc(Comment.id)) \
-                        .first()
+        newComment = db.session.query(
+            Comment.id,
+            # Comment.date,
+            cast(Comment.date, String),
+            Comment.content,
+            User.name,
+            User.photo
+        ).join(User, Comment.author_id == User.id) \
+            .outerjoin(Post, Comment.post_id == Post.id) \
+            .filter(Post.id == post_id) \
+            .order_by(desc(Comment.id)) \
+            .first()
         response_json = jsonify({
-            'ids'  : newComment[0],
+            'ids': newComment[0],
             'dates': newComment[1],
             'contents': newComment[2],
-            'authors': newComment[3],  
+            'authors': newComment[3],
             'avatars': newComment[4]
-            })
+        })
         print({
-            'ids'  : newComment[0],
+            'ids': newComment[0],
             'dates': newComment[1],
             'contents': newComment[2],
-            'authors': newComment[3],  
+            'authors': newComment[3],
             'avatars': newComment[4]
-            })
+        })
         return response_json
     else:
         return jsonify({'message': '评论内容或文章 ID 不能为空'}), 400
 
 # 获取帖子评论
+
+
 @app.route('/api/post_comments/<int:post_id>', methods=['GET'])
 def get_postComment(post_id):
     # 首先是文章信息，包括内容、作者等
     print(post_id)
-    comments=db.session.query(
+    comments = db.session.query(
         Comment.id,
         # Comment.date,
         cast(Comment.date, String),
@@ -1080,14 +1232,14 @@ def get_postComment(post_id):
         User.photo
     ).join(User, Comment.author_id == User.id) \
         .outerjoin(Post, Comment.post_id == Post.id) \
-        .filter(Post.id==post_id) \
+        .filter(Post.id == post_id) \
         .order_by(desc(Comment.id)) \
-        .all() 
-    ids=[]
-    dates=[]
-    contents=[]
-    authors=[]
-    avatars=[]
+        .all()
+    ids = []
+    dates = []
+    contents = []
+    authors = []
+    avatars = []
     for comment in comments:
         ids.append(comment[0])
         dates.append(comment[1][:19])
@@ -1095,22 +1247,24 @@ def get_postComment(post_id):
         authors.append(comment[3])
         avatars.append(comment[4])
     response_json = jsonify({
-        'ids'  : ids,
+        'ids': ids,
         'dates': dates,
         'contents': contents,
-        'authors': authors,  
+        'authors': authors,
         'avatars': avatars
     })
     print({
-        'ids'  : ids,
+        'ids': ids,
         'dates': dates,
         'contents': contents,
-        'authors': authors,  
+        'authors': authors,
         'avatars': avatars
     })
     return response_json
 
 # 获取帖子评论
+
+
 @app.route('/api/all_comments/<int:user_id>', methods=['GET'])
 def get_allComment(user_id):
     # 获取用户发表的所有帖子
@@ -1130,12 +1284,12 @@ def get_allComment(user_id):
         .filter(Post.id.in_(post_ids)) \
         .order_by(desc(Comment.date)) \
         .all()
-    ids=[]
-    dates=[]
-    contents=[]
-    authors=[]
-    avatars=[]
-    pictures=[]
+    ids = []
+    dates = []
+    contents = []
+    authors = []
+    avatars = []
+    pictures = []
     for comment in comments:
         ids.append(comment[0])
         dates.append(comment[1][:19])
@@ -1144,24 +1298,24 @@ def get_allComment(user_id):
         avatars.append(comment[4])
         pictures.append(comment[5])
     response_json = jsonify({
-        'ids'  : ids,
+        'ids': ids,
         'dates': dates,
         'contents': contents,
-        'authors': authors,  
+        'authors': authors,
         'avatars': avatars,
         'pictures': pictures
     })
     print({
-        'ids'  : ids,
+        'ids': ids,
         'dates': dates,
         'contents': contents,
-        'authors': authors,  
+        'authors': authors,
         'avatars': avatars,
         'pictures': pictures
     })
     return response_json
 
-
+# 获取帖子 （新增获取图片角标内容 by hzq）
 @app.route('/api/post_content/<int:post_id>', methods=['GET'])
 def get_postContent(post_id):
     print(post_id)
@@ -1183,17 +1337,31 @@ def get_postContent(post_id):
         func.count(Collect.id.distinct()).label('collect'),
         Post.id
     ).join(User, Post.author_id == User.id) \
-      .outerjoin(Like, Post.id == Like.post_id) \
-      .outerjoin(Comment, Post.id == Comment.post_id) \
-      .outerjoin(Collect, Post.id == Collect.post_id) \
-      .filter(Post.id == post_id) \
-      .group_by(Post.id, User.id, User.name, User.photo) \
-      .order_by(desc(Post.id)) \
-      .all()
+        .outerjoin(Like, Post.id == Like.post_id) \
+        .outerjoin(Comment, Post.id == Comment.post_id) \
+        .outerjoin(Collect, Post.id == Collect.post_id) \
+        .filter(Post.id == post_id) \
+        .group_by(Post.id, User.id, User.name, User.photo) \
+        .order_by(desc(Post.id)) \
+        .all()
 
     if contents:
         content = contents[0]
         pictures = [pic for pic in content[:5] if pic]
+        pic_types = []
+        # 查询 Picture 数据库获得每张图片的Ptype
+        for pic in pictures:
+            pic_type = Picture.query.filter_by(id=pic).first()
+            if not pic_type:
+                pic_types.append(-1)
+            else:
+                # 如果不存在，就置0
+                pic_type = pic_type.Ptype
+                if not pic_type:
+                    pic_types.append(-1)
+                else:
+                    pic_types.append(pic_type)
+        print("pic_types", pic_types)
         response_json = jsonify({
             'pictures': pictures,
             'date': content[5][:19],
@@ -1204,37 +1372,40 @@ def get_postContent(post_id):
             'author_id': content[10],  # Using the fetched author ID
             'likes_num': content[11],
             'comments_num': content[12],
-            'collects_num': content[13]
+            'collects_num': content[13],
+            'pic_tabs': pic_types,
         })
-        print(response_json.get_json())  # This will print the JSON response in your server logs
+        print(response_json.get_json())
         return response_json
     else:
         return jsonify({'error': 'Post not found'}), 404
 
 
-
-#互相关注
+# 互相关注
 @app.route('/api/follow', methods=['POST'])
 def follow_user():
     data = request.get_json()
     follower_id = data.get('follower_id')
     followed_id = data.get('followed_id')
-    #print(follower_id)
+    # print(follower_id)
     if follower_id == followed_id:
         return jsonify({'error': 'Cannot follow yourself'}), 400
 
-    follow = Follow.query.filter_by(follower_id=follower_id, followed_id=followed_id).first()
+    follow = Follow.query.filter_by(
+        follower_id=follower_id, followed_id=followed_id).first()
     if follow:
         # 已经存在关注记录，检查是否已经是互相关注
         return jsonify({'message': 'Already followed', 'status': follow.status}), 409
     else:
         # 创建新的关注关系
-        new_follow = Follow(follower_id=follower_id, followed_id=followed_id, status=0)
+        new_follow = Follow(follower_id=follower_id,
+                            followed_id=followed_id, status=0)
        # print(follower_id)
         db.session.add(new_follow)
 
         # 检查对方是否已关注当前用户，实现互相关注
-        reverse_follow = Follow.query.filter_by(follower_id=followed_id, followed_id=follower_id).first()
+        reverse_follow = Follow.query.filter_by(
+            follower_id=followed_id, followed_id=follower_id).first()
         if reverse_follow:
             new_follow.status = 1
             reverse_follow.status = 1
@@ -1244,6 +1415,8 @@ def follow_user():
         return jsonify({'message': 'Followed successfully', 'status': new_follow.status}), 200
 
 # 取消关注
+
+
 @app.route('/api/unfollow', methods=['POST'])
 def unfollow_user():
     data = request.get_json()
@@ -1254,7 +1427,8 @@ def unfollow_user():
         return jsonify({'error': 'Cannot unfollow yourself'}), 400
 
     # 查询是否存在关注记录
-    follow = Follow.query.filter_by(follower_id=follower_id, followed_id=followed_id).first()
+    follow = Follow.query.filter_by(
+        follower_id=follower_id, followed_id=followed_id).first()
     if not follow:
         return jsonify({'message': 'No follow relation found'}), 404
 
@@ -1262,7 +1436,8 @@ def unfollow_user():
     db.session.delete(follow)
 
     # 检查是否需要更新互相关注状态
-    reverse_follow = Follow.query.filter_by(follower_id=followed_id, followed_id=follower_id).first()
+    reverse_follow = Follow.query.filter_by(
+        follower_id=followed_id, followed_id=follower_id).first()
     if reverse_follow and reverse_follow.status == 1:
         reverse_follow.status = 0  # 更新为非互相关注状态
         db.session.add(reverse_follow)
@@ -1270,10 +1445,13 @@ def unfollow_user():
     db.session.commit()
     return jsonify({'message': 'Unfollowed successfully'}), 200
 
-#查看，来显示
+# 查看，来显示
+
+
 @app.route('/api/check-follow/<int:follower_id>/<int:followed_id>', methods=['GET'])
 def check_follow(follower_id, followed_id):
-    follow = Follow.query.filter_by(follower_id=follower_id, followed_id=followed_id).first()
+    follow = Follow.query.filter_by(
+        follower_id=follower_id, followed_id=followed_id).first()
     print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     print(follow)
     if follow:
@@ -1282,13 +1460,11 @@ def check_follow(follower_id, followed_id):
         return jsonify({'isFollowed': False, 'status': 0}), 200
 
 
-
-
 # 广场页获取帖子
 # @cross_origin()
 @app.route('/api/posts', methods=['GET'])
 def get_posts():
-    posts=db.session.query(
+    posts = db.session.query(
         Post.id,
         Post.picture1,
         Post.title,
@@ -1297,17 +1473,17 @@ def get_posts():
         func.count(Like.id).label('like')
     ).join(User, Post.author_id == User.id) \
         .outerjoin(Like, Post.id == Like.post_id) \
-        .group_by(Post.picture1, 
-                  Post.title, 
-                  User.name, 
+        .group_by(Post.picture1,
+                  Post.title,
+                  User.name,
                   User.photo) \
         .all()
-    ids=[] 
-    pictures=[]
-    titles=[]
-    authors=[]
-    avatars=[]
-    likes=[]
+    ids = []
+    pictures = []
+    titles = []
+    authors = []
+    avatars = []
+    likes = []
     for post in posts:
         ids.append(post[0])
         pictures.append(post[1])
@@ -1335,6 +1511,8 @@ def get_posts():
 
 # 广场页获取关注帖子
 # @cross_origin()
+
+
 @app.route('/api/follow_posts/<int:user_id>', methods=['GET'])
 def get_followposts(user_id):
     # user_id = 1  # Replace with the current logged in user's ID
@@ -1354,12 +1532,12 @@ def get_followposts(user_id):
                   User.name,
                   User.photo) \
         .all()
-    ids=[] 
-    pictures=[]
-    titles=[]
-    authors=[]
-    avatars=[]
-    likes=[]
+    ids = []
+    pictures = []
+    titles = []
+    authors = []
+    avatars = []
+    likes = []
     for post in posts:
         ids.append(post[0])
         pictures.append(post[1])
@@ -1385,28 +1563,34 @@ def get_followposts(user_id):
     # })
     return response_json
 
+
 @socketio.on('connect')
 def handle_connect():
     print('Client connected')
+
 
 @socketio.on('disconnect')
 def handle_disconnect():
     print('Client disconnected')
 
+
 @socketio.on('join')
 def handle_join(data):
-    print("join:",data)
+    print("join:", data)
     chat_id = data['chat_id']
     join_room(chat_id)
+
 
 @socketio.on('message')
 def handle_message(data):
     chat_id = data['chat_id']
-    print("chat:",chat_id)
+    print("chat:", chat_id)
     emit('message', {'message': data['message']}, room=chat_id)
 
 # 管理员相关函数
 # 获取所有用户
+
+
 @app.route('/api/get-all-user', methods=['GET'])
 def get_all_users():
     users = User.query.all()
@@ -1425,7 +1609,7 @@ def get_all_users():
             'sex': user.sex,
             'senior': user.is_premium,
             'description': user.description,
-            'status':user.status
+            'status': user.status
         }
         users_data.append(user_data)
 
@@ -1437,9 +1621,11 @@ def get_all_users():
 def get_user_post_num():
     users = User.query.all()
     posts = Post.query.all()
-    return jsonify({'userNum':len(users),'postNum':len(posts)})
+    return jsonify({'userNum': len(users), 'postNum': len(posts)})
 
 # 获取所有帖子
+
+
 @app.route('/api/get-all-post', methods=['GET'])
 def get_all_posts():
     posts = Post.query.all()
@@ -1450,16 +1636,18 @@ def get_all_posts():
             'id': post.id,
             'author_id': post.author_id,
             'date': formatDateTime(post.date),
-            'pics':[post.picture1,post.picture2,post.picture3,post.picture4,post.picture5],
+            'pics': [post.picture1, post.picture2, post.picture3, post.picture4, post.picture5],
             'title': post.title,
             'content': post.body,
-            'status':post.status
+            'status': post.status
         }
         posts_data.append(post_data)
 
     return jsonify({'dataList': posts_data})
 
 # 更新用户状态 禁用和正常来回切换
+
+
 @app.route('/api/update-user-status/<int:user_id>', methods=['POST'])
 def update_user_status(user_id):
     user = User.query.get(user_id)
@@ -1473,6 +1661,8 @@ def update_user_status(user_id):
     return jsonify({'success': 'User status updated successfully', 'new_status': user.status})
 
 # 更新帖子状态 禁用和正常来回切换
+
+
 @app.route('/api/update-post-status/<int:post_id>', methods=['POST'])
 def update_post_status(post_id):
     print(post_id)
@@ -1500,15 +1690,15 @@ def postnotes():
     pic3 = ''
     pic4 = ''
     pic5 = ''
-    if cnt>=1:
+    if cnt >= 1:
         pic1 = dataform[0]
-    if cnt>=2:
+    if cnt >= 2:
         pic2 = dataform[1]
-    if cnt>=3:
+    if cnt >= 3:
         pic3 = dataform[2]
-    if cnt>=4:
+    if cnt >= 4:
         pic4 = dataform[3]
-    if cnt>=5:
+    if cnt >= 5:
         pic5 = dataform[4]
     # 谁定义的数据表，表项名字那么长...pic不好么
     dateToday = datetime.now()
@@ -1519,20 +1709,24 @@ def postnotes():
     db.session.commit()
     return jsonify({'message': 'Post created successfully'})
 
-# 后端调用修图指令
+# 后端一键修图指令
 # 参数：img_url(原图URL) + img_select(对应的模板url，用于寻找prompt)
 # 本地调试请注释该函数！！！！！！！
+@app.route('/api/call_P2P', methods=['GET', 'POST'])
 @app.route('/api/call_P2P', methods=['GET', 'POST'])
 def call_P2P():
     img_old = request.json.get('img_url')
     img_select = request.json.get('img_select')
-    user_id = request.json.get('userId')
+    user_id = request.json.get('user_id')
+    print(img_old, img_select, user_id)
+    # if img_old is None or img_select is None or user_id is None:
+    #     return jsonify({'img': 'Invalid data provided'}), 400
     # 查询Picture数据表，找到对应的prompt
-    pic_tmp = Picture(id=img_select, prompt='turn it yellow')
+    pic_tmp = Picture(id=img_select, prompt='turn it yellow.')
     db.session.add(pic_tmp)
     db.session.commit()
     prompt = Picture.query.filter_by(id=img_select).first().prompt
-    if prompt is None:      
+    if prompt is None:
         print("prompt is None")
         return jsonify({'img': 'Prompt not found'})
     # 调用修图指令
@@ -1540,7 +1734,7 @@ def call_P2P():
     # 函数调用修图命令，存储为/mod/{prompt+"_modify_"+img_old}
     sys.path.append(r'/root/Code/Models/P2P')
     import P2P
-    modify_pic(img_old, prompt)
+    P2P.modify_pic(img_old, prompt)
     # 上传阿里云图床
     # OSS_ACCESS_KEY_ID = "LTAI5tR1c1uhFRfWxjq8BWT4"
     # OSS_ACCESS_KEY_SECRET = "BdN5OIEdet7IO6KWOq7TJiivHOsC5B"
@@ -1548,12 +1742,13 @@ def call_P2P():
     bucket = oss2.Bucket(
         auth, 'https://oss-cn-beijing.aliyuncs.com', 'graphcrafter')
     # /root/Code/Models/P2P/weights
-    mod_img_url = '/root/Code/Models/P2P/mod/' + prompt + "_modify_" + img_old.split("/")[-1]
-    with open(mod_img_url) as fileobj:
+    prompt = prompt.replace(" ", "")
+    mod_img_url = prompt + "_modify_" + img_old.split("/")[-1]
+    with open(mod_img_url, mode="rb") as fileobj:
         fileobj.seek(0, os.SEEK_SET)
         current = fileobj.tell()
         bucket_url = user_id+'/'+prompt + "_modify_" + img_old.split("/")[-1]
-        bucket.put_object(user_id + '/' + bucket_url, fileobj)
+        bucket.put_object(bucket_url, fileobj)
         # 删除文件夹中的图片
         os.remove(mod_img_url)
         current_url = 'https://graphcrafter.oss-cn-beijing.aliyuncs.com/' + bucket_url
@@ -1585,10 +1780,12 @@ def delete_post(post_id):
     return jsonify({'message': 'Post deleted successfully'}), 200
 
 # 基本图像处理
+
+
 @app.route('/api/simple-image-process', methods=['POST'])
 def process_image_simple():
     print(request.files)
-    print("form:",request.form)
+    print("form:", request.form)
     if 'file' not in request.files:
         return jsonify({'error': 'No file uploaded'}), 400
     file = request.files['file']
@@ -1597,8 +1794,9 @@ def process_image_simple():
 
     # 读取参数
     user_id = request.form.get('user_id')
-    process_category = request.form.get('process_category') # 处理的类别 eg.图像色彩，图像变换...
-    process_type = request.form.get('process_type') #具体的处理类型 eg.色调
+    # 处理的类别 eg.图像色彩，图像变换...
+    process_category = request.form.get('process_category')
+    process_type = request.form.get('process_type')  # 具体的处理类型 eg.色调
 
     if not user_id or not process_category or not process_type:
         return jsonify({'error': 'Missing processing parameters'}), 400
@@ -1608,8 +1806,8 @@ def process_image_simple():
     file_bytes = np.frombuffer(file_stream.read(), np.uint8)
     origin = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
     height, width, channels = origin.shape
-    img_size = [width,height]
-    print("image size:",height,width)
+    img_size = [width, height]
+    print("image size:", height, width)
 
     if origin is None:
         return jsonify({'error': 'Failed to read the uploaded image'}), 500
@@ -1617,15 +1815,15 @@ def process_image_simple():
     # 进行图像处理
     # 处理后的图片暂存为tmp.png
     if process_category == "color":
-        show_hsv(origin,process_type,img_size)
+        show_hsv(origin, process_type, img_size)
     elif process_category == "transform":
-        show_transformation(origin,process_type,img_size)
+        show_transformation(origin, process_type, img_size)
     elif process_category == "filter":
-        show_filtering(origin,process_type,img_size)
+        show_filtering(origin, process_type, img_size)
     elif process_category == "outline":
-        show_outline(origin,process_type,img_size)
+        show_outline(origin, process_type, img_size)
     elif process_category == "enhance":
-        show_enhancement(origin,process_type,img_size)
+        show_enhancement(origin, process_type, img_size)
     else:
         return jsonify({'error': 'Process category chosen does not exits'}), 400
 
@@ -1639,6 +1837,246 @@ def process_image_simple():
     print(img_url)
 
     return jsonify({'imgUrl': img_url})
+
+###################################################
+
+
+# Chat 界面
+
+
+####################################
+from flask import redirect
+import openai
+import base64
+from io import BytesIO
+from IAA_main import get_score_one_image
+
+# Set your OpenAI API key here
+openai.api_key = 'sk-75C7ruBi5U7ts0Yi55BeDb4576Cd41EbA68bDbF1344f9f5e'
+
+# Set base URL for OpenAI API
+openai.api_base = "https://tb.plus7.plus/v1"
+
+history=[]
+image_list=[]
+up=False
+img_score=0
+
+# Define a route for clearing chat history
+@app.route('/clear_history/<int:user_id>', methods=['GET'])
+@cross_origin(supports_credentials=True)
+def clear_history(user_id):
+    History.query.filter(History.user_id==user_id).delete()
+    db.session.commit()
+    return {}
+
+@app.route('/api/getmsg/<int:user_id>', methods=['GET'])
+@cross_origin(supports_credentials=True)
+def getMessageList(user_id):
+    chats = db.session.query(
+        History.id,
+        History.role,
+        History.time,
+        History.content,
+        History.user_id,
+        History.picture,
+        User.photo
+    ).join(User, History.user_id == User.id).filter(User.id==user_id).all()
+    data = []
+    for chat in chats:
+        chat_data = {
+            'id': chat[0],
+            'role': chat[1],
+            # 'time': formatDateTime(chat.time),
+            'time': chat[2],
+            'content': chat[3],
+            'user_id': chat[4],
+            'picture': chat[5],
+            'photo':chat[6]
+        }
+        data.append(chat_data)
+    # data.sort(key=lambda x: parse_last_time(x['time']), reverse=True) # 按最后一条消息的时间降序排序
+    print("chats data:", data)
+    return jsonify({"data":data})
+
+@app.route('/upload_photo', methods=['POST'])
+@cross_origin(supports_credentials=True)
+def photo():
+    if "img_score" not in globals():
+        global img_score
+    image=request.files['file']
+    # Convert image to base64
+    image_read = image.read()
+    image_stream = BytesIO(image_read)
+    img_score = get_score_one_image(image_stream)
+    img_score = round(min(img_score*1.2,10),2)
+    img_base64 = base64.b64encode(image_read).decode('utf-8')
+    # global_image_data = image_data #更新global_image_data
+    image_list.append(f"data:image/jpeg;base64,{img_base64}")
+    if "up" not in globals():
+        global up
+    up=True
+    return "success"
+
+# Home route accepts both GET and POST to display the form and handle form submissions
+@app.route('/gpt/<int:user_id>', methods=['GET', 'POST'])
+@cross_origin(supports_credentials=True)
+def home(user_id):
+    if "img_score" not in globals():
+        global img_score
+    if "up" not in globals():
+        global up
+
+    picture = None
+    question = ""
+    img_url=None
+    if request.method == 'POST':
+        if 'file' in request.files:
+            picture=request.files['file']
+            img_url=request.form.get('img_url')
+        question=request.form.get('question')
+    if question=="":
+        post = History(user_id=user_id,role="warn",content="请输入问题")
+        db.session.add(post)
+        db.session.commit()
+        return {}
+    chats=db.session.query(
+        History.role,
+        History.content,
+        History.picture,
+    ).join(User, History.user_id == User.id).filter(User.id==user_id,History.role!='warn').all()
+    chat_history = []
+    last_picture=None
+    for chat in chats:
+        chat_data = {
+            'role': chat[0],
+            'content': chat[1]
+        }
+        chat_history.append(chat_data)
+        last_picture=chat[2]
+                
+    # data.sort(key=lambda x: parse_last_time(x['time']), reverse=True) # 按最后一条消息的时间降序排序
+    if picture==None:
+        if last_picture is not None:
+            picture=last_picture
+        else:
+            post = History(user_id=user_id,role="warn",content="请上传一张照片")
+            db.session.add(post)
+            db.session.commit()
+            return {}
+    image_read = picture.read()
+    image_stream = BytesIO(image_read)
+    img_score = get_score_one_image(image_stream)
+    img_score = round(min(img_score*1.2,10),2)
+    img_base64 = base64.b64encode(image_read).decode('utf-8')
+    # global_image_data = image_data #更新global_image_data
+    image_data=f"data:image/jpeg;base64,{img_base64}"
+
+    rate_msg = f"这张图片的IAA评分是{img_score}/10分，"
+    response = send_gpt(rate_msg+question,image_data,chat_history)
+    response = rate_msg + response
+
+    q = History(user_id=user_id,role="user",content=question,picture=img_url)
+    a = History(user_id=user_id,role="assistant",content=response,picture=img_url)
+    db.session.add(q)
+    db.session.add(a)
+    db.session.commit()
+    return {"score":img_score}
+    #     # question = request.form['question']
+    #     # print("所有：",request.get_data(as_text=True))
+    #     question = eval(request.get_data(as_text=True))["content"]
+    #     print("问题：",question)
+    #     # print(request.files.get('image'))
+    #     # image = request.files.get('image')
+    #     if(len(image_list)==0):
+    #         image=None
+    #         img_score=0
+    #     elif(up==False):
+    #         image=image_list[-1]
+    #         img_score=0
+    #     else:
+    #         image=image_list[-1]
+    #     print("image:",image)
+    #     # Handle image file if uploaded
+    #     # img_score = 0
+    #     if image:
+    #         # # Convert image to base64
+    #         # image_read = image.read()
+    #         # image_stream = BytesIO(image_read)
+    #         # img_score = get_score_one_image(image_stream)
+    #         # img_score = round(min(img_score*1.2,10),2)
+    #         # img_base64 = base64.b64encode(image_read).decode('utf-8')
+    #         # image_data = f"data:image/jpeg;base64,{img_base64}"
+    #         # global_image_data = image_data #更新global_image_data
+    #         image_data=image
+    #     else:
+    #         image_data = None
+
+    #     # Send data to GPT and get response
+    #     if img_score:
+    #         rate_msg = f"这张图片的IAA评分是{img_score}/10分，"
+    #     else:
+    #         rate_msg = ""
+
+    #     response = send_gpt(rate_msg+question, image_data)
+    #     response = rate_msg + response
+    #     print(up)
+    #     history.append({"q":question,"a":response,"p":image_data if up==True else None})
+    #     up=False
+    #     return ""#render_template('index.html', question=question, response=response,ch=history)
+    # else:
+    #     # Display the form for user input on GET requests
+    #     return render_template('index.html', question=None, response=None)
+
+# Function to send data to OpenAI's GPT including text and optional image
+def send_gpt(prompt, image_data=None,chat_history=[]):
+    try:
+        # 构建消息
+        message = {"role": "user", "content": prompt}
+
+        # 如果本轮没有传图片 - 用以前的
+        if image_data==None:
+            image_data = image_data
+
+        if image_data:
+            message["content"] = [{"type": "text", "text": prompt}, {"type": "image_url", "image_url": image_data}]
+
+        # Limit the chat history to the last 3 exchanges to ensure the conversation does not exceed 3 turns
+        if len(chat_history) >= 6:
+            chat_history = chat_history[-6:]
+
+        chat_history.insert(0, message)
+        
+        print(chat_history)
+
+        # Call OpenAI API
+        response = openai.ChatCompletion.create(
+            model='gpt-4-vision-preview',
+            messages=chat_history,
+            max_tokens=4096
+        )
+
+        # Extract and return the response
+        reply = response["choices"][0]['message']['content']
+        chat_history.insert(0, {"role": "assistant", "content": reply})
+        return reply
+    except Exception as e:
+        return str(e)
+
+'''
+
+
+CREATE TABLE history (
+    id INTEGER PRIMARY KEY,
+    role VARCHAR(60),
+    time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    content TEXT,
+    user_id INTEGER,
+    picture VARCHAR(60)
+);
+
+
+'''
 
 if __name__ == '__main__':
     config = dict(
