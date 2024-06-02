@@ -18,7 +18,7 @@
           </span>
           <span class="triangle-top-right"></span>
           <!-- 头像 -->
-           <img :src="message.photo" class="user-avatar">
+           <img :src="info" class="user-avatar">
         </div>
         <!--对方-->
         <div v-else class="chat-bubble right">
@@ -75,6 +75,7 @@ import axios from 'axios';
 import store from "../store/index";
 import { ref,onMounted } from 'vue';
 import "https://gosspublic.alicdn.com/aliyun-oss-sdk-6.18.0.min.js";
+import { formatDateTime } from '@/utils/socket';
 
 export default {
   data(){
@@ -162,7 +163,15 @@ export default {
   setup() {
     const text=ref("");
     let messages=ref([]);
-    let img_url=ref("")
+    let img_url=ref("");
+    let info=ref();
+    axios.post("/api/get_info",{
+      user_id:store.state.user_id
+    }).then(function (response) {
+      info.value=response.data["info"];
+    }).catch(function (error) {
+      console.log(error);
+    });
     axios.get(`/api/getmsg/${store.state.user_id}`).then(function (response) {
       messages.value=response.data["data"];
       console.log(messages);
@@ -170,42 +179,36 @@ export default {
       console.log(error);
     });
 
-
     const file = ref(null);
+    // 清空消息，删库
     async function clearMsg(){
       axios.get(`/clear_history/${store.state.user_id}`).then(function (response) {
-        console.log(response);
-        // 重新获取消息
-        axios.get(`/api/getmsg/${store.state.user_id}`).then(function (response) {
-          messages.value = response.data["data"];
-          console.log(messages);
-        }).catch(function (error) {
-          console.log(error);
-        });
+        messages.value=[];
         console.log(response);
       }).catch(function (error) {
         console.log(error);
       });
     }
+    // 发送消息
     async function sendMsg(){
-      // 使用FormData传参数和文件
-      var form = new FormData();
-      console.log(file.value);
-      const config = {
-        headers:{'Content-Type':'multipart/form-data'}
+      const newMsg={
+        content:text.value,
+        picture:img_url.value,
+        time: formatDateTime(new Date()),
+        role:"user"
       };
-      form.append("file", file.value);
-      form.append("question",text.value);
-      form.append("img_url",img_url.value);
-      // form.append("billBillType", this.edit_id);
-      axios.post(`/gpt/${store.state.user_id}`,form,config).then(function (response) {
-        text.value='';
-        // 清空 messages
-        messages.value = [];
+      messages.value.push(newMsg);
+      text.value='';
+      axios.post("/gpt",{
+        user_id:store.state.user_id,
+        question:newMsg.content,
+        img_url:img_url.value,
+        time: formatDateTime(new Date()),
+      }).then(function (response) {
         // 重新获取消息
         axios.get(`/api/getmsg/${store.state.user_id}`).then(function (response) {
           messages.value = response.data["data"];
-          console.log(messages);
+          console.log(response);
         }).catch(function (error) {
           console.log(error);
         });
@@ -226,7 +229,8 @@ export default {
       sendMsg,
       file,
       img_url,
-      clearMsg
+      clearMsg,
+      info
     };
   }
 };
