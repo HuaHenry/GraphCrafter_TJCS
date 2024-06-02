@@ -722,8 +722,6 @@ def del_draft(post_id):
     return jsonify({'message': 'Delete successfully'})
 
 # 暂存草稿
-
-
 @cross_origin()
 @app.route('/api/post_draft/', methods=['POST', 'GET'])
 def post_draft():

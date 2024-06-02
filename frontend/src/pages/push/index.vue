@@ -1,57 +1,77 @@
 <template>
-  <div class="container">
-    <h2>请选择图片</h2>
-    <div class="upload_con">
-        <el-form
-            :rules="rules"
-            ref="ruleF"
-            :model="ruleForm"
-        >
-        <el-form-item>
-        <el-upload
-            :class="{uoloadSty:showBtnDealImg,disUoloadSty:noneBtnImg}"
-            ref="upload"
-            action=""
-            list-type="picture-card"
-            accept="image/*"
-
-            :on-preview="handlePictureCardPreview"
-            :on-remove="handleRemove"
-            :on-change="upclick_click"
-            :limit="5"
-            :file-list="fileList"
-            :auto-upload="false"
-        >
-          <i class="el-icon-plus"></i>
-          <template #tip>
-            <!-- <div style="font-size: 12px;color: #919191;">
-              单次限制上传一张图片
-            </div> -->
-          </template>
-        </el-upload>
-        <el-dialog v-model="dialogVisible" style="line-height: 0;">
-          <img style="width: 100%;height: 100%"  :src="dialogImageUrl" alt="" />
-        </el-dialog>
-      </el-form-item>
-      </el-form>
-    </div>
-    <!-- <el-button id="upload">上传图片</el-button>
-    <img id="uploadedImage" style="visibility:hidden" alt="Uploaded Image" /> -->
-    <input v-model="ruleForm.name" type="text" id="title" name="title" placeholder="请输入标题"/>
-    <textarea v-model="ruleForm.summary" id="description" name="description" placeholder="请输入内容..."></textarea>
-    <el-button type="primary" @click="submitForm('ruleF')" id="submit_button">发 布 动 态</el-button>
-  </div>
-
-  <div class="input_txt">
-    <el-form-item>
-        <!-- 标题和一段文字的摘要 -->
+    
         
-    </el-form-item>
-  </div>
-  
+        <div class="container">
+            <h2>请选择图片</h2>
+            <div class="upload_con">
+                <!-- <el-button type="primary" @click="goToDrafts" class="left-button" id="draft_button">从草稿箱传入</el-button> -->
+
+                <el-form
+                    :rules="rules"
+                    ref="ruleF"
+                    :model="ruleForm"
+                >
+                <el-form-item>
+                <el-upload
+                    :class="{uoloadSty:showBtnDealImg,disUoloadSty:noneBtnImg}"
+                    ref="upload"
+                    action=""
+                    list-type="picture-card"
+                    accept="image/*"
+
+                    :on-preview="handlePictureCardPreview"
+                    :on-remove="handleRemove"
+                    :on-change="upclick_click"
+                    :limit="5"
+                    :file-list="fileList"
+                    :auto-upload="false"
+                >
+                <i class="el-icon-plus"></i>
+                <template #tip>
+                    <!-- <div style="font-size: 12px;color: #919191;">
+                    单次限制上传一张图片
+                    </div> -->
+                </template>
+                </el-upload>
+                <el-dialog v-model="dialogVisible" style="line-height: 0;">
+                <img style="width: 100%;height: 100%"  :src="dialogImageUrl" alt="" />
+                </el-dialog>
+            </el-form-item>
+            </el-form>
+            </div>
+            <!-- <el-button id="upload">上传图片</el-button>
+            <img id="uploadedImage" style="visibility:hidden" alt="Uploaded Image" /> -->
+            <input v-model="ruleForm.name" type="text" id="title" name="title" placeholder="请输入标题"/>
+            <textarea v-model="ruleForm.summary" id="description" name="description" placeholder="请输入内容..."></textarea>
+            <el-button type="primary" @click="submitForm('ruleF')" id="submit_button">发 布 动 态</el-button>
+            
+        </div>
+
+        <div class="input_txt">
+            <el-form-item>
+                <!-- 标题和一段文字的摘要 -->
+                
+            </el-form-item>
+        </div>
+   
 </template>
 
 <style lang="less" scoped>
+    .outer-container {
+  position: relative;
+  padding-left: 100px;  /* 这应该是你的按钮的宽度 */
+}
+
+.left-button {
+  position: relative;
+  left: 0;  /* 将按钮定位到 container 的左边 */
+  top: 50%;
+  transform: translateY(-50%);
+  width: 150px;  /* 这应该是你的图片上传框的宽度 */
+  height: 150px;  /* 这应该是你的图片上传框的高度 */
+  margin-right: 20px;  /* 在按钮和 container 之间添加一些空间 */
+}
+
     .container {
     position: relative;
     top: 80px;
@@ -68,7 +88,13 @@
     
     .upload_con{
         text-align: center;
-        position:relative 
+        position:relative ;
+        //内部元素水平排列
+        display: flex;
+        // justify-content: center;
+        align-items: center;
+        direction: horizontal;
+
 
         .uoloadSty .el-upload--picture-card{
             width:110px;
