@@ -3,15 +3,24 @@
     <div class="channel-container">
       <div class="scroll-container channel-scroll-container">
         <div class="content-container">
-          <!-- <div class="channel active">推荐</div>
-          <div class="channel">关注</div>         -->
-          <div class="static-channel">全部</div>
+          <div class="channel" :class="{ active: activeChannel === '帖子' }" @click="activeChannel = '帖子'; fetchSearchResults()">帖子</div>
+          <div class="channel" :class="{ active: activeChannel === '用户' }" @click="activeChannel = '用户'; fetchSearchResults()">用户</div>
         </div>
       </div>
     </div>
     <div class="loading-container"></div>
     <div class="feeds-container">
-      <Waterfall :list="list" :width="242" :hasAroundGutter="false" style="max-width: 1260px">
+      <!-- 仅在用户视图中显示用户 -->
+      <div v-if="activeChannel === '用户'">
+        <ul class="user-list">
+          <li v-for="user in list" :key="user.id" class="user-item">
+            <img :src="user.photo" class="user-avatar" alt="User photo" @click="toOther(user.id)">
+            <div class="user-name">{{ user.name }}</div>
+          </li>
+        </ul>
+      </div>
+      <!-- 显示帖子的视图保留原样 -->
+      <Waterfall v-else :list="list" :width="242" :hasAroundGutter="false" style="max-width: 1260px">
       <template #item="{item}">
         <div class="card">
           <LazyImg :url="item.pictures" style="border-radius: 8px"  @click="toMain(item.ids)" />
@@ -35,12 +44,13 @@
       </template>
     </Waterfall>
     </div>
+
     <div class="feeds-loading"></div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
 import { LazyImg, Waterfall } from "vue-waterfall-plugin-next";
@@ -51,7 +61,7 @@ const route = useRoute();
 const router = useRouter();
 
 const list = ref([]);
-
+const activeChannel = ref('帖子'); // 初始频道设为“推荐”
 // 获取搜索结果
 const fetchSearchResults = async () => {
     const query = route.query.query;
@@ -60,30 +70,76 @@ const fetchSearchResults = async () => {
         return;
     }
     try {
-        const response = await axios.get(`/api/posts/search`, { params: { query } });
-        list.value = response.data.posts.map(post => ({
-            ids: post.id,
-            pictures: post.picture1,
-            titles: post.title,
-            authors: post.author,
-            avatars: post.avatar,
-            likes: post.likes
-        }));
+        let url = '/api/posts/search';
+      if (activeChannel.value === '用户') {
+            url = '/api/users/search';
+        }
+        const response = await axios.get(url, { params: { query } });
+        if (activeChannel.value === '用户') {
+            list.value = response.data.users.map(user => ({
+                id: user.id,
+                name: user.name,
+                photo: user.photo
+            }));
+        } else {
+            list.value = response.data.posts.map(post => ({
+                ids: post.id,
+                pictures: post.picture1,
+                titles: post.title,
+                authors: post.author,
+                avatars: post.avatar,
+                likes: post.likes
+            }));
+        }
     } catch (error) {
         console.error('Error fetching search results:', error);
     }
 };
 
+
+// 监视路由查询参数的变化
+watch(() => route.query.query, () => {
+    fetchSearchResults();
+});
 onMounted(fetchSearchResults);
-// const toMain = (id: number) => {
-//   router.push({ path: "/main" });
-// };
 const toMain = (id: number) => {
   router.push({ path: "/main", query: { id: id } });
 };
+
+const toOther = (id) => {
+  router.push({ path: "/other", query: { id } });
+};
+
+const handleUserClick = () => {
+  // Add follow/unfollow logic here
+};
+
 </script>
 
 <style lang="less" scoped>
+.user-list {
+  list-style: none;
+  padding: 0;
+}
+
+.user-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.user-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  margin-right: 16px;
+  cursor: pointer;
+}
+
+.user-name {
+  font-weight: bold;
+}
+
 .static-channel {
   padding: 8px 16px;
   background-color: #f0f0f0;
