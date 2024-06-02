@@ -1831,6 +1831,14 @@ class Opencv(db.Model):
     type = db.Column(db.String(10))
     code = db.Column(db.Text)  # 代码
 
+class History(db.Model):  # 图像评估聊天历史
+    __tablename__ = 'history'
+    id = db.Column(db.Integer, primary_key=True)  # 主键
+    role = db.Column(db.String(60))  # 消息方
+    time = db.Column(db.TIMESTAMP, default=func.current_timestamp())
+    content = db.Column(db.Text)  # 内容
+    user_id = db.Column(db.Integer) # 用户id
+    picture = db.Column(db.String(60)) # 图片
 
 # app = Flask(__name__)
 app.config.from_object(__name__)
@@ -3464,11 +3472,250 @@ def process_image_simple():
 
     return jsonify({'imgUrl': img_url})
 
+###################################################
+
+
+# Chat 界面
+
+
+####################################
+from flask import redirect
+import openai
+import base64
+from io import BytesIO
+from IAA_main import get_score_one_image
+
+# Set your OpenAI API key here
+openai.api_key = 'sk-75C7ruBi5U7ts0Yi55BeDb4576Cd41EbA68bDbF1344f9f5e'
+
+# Set base URL for OpenAI API
+openai.api_base = "https://tb.plus7.plus/v1"
+
+history=[]
+image_list=[]
+up=False
+img_score=0
+
+# Define a route for clearing chat history
+@app.route('/clear_history/<int:user_id>', methods=['GET'])
+@cross_origin(supports_credentials=True)
+def clear_history(user_id):
+    History.query.filter(History.user_id==user_id).delete()
+    db.session.commit()
+    return {}
+
+@app.route('/api/getmsg/<int:user_id>', methods=['GET'])
+@cross_origin(supports_credentials=True)
+def getMessageList(user_id):
+    chats = db.session.query(
+        History.id,
+        History.role,
+        History.time,
+        History.content,
+        History.user_id,
+        History.picture,
+        User.photo
+    ).join(User, History.user_id == User.id).filter(User.id==user_id).all()
+    data = []
+    for chat in chats:
+        chat_data = {
+            'id': chat[0],
+            'role': chat[1],
+            # 'time': formatDateTime(chat.time),
+            'time': chat[2],
+            'content': chat[3],
+            'user_id': chat[4],
+            'picture': chat[5],
+            'photo':chat[6]
+        }
+        data.append(chat_data)
+    # data.sort(key=lambda x: parse_last_time(x['time']), reverse=True) # 按最后一条消息的时间降序排序
+    print("chats data:", data)
+    return jsonify({"data":data})
+
+@app.route('/upload_photo', methods=['POST'])
+@cross_origin(supports_credentials=True)
+def photo():
+    if "img_score" not in globals():
+        global img_score
+    image=request.files['file']
+    # Convert image to base64
+    image_read = image.read()
+    image_stream = BytesIO(image_read)
+    img_score = get_score_one_image(image_stream)
+    img_score = round(min(img_score*1.2,10),2)
+    img_base64 = base64.b64encode(image_read).decode('utf-8')
+    # global_image_data = image_data #更新global_image_data
+    image_list.append(f"data:image/jpeg;base64,{img_base64}")
+    if "up" not in globals():
+        global up
+    up=True
+    return "success"
+
+# Home route accepts both GET and POST to display the form and handle form submissions
+@app.route('/gpt/<int:user_id>', methods=['GET', 'POST'])
+@cross_origin(supports_credentials=True)
+def home(user_id):
+    if "img_score" not in globals():
+        global img_score
+    if "up" not in globals():
+        global up
+
+    picture = None
+    question = ""
+    img_url=None
+    if request.method == 'POST':
+        if 'file' in request.files:
+            picture=request.files['file']
+            img_url=request.form.get('img_url')
+        question=request.form.get('question')
+    if question=="":
+        post = History(user_id=user_id,role="warn",content="请输入问题")
+        db.session.add(post)
+        db.session.commit()
+        return {}
+    chats=db.session.query(
+        History.role,
+        History.content,
+        History.picture,
+    ).join(User, History.user_id == User.id).filter(User.id==user_id,History.role!='warn').all()
+    chat_history = []
+    last_picture=None
+    for chat in chats:
+        chat_data = {
+            'role': chat[0],
+            'content': chat[1]
+        }
+        chat_history.append(chat_data)
+        last_picture=chat[2]
+                
+    # data.sort(key=lambda x: parse_last_time(x['time']), reverse=True) # 按最后一条消息的时间降序排序
+    if picture==None:
+        if last_picture is not None:
+            picture=last_picture
+        else:
+            post = History(user_id=user_id,role="warn",content="请上传一张照片")
+            db.session.add(post)
+            db.session.commit()
+            return {}
+    image_read = picture.read()
+    image_stream = BytesIO(image_read)
+    img_score = get_score_one_image(image_stream)
+    img_score = round(min(img_score*1.2,10),2)
+    img_base64 = base64.b64encode(image_read).decode('utf-8')
+    # global_image_data = image_data #更新global_image_data
+    image_data=f"data:image/jpeg;base64,{img_base64}"
+
+    rate_msg = f"这张图片的IAA评分是{img_score}/10分，"
+    response = send_gpt(rate_msg+question,image_data,chat_history)
+    response = rate_msg + response
+
+    q = History(user_id=user_id,role="user",content=question,picture=img_url)
+    a = History(user_id=user_id,role="assistant",content=response,picture=img_url)
+    db.session.add(q)
+    db.session.add(a)
+    db.session.commit()
+    return {"score":img_score}
+    #     # question = request.form['question']
+    #     # print("所有：",request.get_data(as_text=True))
+    #     question = eval(request.get_data(as_text=True))["content"]
+    #     print("问题：",question)
+    #     # print(request.files.get('image'))
+    #     # image = request.files.get('image')
+    #     if(len(image_list)==0):
+    #         image=None
+    #         img_score=0
+    #     elif(up==False):
+    #         image=image_list[-1]
+    #         img_score=0
+    #     else:
+    #         image=image_list[-1]
+    #     print("image:",image)
+    #     # Handle image file if uploaded
+    #     # img_score = 0
+    #     if image:
+    #         # # Convert image to base64
+    #         # image_read = image.read()
+    #         # image_stream = BytesIO(image_read)
+    #         # img_score = get_score_one_image(image_stream)
+    #         # img_score = round(min(img_score*1.2,10),2)
+    #         # img_base64 = base64.b64encode(image_read).decode('utf-8')
+    #         # image_data = f"data:image/jpeg;base64,{img_base64}"
+    #         # global_image_data = image_data #更新global_image_data
+    #         image_data=image
+    #     else:
+    #         image_data = None
+
+    #     # Send data to GPT and get response
+    #     if img_score:
+    #         rate_msg = f"这张图片的IAA评分是{img_score}/10分，"
+    #     else:
+    #         rate_msg = ""
+
+    #     response = send_gpt(rate_msg+question, image_data)
+    #     response = rate_msg + response
+    #     print(up)
+    #     history.append({"q":question,"a":response,"p":image_data if up==True else None})
+    #     up=False
+    #     return ""#render_template('index.html', question=question, response=response,ch=history)
+    # else:
+    #     # Display the form for user input on GET requests
+    #     return render_template('index.html', question=None, response=None)
+
+# Function to send data to OpenAI's GPT including text and optional image
+def send_gpt(prompt, image_data=None,chat_history=[]):
+    try:
+        # 构建消息
+        message = {"role": "user", "content": prompt}
+
+        # 如果本轮没有传图片 - 用以前的
+        if image_data==None:
+            image_data = image_data
+
+        if image_data:
+            message["content"] = [{"type": "text", "text": prompt}, {"type": "image_url", "image_url": image_data}]
+
+        # Limit the chat history to the last 3 exchanges to ensure the conversation does not exceed 3 turns
+        if len(chat_history) >= 6:
+            chat_history = chat_history[-6:]
+
+        chat_history.insert(0, message)
+        
+        print(chat_history)
+
+        # Call OpenAI API
+        response = openai.ChatCompletion.create(
+            model='gpt-4-vision-preview',
+            messages=chat_history,
+            max_tokens=4096
+        )
+
+        # Extract and return the response
+        reply = response["choices"][0]['message']['content']
+        chat_history.insert(0, {"role": "assistant", "content": reply})
+        return reply
+    except Exception as e:
+        return str(e)
+
+'''
+
+
+CREATE TABLE history (
+    id INTEGER PRIMARY KEY,
+    role VARCHAR(60),
+    time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    content TEXT,
+    user_id INTEGER,
+    picture VARCHAR(60)
+);
+
+
+'''
 
 if __name__ == '__main__':
     config = dict(
         host='0.0.0.0',
-        port=3306,
+        port=8080,
         debug=True,
         allow_unsafe_werkzeug=True
     )

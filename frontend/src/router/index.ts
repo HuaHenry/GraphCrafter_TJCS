@@ -3,7 +3,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import Dashboard from "@/pages/dashboard/dashboard.vue";
 import easy1 from "@/pages/edit/easy1.vue";
 import Manage from "@/pages/manager/Manage.vue";
-
+import conversation from "@/pages/gpt.vue";
 
 import Demo from "@/views/Demo.vue";
 import Login from "@/components/Login.vue";
@@ -41,6 +41,11 @@ export const routes = [
     component: () => import("@/pages/index.vue"),
     redirect: "/dashboard",
     children: [
+      {
+        name: "conversation",
+        path: "/conversation",
+        component: conversation,
+      },
       {
         name: "easy1",
         path: "/easy1",
