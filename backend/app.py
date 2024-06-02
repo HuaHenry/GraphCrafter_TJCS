@@ -1974,6 +1974,32 @@ def search_posts():
     return jsonify({'posts': results})
 
 
+@app.route('/api/users/search', methods=['GET'])
+@cross_origin(supports_credentials=True)
+def search_users():
+    query = request.args.get('query', '')
+    if not query:
+        return jsonify({'users': []})
+
+    # Search for users by name or email that includes the query string
+    users = User.query.filter((User.name.ilike(f'%{query}%'))).all()
+
+    results = [{
+        'id': user.id,
+        'name': user.name,
+        'photo': user.photo,
+        'email': user.email,
+        'age': user.age,
+        'sex': 'Male' if user.sex else 'Female',
+        'is_admin': user.is_admin,
+        'is_premium': user.is_premium,
+        'description': user.description,
+        'status': 'Active' if user.status else 'Banned'
+    } for user in users]
+    print(results)
+    return jsonify({'users': results})
+
+
 @app.route('/api/opencvimages', methods=['GET'])
 def get_images():
     opencv_imgs = Opencv.query.all()
