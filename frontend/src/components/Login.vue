@@ -65,7 +65,7 @@ export default {
             this.$router.push("/manager");
           }
           else{
-            this.$router.push("/dashboard");
+            this.$router.push("/Demo");
           }
         }
         else if (res.data.status === 'error') {
@@ -98,7 +98,7 @@ export default {
           }
           else {
             ElMessage.error({
-              message: "登录失败：数据库密码未更新，待解决",
+              message: "登录失败：请检查后端是否开启；端口/IP是否正确",
               duration: 1500
             });
           }
