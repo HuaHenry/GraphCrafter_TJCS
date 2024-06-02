@@ -29,6 +29,7 @@
            <span class="chat-bubble-left">
 <!--       <span class="chat-bubble-left" @mouseover="changeLeftArrowColor(true)" @mouseout="changeLeftArrowColor(false)"> -->
              <div class="chat-text">{{message.content}}</div>
+             <img :src="message.picture" style="height: 200px;">
      	     </span>
         </div>
 
@@ -75,6 +76,7 @@ import axios from 'axios';
 import store from "../store/index";
 import { ref,onMounted } from 'vue';
 import "https://gosspublic.alicdn.com/aliyun-oss-sdk-6.18.0.min.js";
+import { formatDateTime } from '@/utils/socket';
 
 export default {
   data(){
@@ -162,42 +164,46 @@ export default {
   setup() {
     const text=ref("");
     let messages=ref([]);
-    let img_url=ref("")
-    axios.get(`/api/getmsg/${store.state.user_id}`).then(function (response) {
-      messages.value=response.data["data"];
-      console.log(messages);
+    let img_url=ref("");
+    let info=ref();
+    axios.post("/api/get_info",{
+      user_id:store.state.user_id
+    }).then(function (response) {
+      info.value=response.data["info"];
     }).catch(function (error) {
       console.log(error);
     });
-
-
-    const file = ref(null);
     async function clearMsg(){
-      axios.get(`/clear_history/${store.state.user_id}`).then(function (response) {
-        console.log(response);
-        // 重新获取消息
-        axios.get(`/api/getmsg/${store.state.user_id}`).then(function (response) {
-          messages.value = response.data["data"];
-          console.log(messages);
-        }).catch(function (error) {
-          console.log(error);
-        });
-        console.log(response);
-      }).catch(function (error) {
-        console.log(error);
-      });
+      messages.value=[];
+      img_url.value="";
     }
     async function sendMsg(){
-      const response_img=axios.post('/api/chat_P2P',{
+      const newMessage = {
+        content: text.value,
+        time: formatDateTime(new Date()),
+        role: "user",
+        picture: img_url.value, // 使用 img_url.value 而不是 img_url
+        photo: info.value // 使用 info.value 而不是 info
+      };
+      messages.value.push(newMessage);
+
+      text.value='';
+      axios.post('/api/chat_P2P',{
         img_url:img_url.value,
-        prompt:text.value,
+        prompt:newMessage.content,
         user_id:store.state.user_id,
       }).then(function (response) {
-          console.log(response);
+        console.log(response.data['img']);
+        const newMsg={
+          time: formatDateTime(new Date()),
+          role:"assistant",
+          picture:response.data['img']
+        };
+        messages.value.push(newMsg);
+        img_url.value=response.data['img'];
         }).catch(function (error) {
           console.log(error);
         });
-      console.log(response_img.data["img"]);
     }
 
 
@@ -209,7 +215,6 @@ export default {
       text,
       messages,
       sendMsg,
-      file,
       img_url,
       clearMsg
     };
