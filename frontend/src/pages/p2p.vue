@@ -2,7 +2,7 @@
   <div class="custom-box">
     <!--顶栏-->
     <div class="header">
-      <div class="room-info">图像评估建议专家</div>
+      <div class="room-info">对话修图模型</div>
     </div>
     <!--对话框-->
     <div ref="content" class="message-container">
@@ -18,7 +18,7 @@
           </span>
           <span class="triangle-top-right"></span>
           <!-- 头像 -->
-           <img :src="info" class="user-avatar">
+           <img :src="message.photo" class="user-avatar">
         </div>
         <!--对方-->
         <div v-else class="chat-bubble right">
@@ -29,6 +29,7 @@
            <span class="chat-bubble-left">
 <!--       <span class="chat-bubble-left" @mouseover="changeLeftArrowColor(true)" @mouseout="changeLeftArrowColor(false)"> -->
              <div class="chat-text">{{message.content}}</div>
+             <img :src="message.picture" style="height: 200px;">
      	     </span>
         </div>
 
@@ -172,50 +173,37 @@ export default {
     }).catch(function (error) {
       console.log(error);
     });
-    axios.get(`/api/getmsg/${store.state.user_id}`).then(function (response) {
-      messages.value=response.data["data"];
-      console.log(messages);
-    }).catch(function (error) {
-      console.log(error);
-    });
-
-    const file = ref(null);
-    // 清空消息，删库
     async function clearMsg(){
-      axios.get(`/clear_history/${store.state.user_id}`).then(function (response) {
-        messages.value=[];
-        console.log(response);
-      }).catch(function (error) {
-        console.log(error);
-      });
+      messages.value=[];
+      img_url.value="";
     }
-    // 发送消息
     async function sendMsg(){
-      const newMsg={
-        content:text.value,
-        picture:img_url.value,
+      const newMessage = {
+        content: text.value,
         time: formatDateTime(new Date()),
-        role:"user"
+        role: "user",
+        picture: img_url.value, // 使用 img_url.value 而不是 img_url
+        photo: info.value // 使用 info.value 而不是 info
       };
-      messages.value.push(newMsg);
+      messages.value.push(newMessage);
+
       text.value='';
-      axios.post("/gpt",{
-        user_id:store.state.user_id,
-        question:newMsg.content,
+      axios.post('/api/chat_P2P',{
         img_url:img_url.value,
-        time: formatDateTime(new Date()),
+        prompt:newMessage.content,
+        user_id:store.state.user_id,
       }).then(function (response) {
-        // 重新获取消息
-        axios.get(`/api/getmsg/${store.state.user_id}`).then(function (response) {
-          messages.value = response.data["data"];
-          console.log(response);
+        console.log(response.data['img']);
+        const newMsg={
+          time: formatDateTime(new Date()),
+          role:"assistant",
+          picture:response.data['img']
+        };
+        messages.value.push(newMsg);
+        img_url.value=response.data['img'];
         }).catch(function (error) {
           console.log(error);
         });
-        console.log(response);
-      }).catch(function (error) {
-        console.log(error);
-      });
     }
 
 
@@ -227,10 +215,8 @@ export default {
       text,
       messages,
       sendMsg,
-      file,
       img_url,
-      clearMsg,
-      info
+      clearMsg
     };
   }
 };

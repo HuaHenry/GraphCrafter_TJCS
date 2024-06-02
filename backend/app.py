@@ -29,10 +29,11 @@ from simple_image_process.image_outline import show_outline
 from simple_image_process.image_transformation import show_transformation
 from simple_image_process.image_color import show_hsv
 from simple_image_process.image_enhancement import show_enhancement
+import requests
 
 # 防止通信报错 by zyp
-# import locale
-# locale.setlocale(locale.LC_CTYPE,"chinese")
+import locale
+locale.setlocale(locale.LC_CTYPE,"chinese")
 
 WIN = sys.platform.startswith('win')
 if WIN:  # 如果是 Windows 系统，使用三个斜线
@@ -188,7 +189,7 @@ class History(db.Model):  # 图像评估聊天历史
     __tablename__ = 'history'
     id = db.Column(db.Integer, primary_key=True)  # 主键
     role = db.Column(db.String(60))  # 消息方
-    time = db.Column(db.TIMESTAMP, default=func.current_timestamp())
+    time = db.Column(db.String(60))
     content = db.Column(db.Text)  # 内容
     user_id = db.Column(db.Integer) # 用户id
     picture = db.Column(db.String(60)) # 图片
@@ -335,28 +336,32 @@ def search_posts():
     return jsonify({'posts': results})
 
 
+# 广场页模糊搜索用户
 @app.route('/api/users/search', methods=['GET'])
 @cross_origin(supports_credentials=True)
 def search_users():
     query = request.args.get('query', '')
+    current_user_id = request.args.get('userId')  # 获取前端传来的当前用户 ID
     if not query:
         return jsonify({'users': []})
 
-    # Search for users by name or email that includes the query string
-    users = User.query.filter((User.name.ilike(f'%{query}%'))).all()
+    users = User.query.filter(User.name.ilike(f'%{query}%')).all()
+    results = []
 
-    results = [{
-        'id': user.id,
-        'name': user.name,
-        'photo': user.photo,
-        'email': user.email,
-        'age': user.age,
-        'sex': 'Male' if user.sex else 'Female',
-        'is_admin': user.is_admin,
-        'is_premium': user.is_premium,
-        'description': user.description,
-        'status': 'Active' if user.status else 'Banned'
-    } for user in users]
+    for user in users:
+        is_followed = Follow.query.filter_by(follower_id=current_user_id, followed_id=user.id).first() is not None
+        followers_count = Follow.query.filter_by(followed_id=user.id).count()
+        posts_count = Post.query.filter_by(author_id=user.id).count()
+        is_follower = Follow.query.filter_by(followed_id=current_user_id, follower_id=user.id).first() is not None
+        results.append({
+            'id': user.id,
+            'name': user.name,
+            'photo': user.photo,
+            'followers': followers_count,
+            'posts': posts_count,
+            'is_followed': is_followed,
+            'is_follower': is_follower
+        })
     print(results)
     return jsonify({'users': results})
 
@@ -1387,7 +1392,9 @@ def follow_user():
     data = request.get_json()
     follower_id = data.get('follower_id')
     followed_id = data.get('followed_id')
-    # print(follower_id)
+    print(follower_id)
+    print(followed_id)
+
     if follower_id == followed_id:
         return jsonify({'error': 'Cannot follow yourself'}), 400
 
@@ -1713,6 +1720,7 @@ def postnotes():
 # 参数：img_url(原图URL) + img_select(对应的模板url，用于寻找prompt)
 # 本地调试请注释该函数！！！！！！！
 @app.route('/api/call_P2P', methods=['GET', 'POST'])
+@app.route('/api/call_P2P', methods=['GET', 'POST'])
 def call_P2P():
     img_old = request.json.get('img_url')
     img_select = request.json.get('img_select')
@@ -1750,52 +1758,12 @@ def call_P2P():
         bucket.put_object(bucket_url, fileobj)
         # 删除文件夹中的图片
         os.remove(mod_img_url)
-        print("https://graphcrafter.oss-cn-beijing.aliyuncs.com/" + bucket_url)
-        return jsonify({'img': "https://graphcrafter.oss-cn-beijing.aliyuncs.com/" + bucket_url})
-    return jsonify({'img': None})
-
-# 对话修图指令
-@app.route('/api/chat_P2P', methods=['GET', 'POST'])
-def chat_P2P():
-    img_old = request.json.get('img_url')
-    # img_select = request.json.get('img_select')
-    prompt = request.json.get('prompt')
-    user_id = request.json.get('user_id')
-    # print(img_old, img_select, user_id)
-    if img_old is None or prompt is None or user_id is None:
-        return jsonify({'img': 'Invalid data provided'}), 400
-    # 查询Picture数据表，找到对应的prompt
-    # pic_tmp = Picture(id=img_select, prompt='turn it yellow.')
-    # db.session.add(pic_tmp)
-    # db.session.commit()
-    # prompt = Picture.query.filter_by(id=img_select).first().prompt
-    # if prompt is None:
-    #     print("prompt is None")
-    #     return jsonify({'img': 'Prompt not found'})
-    # 调用修图指令
-    # img_new = os.system("python /root/Code/Models/P2P/P2P.py --img_url "+img_old+" --prompt "+prompt)
-    # 函数调用修图命令，存储为/mod/{prompt+"_modify_"+img_old}
-    sys.path.append(r'/root/Code/Models/P2P')
-    import P2P
-    P2P.modify_pic(img_old, prompt)
-    # 上传阿里云图床
-    # OSS_ACCESS_KEY_ID = "LTAI5tR1c1uhFRfWxjq8BWT4"
-    # OSS_ACCESS_KEY_SECRET = "BdN5OIEdet7IO6KWOq7TJiivHOsC5B"
-    auth = oss2.ProviderAuth(EnvironmentVariableCredentialsProvider())
-    bucket = oss2.Bucket(
-        auth, 'https://oss-cn-beijing.aliyuncs.com', 'graphcrafter')
-    # /root/Code/Models/P2P/weights
-    prompt = prompt.replace(" ", "")
-    mod_img_url = prompt + "_modify_" + img_old.split("/")[-1]
-    with open(mod_img_url, mode="rb") as fileobj:
-        fileobj.seek(0, os.SEEK_SET)
-        current = fileobj.tell()
-        bucket_url = user_id+'/'+prompt + "_modify_" + img_old.split("/")[-1]
-        bucket.put_object(bucket_url, fileobj)
-        # 删除文件夹中的图片
-        os.remove(mod_img_url)
-        print("https://graphcrafter.oss-cn-beijing.aliyuncs.com/" + bucket_url)
-        return jsonify({'img': "https://graphcrafter.oss-cn-beijing.aliyuncs.com/" + bucket_url})
+        current_url = 'https://graphcrafter.oss-cn-beijing.aliyuncs.com/' + bucket_url
+        new_pic = Picture(id=current_url, prompt=prompt,Ptype=2)
+        db.session.add(new_pic)
+        db.session.commit()        
+        return jsonify({'img': "https://graphcrafter.oss-cn-beijing.aliyuncs.com/"+ bucket_url})
+    
     return jsonify({'img': None})
 
 # 删除帖子的接口
@@ -1888,7 +1856,7 @@ from flask import redirect
 import openai
 import base64
 from io import BytesIO
-from IAA_main import get_score_one_image
+# from IAA_main import get_score_one_image
 
 # Set your OpenAI API key here
 openai.api_key = 'sk-75C7ruBi5U7ts0Yi55BeDb4576Cd41EbA68bDbF1344f9f5e'
@@ -1898,8 +1866,6 @@ openai.api_base = "https://tb.plus7.plus/v1"
 
 history=[]
 image_list=[]
-up=False
-img_score=0
 
 # Define a route for clearing chat history
 @app.route('/clear_history/<int:user_id>', methods=['GET'])
@@ -1947,65 +1913,58 @@ def photo():
     # Convert image to base64
     image_read = image.read()
     image_stream = BytesIO(image_read)
-    img_score = get_score_one_image(image_stream)
+    # img_score = get_score_one_image(image_stream)
+    img_score = 8.2
     img_score = round(min(img_score*1.2,10),2)
     img_base64 = base64.b64encode(image_read).decode('utf-8')
     # global_image_data = image_data #更新global_image_data
     image_list.append(f"data:image/jpeg;base64,{img_base64}")
-    if "up" not in globals():
-        global up
-    up=True
     return "success"
 
-# Home route accepts both GET and POST to display the form and handle form submissions
-@app.route('/gpt/<int:user_id>', methods=['GET', 'POST'])
+# 图像评估
+@app.route('/gpt', methods=['POST'])
 @cross_origin(supports_credentials=True)
-def home(user_id):
-    if "img_score" not in globals():
-        global img_score
-    if "up" not in globals():
-        global up
+def gpt():
+    user_id=request.json.get('user_id')
+    question=request.json.get('question')
+    img_url=request.json.get('img_url')
+    time=request.json.get('time')
 
-    picture = None
-    question = ""
-    img_url=None
-    if request.method == 'POST':
-        if 'file' in request.files:
-            picture=request.files['file']
-            img_url=request.form.get('img_url')
-        question=request.form.get('question')
-    if question=="":
-        post = History(user_id=user_id,role="warn",content="请输入问题")
-        db.session.add(post)
-        db.session.commit()
-        return {}
+    # if question=="":
+    #     post = History(user_id=user_id,role="warn",content="请输入问题")
+    #     db.session.add(post)
+    #     db.session.commit()
+    #     return {}
     chats=db.session.query(
         History.role,
         History.content,
         History.picture,
     ).join(User, History.user_id == User.id).filter(User.id==user_id,History.role!='warn').all()
     chat_history = []
-    last_picture=None
+    # last_picture=None
     for chat in chats:
         chat_data = {
             'role': chat[0],
             'content': chat[1]
         }
         chat_history.append(chat_data)
-        last_picture=chat[2]
+        # last_picture=chat[2]
                 
     # data.sort(key=lambda x: parse_last_time(x['time']), reverse=True) # 按最后一条消息的时间降序排序
-    if picture==None:
-        if last_picture is not None:
-            picture=last_picture
-        else:
-            post = History(user_id=user_id,role="warn",content="请上传一张照片")
-            db.session.add(post)
-            db.session.commit()
-            return {}
-    image_read = picture.read()
+    # if picture==None:
+    #     if last_picture is not None:
+    #         picture=last_picture
+    #     else:
+    #         post = History(user_id=user_id,role="warn",content="请上传一张照片")
+    #         db.session.add(post)
+    #         db.session.commit()
+    #         return {}
+    file=requests.get(img_url).content
+    print(file)
+    image_read = file#.read()
     image_stream = BytesIO(image_read)
-    img_score = get_score_one_image(image_stream)
+    # img_score = get_score_one_image(image_stream)
+    img_score = 8.2
     img_score = round(min(img_score*1.2,10),2)
     img_base64 = base64.b64encode(image_read).decode('utf-8')
     # global_image_data = image_data #更新global_image_data
@@ -2015,8 +1974,8 @@ def home(user_id):
     response = send_gpt(rate_msg+question,image_data,chat_history)
     response = rate_msg + response
 
-    q = History(user_id=user_id,role="user",content=question,picture=img_url)
-    a = History(user_id=user_id,role="assistant",content=response,picture=img_url)
+    q = History(user_id=user_id,role="user",content=question,picture=img_url,time=time)
+    a = History(user_id=user_id,role="assistant",content=response,picture=img_url,time=time)
     db.session.add(q)
     db.session.add(a)
     db.session.commit()
@@ -2108,7 +2067,7 @@ def send_gpt(prompt, image_data=None,chat_history=[]):
 CREATE TABLE history (
     id INTEGER PRIMARY KEY,
     role VARCHAR(60),
-    time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    time VARCHAR(60),
     content TEXT,
     user_id INTEGER,
     picture VARCHAR(60)

@@ -193,6 +193,7 @@ def start_train(opt):
 
 
 def get_score_one_image(image_stream):
+    return 8.12
     # 加载模型
     args, config = parse_option()
     # print(f"Creating model:{config.MODEL.TYPE}/{config.MODEL.NAME}")
