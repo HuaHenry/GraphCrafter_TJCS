@@ -7,34 +7,46 @@
       :label="item"
       :value="item">
     </el-option>
-  </el-select><el-button type="primary"  @click="labelSearch" style="margin-left: 20px;background-color: #000C42; color: white; border-color: #000C42;">搜索</el-button></div>
-    <Waterfall :list="list" :width="220" :hasAroundGutter="false" style="max-width: 1260px">
+  </el-select>
+  <el-button type="primary"  @click="labelSearch" style="margin-left: 20px;background-color: #000C42; color: white; border-color: #000C42;">搜索</el-button></div>
+    
+  <Waterfall :list="list" :width="220" :hasAroundGutter="false" style="max-width: 1260px" >
       <template #item="{item}">
-        <div class="card" :key="componentKey">
-          <LazyImg :url="item.pictures" style="border-radius: 8px"  @click="toDel_draft(item.ids)"    />
+        <div class="card" :key="componentKey" @mouseover="item.showPostButton = true"
+            @mouseout="item.showPostButton = false" @click="toggleShowPostDialog(item)">          
+          <LazyImg :url="item.pictures" style="border-radius: 8px"      />
+          <!-- <el-button v-if="item.showPostButton" class="post-button" @click="toggleShowPostDialog">发帖</el-button> -->
           <div class="footer">
             <a class="title"><span>{{ item.labels }}</span></a>
             
             <div class="author-wrapper">
               <a class="author">
-                <!-- <img class="author-avatar" :src="item.avatars" /> -->
+                <!-- <img class="author-avatar" :src="item.avatars" /> @click="toDel_draft(item.ids)" -->
                 <span class="name">{{ item.dates }}</span>
               </a>
-              <!-- <span class="like-wrapper like-active">
-                <Search style="width: 1em; height: 1em" />
-                <span class="count">{{ item.likes }}</span>
-              </span> -->
             </div>
           </div>
         </div>
+        
       </template>
     </Waterfall>
+
+    <el-dialog title="发布帖子"  v-model="showPostDialog" width="500" >
+            <el-image :src="currentItem.pictures"></el-image>
+            <el-input v-model="ruleForm.name" type="text" id="title" name="title" placeholder="请输入标题"></el-input>
+            <el-input v-model="ruleForm.summary" type="textarea" id="description" name="description" placeholder="请输入内容..."></el-input>
+            <span slot="footer" class="dialog-footer">
+              <el-button @click="showPostDialog = false">取 消</el-button>
+              <el-button type="primary" @click="submitForm('ruleForm')">发 布 动 态</el-button>
+            </span>
+        </el-dialog>
   </div>
 </template>
 <script lang="ts" setup>
 // import { Star } from "@element-plus/icons-vue";
 import { Search } from "@element-plus/icons-vue";
 import { LazyImg, Waterfall } from "vue-waterfall-plugin-next";
+import { ElMessage } from "element-plus";
 import "vue-waterfall-plugin-next/dist/style.css";
 // import { ref } from "vue";
 
@@ -50,33 +62,19 @@ const toDel_draft = (id: number) => {
 
 let  componentKey=0;
 
-const list = ref([
-  // { src: "https://tse1-mm.cn.bing.net/th/id/OIP-C.Zte3ljd4g6kqrWWyg-8fhAHaEo?w=264&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7" },
-  // { src: "https://tse1-mm.cn.bing.net/th/id/OIP-C.cGc4c8dVlqnfV3uwcS1IogHaE8?w=260&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7" },
-  // { src: "https://tse1-mm.cn.bing.net/th/id/OIP-C.Zte3ljd4g6kqrWWyg-8fhAHaEo?w=264&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7" },
-  // { src: "https://tse4-mm.cn.bing.net/th/id/OIP-C.N0USLldg_iKDGVKT12vB4AHaEK?w=292&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7" },
-  // { src: "https://tse1-mm.cn.bing.net/th/id/OIP-C.jzcWzXf_uts2sgE2WChuCQHaEo?w=263&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7" },
-  // { src: "https://tse1-mm.cn.bing.net/th/id/OIP-C.Zte3ljd4g6kqrWWyg-8fhAHaEo?w=264&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7" },
-  // { src: "https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg" },
-  // { src: "https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg" },
-  // { src: "https://fuss10.elemecdn.com/d/e6/c4d93a3805b3ce3f323f7974e6f78jpeg.jpeg" },
-  // { src: "https://fuss10.elemecdn.com/0/6f/e35ff375812e6b0020b6b4e8f9583jpeg.jpeg" },
-  // { src: "https://fuss10.elemecdn.com/9/bb/e27858e973f5d7d3904835f46abbdjpeg.jpeg" },
-  // { src: "https://fuss10.elemecdn.com/3/28/bbf893f792f03a54408b3b7a7ebf0jpeg.jpeg" },
-  // { src: "https://fuss10.elemecdn.com/2/11/6535bcfb26e4c79b48ddde44f4b6fjpeg.jpeg" },
-  // { src: "https://tse4-mm.cn.bing.net/th/id/OIP-C.N0USLldg_iKDGVKT12vB4AHaEK?w=292&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7" },
-  // { src: "https://tse1-mm.cn.bing.net/th/id/OIP-C.jzcWzXf_uts2sgE2WChuCQHaEo?w=263&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7" },
-  // { src: "https://tse3-mm.cn.bing.net/th/id/OIP-C.YzEeJqgWky6RQMatrMd6-gHaHa?w=170&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7" },
-  // { src: "https://tse3-mm.cn.bing.net/th/id/OIP-C.YzEeJqgWky6RQMatrMd6-gHaHa?w=170&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7" },
-  // { src: "https://tse1-mm.cn.bing.net/th/id/OIP-C.Zte3ljd4g6kqrWWyg-8fhAHaEo?w=264&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7" },
-  // { src: "https://tse4-mm.cn.bing.net/th/id/OIP-C.N0USLldg_iKDGVKT12vB4AHaEK?w=292&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7" },
-  // { src: "https://tse1-mm.cn.bing.net/th/id/OIP-C.jzcWzXf_uts2sgE2WChuCQHaEo?w=263&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7" },
-  // { src: "https://tse1-mm.cn.bing.net/th/id/OIP-C.Zte3ljd4g6kqrWWyg-8fhAHaEo?w=264&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7" },
-  // { src: "https://tse1-mm.cn.bing.net/th/id/OIP-C.cGc4c8dVlqnfV3uwcS1IogHaE8?w=260&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7" },
-]);
+const list = ref([]);
 
 const labels=ref();
 const selected_label=ref();
+// const showPostButton = ref(false);
+const showPostDialog = ref(false);
+const ruleForm = ref({
+    name:'',
+    image:'',
+    summary:'',
+    issue:'',
+});
+const currentItem = ref();
 
 const get_labels = async() => {
   try{
@@ -103,7 +101,8 @@ const labelSearch = async () => {
         pictures: pictures[i], // 使用对应索引的图片 URL 作为 src 属性
         dates: dates[i], // 使用对应索引的标题属性
         labels: labels[i], // 使用对应索引的作者属性
-        ids:ids[i]
+        ids:ids[i],
+        showPostButton:false
       };
       list.value.push(item);
     }
@@ -128,7 +127,8 @@ const fetchData = async () => {
         pictures: pictures[i], // 使用对应索引的图片 URL 作为 src 属性
         dates: dates[i], // 使用对应索引的标题属性
         labels: labels[i], // 使用对应索引的作者属性
-        ids:ids[i]
+        ids:ids[i],
+        showPostButton:false
       };
       list.value.push(item);
     }
@@ -137,12 +137,53 @@ const fetchData = async () => {
     console.error('Error fetching data:', error);
   }
 };
+function toggleShowPostDialog(item)
+{
+  currentItem.value = item;
+  showPostDialog.value =true;
+  console.log(showPostDialog.value);
+}
+
+const submitForm =()=>
+{
+  // console.log(ruleForm.value);
+  console.log(currentItem.value.pictures);
+  try{
+    axios.post('/api/postnotes',{
+      pics:[currentItem.value.pictures],
+      title:ruleForm.value.name,
+      description:ruleForm.value.summary,
+      userId:store.state.user_id,
+  });
+  }catch (error) {
+    console.error('Error fetching data:', error);
+  }
+  ElMessage.success({
+    message: "发布成功",
+    duration: 1500
+  });
+  // 使用setTimeout延迟1秒后执行页面跳转
+  setTimeout(() => {
+    // location.href = "/dashboard";
+  }, 800);  // 延时800毫秒
+
+}
 onMounted(() => {
   fetchData(); // Call fetchData function when the component is mounted
   get_labels();
 });
 </script>
 <style lang="less" scoped>
+.post-button {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  z-index: 1000;
+}
 .feeds-container {
   position: relative;
   transition: width 0.5s;

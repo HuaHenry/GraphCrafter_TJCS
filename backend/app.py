@@ -1,6 +1,6 @@
 import sys
 import os
-from flask import Flask, jsonify, request, render_template, url_for, send_from_directory
+from flask import Flask, jsonify, request, render_template, url_for, send_from_directory, make_response
 from flask_cors import CORS, cross_origin
 
 from flask_sqlalchemy import SQLAlchemy  # 导入扩展类
@@ -727,18 +727,17 @@ def del_draft(post_id):
     return jsonify({'message': 'Delete successfully'})
 
 # 暂存草稿
-
-
 @cross_origin()
-@app.route('/api/post_draft/', methods=['POST', 'GET'])
+@app.route('/api/post_draft/', methods=['POST'])
 def post_draft():
+    print(request.json)
     img = request.json.get('img')
     user_id = request.json.get('user_id')
     label = request.json.get('label')
     from datetime import datetime
     date = datetime.now()
     if img:
-        new_draft = Draft(user_id=user_id, picture=img, date=date, label='1')
+        new_draft = Draft(user_id=user_id, picture=img, date=date, label=label)
         db.session.add(new_draft)
         db.session.commit()
     return jsonify({'message': 'Post draft successfully'})
@@ -1827,7 +1826,7 @@ def process_image_simple():
         show_transformation(origin, process_type, img_size)
     elif process_category == "filter":
         show_filtering(origin, process_type, img_size)
-    elif process_category == "outline":
+    elif process_category == "contour":
         show_outline(origin, process_type, img_size)
     elif process_category == "enhance":
         show_enhancement(origin, process_type, img_size)
