@@ -18,16 +18,6 @@
               <span>评论和@</span>
             </div>
           </div>
-          <div :class="{ 'reds-tab-item': true, 'active': activeTab === 'agreeTab' }">
-            <div class="badge-container" @click="toAgree()">
-              <span>赞和收藏</span>
-            </div>
-          </div>
-          <!-- <div :class="{ 'reds-tab-item': true, 'active': activeTab === 'followerTab' }">
-            <div class="badge-container" @click="toFollower()">
-              <span>新增关注</span>
-            </div>
-          </div> -->
         </div>
         <div class="divider" style="margin: 16px 32px 0px"></div>
       </div>
@@ -54,14 +44,14 @@ const toFeedback = () => {
   activeTab = "feedbackTab";
   router.push({ path: "/feedback" });
 };
-const toAgree = () => {
-  activeTab = "agreeTab";
-  router.push({ path: "/agreeCollection" });
-};
-// const toFollower = () => {
-//   activeTab = "followerTab";
-//   router.push({ path: "/follower" });
+// const toAgree = () => {
+//   activeTab = "agreeTab";
+//   router.push({ path: "/agreeCollection" });
 // };
+// // const toFollower = () => {
+// //   activeTab = "followerTab";
+// //   router.push({ path: "/follower" });
+// // };
 </script>
 <style lang="less" scoped>
 .container {

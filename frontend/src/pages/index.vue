@@ -31,15 +31,20 @@
             </a>
           </li>
 
-          <ul v-if="activeChannel === 'photoshop' || activeChannel === 'easy' || activeChannel === 'conversation'" class="sub-menu">
-              <li :class="{ 'active-channel': activeChannel === ' conversation ' }" @click="toConversation">
+          <ul v-if="activeChannel === 'photoshop' || activeChannel === 'easy' || activeChannel === 'conversation'|| activeChannel === 'p2p'" class="sub-menu">
+              <li :class="{ 'active-channel': activeChannel === 'conversation' }" @click="toConversation">
                 <a class="link-wrapper">
-                  <ChatSquare style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel">对话</span>
+                  <DataAnalysis style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel">图像评估</span>
                 </a>
               </li>
               <li :class="{ 'active-channel': activeChannel === 'easy' }" @click="toEasy">
                 <a class="link-wrapper">
-                  <MagicStick style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel">简单</span>
+                  <MagicStick style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel">简单修图</span>
+                </a>
+              </li>
+              <li :class="{ 'active-channel': activeChannel === 'p2p' }" @click="top2p">
+                <a class="link-wrapper">
+                  <ChatDotRound style="width: 1em; height: 1em; margin-right: 8px" /><span class="channel">对话修图</span>
                 </a>
               </li>
             </ul>
@@ -125,7 +130,9 @@ import {
   CirclePlus,
   Brush,
   MagicStick,
-  ChatSquare
+  ChatDotRound,
+  ChatSquare,
+  DataAnalysis
 } from "@element-plus/icons-vue";
 import { useRouter } from "vue-router";
 import { ref } from "vue";
@@ -188,6 +195,11 @@ const toEasy = () => {
   activeChannel.value = 'easy';
 };
 
+const top2p = () => {
+  router.push({ name: 'p2p' });
+  activeChannel.value = 'p2p';
+};
+
 const togglePhotoshop = () => {
   activeChannel.value = activeChannel.value === 'photoshop' ? null : 'photoshop';
 };
@@ -213,6 +225,11 @@ store.commit("setCurUserID",localStorage.getItem("user")?localStorage.getItem("u
 </script>
 
 <style lang="less" scoped>
+
+// /deep/ div#app{
+//   height: 100px;
+// }
+
 .icon-hover {
   cursor: pointer; /* 使鼠标悬浮时变为手型 */
   transition: transform 0.3s ease; /* 过渡效果，可以添加其他视觉效果，如轻微放大 */

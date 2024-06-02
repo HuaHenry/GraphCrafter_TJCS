@@ -219,6 +219,17 @@ function truncatedText(text) {
 
 
 <style lang="less" scoped>
+.avatar-editor {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  
+  border-radius: 20px; /* 添加圆角 */
+  background-color: #fff; /* 确保弹窗背景为白色 */
+  padding: 20px; /* 添加一些内边距以提供空间 */
+  box-shadow: 0 8px 64px 0 rgba(0, 0, 0, 0.04), 0 1px 4px 0 rgba(0, 0, 0, 0.02);
+}
 
 .avatar-actions {
   display: flex; /* 使用 Flexbox 布局 */
@@ -229,16 +240,36 @@ function truncatedText(text) {
 }
 
 .primary-button {
-  background-color: #409EFF; /* 自定义主按钮颜色 */
-  border-color: #409EFF;
+  background-color: #000C42 !important; /* 自定义主按钮颜色 */
+  border-color: #000C42!important;
   color: white;
+  height:30px;
+  width:75px;
+  border-radius:10px;
+  
+}
+
+.primary-button:hover {
+  background-color: rgba(0, 32, 128, 0.769); /* 鼠标悬停时的背景颜色变暗 */
+  border-color: #000C42; /* 鼠标悬停时的边框颜色也变暗 */
 }
 
 .secondary-button {
-  background-color: #F56C6C; /* 自定义次按钮颜色 */
-  border-color: #F56C6C;
+  background-color: #DE124A !important; /* 自定义次按钮颜色 */
+  border-color: #DE124A !important;
+  color: white;
+  height: 30px;
+  width: 75px;
+  border-radius: 10px;
+ 
+}
+
+.secondary-button:hover {
+  background-color: #DE124AB3; /* 鼠标悬停时的背景颜色变暗并半透明 */
+  border-color: #DE124AB3; /* 鼠标悬停时的边框颜色也变暗并半透明 */
   color: white;
 }
+
 
 .hover-button {
   position: absolute;

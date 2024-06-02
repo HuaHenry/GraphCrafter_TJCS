@@ -4,7 +4,7 @@ import Dashboard from "@/pages/dashboard/dashboard.vue";
 import easy1 from "@/pages/edit/easy1.vue";
 import Manage from "@/pages/manager/Manage.vue";
 import conversation from "@/pages/gpt.vue";
-
+import p2p from "@/pages/p2p.vue";
 import Demo from "@/views/Demo.vue";
 import Login from "@/components/Login.vue";
 import Register from "@/components/Register.vue";
@@ -47,6 +47,11 @@ export const routes = [
         component: conversation,
       },
       {
+        name: "p2p",
+        path: "/p2p",
+        component: p2p,
+      },
+      {
         name: "easy1",
         path: "/easy1",
         component: easy1,
@@ -82,11 +87,6 @@ export const routes = [
             path: "/feedback",
             component: () => import("@/pages/message/children/feedback.vue"),
             name: "feedback",
-          },
-          {
-            path: "/agreeCollection",
-            component: () => import("@/pages/message/children/agree-collection.vue"),
-            name: "agreeCollection", // 用于 keep-alive, 必须与SFC自动推导或者显示声明的组件name一致
           },
           {
             path: "/follower",
