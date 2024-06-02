@@ -103,8 +103,8 @@
                       </el-form-item>
                       </el-form>
                     </div>
-                    <el-button type="primary" @click="submitForm('ruleF')" id="submit_button">确认图片</el-button>
-                    <img id="returnPic" src="" alt="" style="width: 100%;height: 100%" />
+                    <el-button type="primary" @click="submitForm('ruleF')" id="submit_button" style="position: absolute;left: 50%;transform: translate(-50%, -50%)">确认图片</el-button>
+                    <!-- <img id="returnPic" src="" alt="" style="width: 100%;height: 100%" /> -->
                     <!-- <input type="file" @change="handleFileUpload"/> -->
                   </div>
                 </div>
@@ -626,6 +626,7 @@ const fetchComments = async () => {
     console.error('Error fetching data:', error);
   }
 }
+
 //发布评论
 const submitComment = async () => {
   try {
@@ -759,7 +760,13 @@ const goBack = () => {
 
 
 
-<style lang="less" >
+<style lang="less">
+
+// .el-upload .el-upload--picture-card{
+//     width: 300px;
+//     height: 200px;
+//     line-height: 110px;
+// }
 
 .send-button {
   margin-left: 8px;
@@ -889,28 +896,31 @@ const goBack = () => {
 
 .modal-content {
   background-color: #fefefe;
-  margin: 15% auto;
+  //水平垂直居中
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   padding: 20px;
   border: 1px solid #888;
   width: 40%;
   border-radius: 20px;
 
-//   .upload_con{
-//      .uoloadSty .el-upload--picture-card{
-//             width:500px;
-//             height:500px;
-//             // line-height:110px;
-//         }
-//   }
+  .upload_con{
 
-// /deep/ .el-upload {
-//     width:350PX;
-//     height: 400PX;
-// }
+    .disUoloadSty .el-upload--picture-card{
+            display:none;   /* 上传按钮隐藏 */
+            background-color: chartreuse
+        }
 
-/deep/ .disUoloadSty .el-upload--picture-card{
-     display:none;   
-    }
+        /deep/ .el-button .el-button--primary{
+            position: absolute;
+            background-color: #333;
+            // top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+  }
 
 .el-icon-plus:before{
    content:''
@@ -936,6 +946,16 @@ const goBack = () => {
   text-decoration: none;
   cursor: pointer;
 }
+
+.el-upload-list--picture-card .el-upload-list__item {
+  width: 500px !important;
+  height: 500px !important;
+}
+
+// .el-upload .el-upload--picture-card{
+//     width: 500px !important;
+//     height: 500px !important;
+// }
 
 .el-upload-list--picture-card .el-upload-list__item {
   width: 500px !important;
@@ -1031,9 +1051,7 @@ const goBack = () => {
             display: flex;
             justify-content: center;
             align-items: center;
-
         }
-
     }
 
     .interaction-container {
