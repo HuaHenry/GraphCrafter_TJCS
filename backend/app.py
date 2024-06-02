@@ -1888,7 +1888,7 @@ from flask import redirect
 import openai
 import base64
 from io import BytesIO
-from IAA_main import get_score_one_image
+# from IAA_main import get_score_one_image
 
 # Set your OpenAI API key here
 openai.api_key = 'sk-75C7ruBi5U7ts0Yi55BeDb4576Cd41EbA68bDbF1344f9f5e'
@@ -1947,7 +1947,8 @@ def photo():
     # Convert image to base64
     image_read = image.read()
     image_stream = BytesIO(image_read)
-    img_score = get_score_one_image(image_stream)
+    # img_score = get_score_one_image(image_stream)
+    img_score = 8.2
     img_score = round(min(img_score*1.2,10),2)
     img_base64 = base64.b64encode(image_read).decode('utf-8')
     # global_image_data = image_data #更新global_image_data
@@ -2005,7 +2006,8 @@ def home(user_id):
             return {}
     image_read = picture.read()
     image_stream = BytesIO(image_read)
-    img_score = get_score_one_image(image_stream)
+    # img_score = get_score_one_image(image_stream)
+    img_score = 8.2
     img_score = round(min(img_score*1.2,10),2)
     img_base64 = base64.b64encode(image_read).decode('utf-8')
     # global_image_data = image_data #更新global_image_data
