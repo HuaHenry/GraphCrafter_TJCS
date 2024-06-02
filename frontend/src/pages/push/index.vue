@@ -39,7 +39,7 @@
     <img id="uploadedImage" style="visibility:hidden" alt="Uploaded Image" /> -->
     <input v-model="ruleForm.name" type="text" id="title" name="title" placeholder="请输入标题"/>
     <textarea v-model="ruleForm.summary" id="description" name="description" placeholder="请输入内容..."></textarea>
-    <el-button type="primary" @click="submitForm('ruleF')" id="submit_button">发布动态</el-button>
+    <el-button type="primary" @click="submitForm('ruleF')" id="submit_button">发 布 动 态</el-button>
   </div>
 
   <div class="input_txt">
@@ -130,12 +130,16 @@
 
     #submit_button{
         position: relative;
-        height:50px;
-        width: 40%;
-        top: 40px;
+        height:45px;
+        width: 15%;
+        top: 60px;
         border-radius: 13px;
-        background-color: rgb(174, 17, 0);
-        border-color: rgb(174, 17, 0);
+        background-color: #DE124A;
+        border-color: #DE124A;
+        font-weight: bold; /* 字体加粗 */
+        padding: 0; /* 移除内边距，让文字可以尽可能填满按钮 */
+        font-weight: bold; /* 字体加粗 */
+        font-size: 15px; /* 修改字体大小 */
     }
 
     }

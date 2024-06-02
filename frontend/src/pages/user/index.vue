@@ -263,7 +263,7 @@ onMounted(()=>{
                   margin-left: 16px;
                   padding: 8px 12px;
                   font-size: 14px;
-                  background-color: #b3acc6;
+                  background-color: #369ebbba;
                   border: none;
                   color: #fff;
                   border-radius: 6px;

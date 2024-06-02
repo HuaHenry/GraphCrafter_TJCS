@@ -10,8 +10,10 @@
             <el-image
               :src="item"
               style="width: 100%; height: 100%"
-              fit="cover"
+              fit="contain"
             />
+            <!-- 给图片加个角标 -->
+            <div class="pic_tab">{{ Ptab }}</div>
             <!-- <img :src="item" alt=""  style="width: 100%"/> -->
           </el-carousel-item>
         </el-carousel>
@@ -39,7 +41,7 @@
                 <el-button type="danger" size="large" round>关注</el-button>
               </div> -->
 
-              <el-button type="danger" size="large" round @click="handleClick">
+              <el-button type="danger" size="large" round @click="handleClick" class="custom-danger-button">
                   {{ buttonText }}
               </el-button>
             </div>
@@ -57,7 +59,7 @@
                   <span class="date">{{ items.date }}</span>
                 </div>
                 <div class="buttons" style="display: flex; justify-content: center; margin-top: 2ch">
-                  <el-button @click=loadButtonClick type="danger" size="medium" style="width: 100%; height:40px; border-radius: 10px;">一键使用模板</el-button>
+                  <el-button @click=loadButtonClick type="danger" size="medium" style="width: 100%; height:40px; border-radius: 10px; background-color: #000C42; color: white; border-color: #000C42;">一键使用模板</el-button>
                 </div>
                 <!-- 一键导入上传图 -->
                 <div v-if="showModal" class="modal">
@@ -184,7 +186,7 @@
                     <Close style="width: 1.2em; height: 1.2em" />
                   </div>
                 </div>
-                <button class="submit" @click="submitComment">发送</button>
+                <button class="send-button" @click="submitComment">发送</button>
               </div>
             </div>
           </div>
@@ -228,6 +230,8 @@ const isCollected=ref();
 const showModal = ref(false);
 const isFollowed = ref(false);
 const followStatus = ref(0);  // 0: 单独关注, 1: 互相关注
+const Ptab = ref('');          // 图片角标        
+const picurl_PtabList = ref([]); // 图片角标列表
 const rules = ref({
   name: [
   {
@@ -350,7 +354,25 @@ const upclick_click = (file, fileList) => {
 const handleCarouselChange = (index) => {
 
   // console.log('handleCarouselChange called');
-  console.log('当前显示的图片是：', ImageList.value[index]);
+    console.log('当前显示的图片是：', ImageList.value[index]);
+    // TODO:图片切换角标内容切换
+    const tmp_id = picurl_PtabList.value[index];
+    if (tmp_id == -1) {
+        Ptab.value = '原 图';
+    }
+    else if(tmp_id == 0){
+        Ptab.value = '原 图';
+    }
+    else if(tmp_id == 1){
+        Ptab.value = '简单修图';
+    }
+    else if (tmp_id == 2) {
+        Ptab.value = '指令修图';
+    }
+    else{
+        Ptab.value = '无信息';
+    }
+    console.log('当前显示的角标是：', Ptab.value);
   current_pic.value = ImageList.value[index];
 };
 
@@ -438,12 +460,17 @@ const fetchPost = async () => {
     // const data = await fetch('http://127.0.0.1:5000/api/post_content/${post_id}'); 
     const result = response.data;
     // 解构出各个属性数组
-    const { pictures,date,title,body,author,avatar,author_id,likes_num,comments_num,collects_num } = result;
+    const { pictures,date,title,body,author,avatar,author_id,likes_num,comments_num,collects_num,pic_tabs } = result;
     //author_id =  response.data.author_id;
     // 遍历数组，构建每个对象并添加到数组中
     for (let i = 0; i < pictures.length; i++) {
       ImageList.value.push(pictures[i]);
-    }
+      }
+    //构建每个tab添加到数组中
+    for(let i = 0; i < pic_tabs.length; i++){
+      picurl_PtabList.value.push(pic_tabs[i]);
+      }
+    console.log(picurl_PtabList.value)
     // ImageList.value= pictures;
     items.value = {
       pictures: pictures, // 使用对应索引的图片 URL 作为 src 属性
@@ -459,8 +486,24 @@ const fetchPost = async () => {
       collects_num: collects_num
     };
     console.log("WTFFFFFF",items.value.author_id)
-    current_pic.value = ImageList.value[0];
-
+      current_pic.value = ImageList.value[0];
+    // 初始化图片角标
+    const tmp_id = picurl_PtabList.value[0];
+    if (tmp_id == -1) {
+        Ptab.value = '原 图';
+    }
+    else if(tmp_id == 0){
+        Ptab.value = '原 图';
+    }
+    else if(tmp_id == 1){
+        Ptab.value = '简单修图';
+    }
+    else if (tmp_id == 2) {
+        Ptab.value = '指令修图';
+    }
+    else{
+        Ptab.value = '无信息';
+    }
   }catch(error){
     console.error('Error fetching data:', error);
   }
@@ -537,11 +580,11 @@ const handleClick = async () => {
     if (isFollowed.value || followStatus.value === 1) {
         // 弹出确认取消关注的对话框
         try {
-            await ElMessageBox.confirm('您确定要取消关注吗？', '确认信息', {
-                confirmButtonText: '确认',
-                cancelButtonText: '取消',
-                type: 'warning'
-            });
+            await ElMessageBox.confirm('您确定要取消关注吗？', {
+              confirmButtonText: '确认',
+              cancelButtonText: '取消',
+              customClass: 'custom-message-box' // 使用自定义样式
+          });
             // 用户确认取消关注
             await unfollowUser();  // 这是你需要实现的取消关注的方法
             await checkFollowStatus();  // 再次检查关注状态
@@ -716,7 +759,115 @@ const goBack = () => {
 
 
 
-<style lang="less" scoped>
+<style lang="less" >
+
+.send-button {
+  margin-left: 8px;
+    width: 60px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    flex-shrink: 0;
+    background: #000C42;
+    border-radius: 44px;
+    font-size: 16px;
+}
+
+/* 悬停时的样式 */
+.send-button:hover {
+  background-color: #000c42c3; /* 悬停时的背景颜色变深 */
+}
+
+.el-message-box .custom-message-box {
+  background-color: #f3f4f6; /* 浅灰色背景 */
+  color: #606266; /* 深灰色文字 */
+  border-radius: 30px; /* 设置圆角 */
+  width: 600px; /* 设置宽度 */
+  height:400px;
+  max-width: 90%; /* 确保宽度不超过90% */
+  min-height: 300px; /* 设置最小高度 */
+}
+
+/* 修改取消按钮的样式 */
+.el-message-box__btns .el-button {
+  background-color: #d3d4d6; /* 灰色背景 */
+  border-color: #d3d4d6; /* 灰色边框 */
+  height:30px;
+  width:90px;
+  margin-right: 15px; /* 右边距，设置取消按钮和确认按钮之间的距离 */
+}
+
+/* 修改确认按钮的样式 */
+.el-message-box__btns .el-button--primary {
+  background-color: #000B42; /* 深蓝背景 */
+  border-color: #000B42; /* 蓝色边框 */
+  height:30px;
+  width:90px;
+  margin-left: 15px; /* 左边距，也可以用来调整距离 */
+}
+
+.el-message-box__btns {
+  display: flex;
+  justify-content: center; /* 水平居中 */
+  align-items: center; /* 垂直居中 */
+  padding: 10px; /* 添加一些内边距 */
+}
+
+.el-message-box__message p {
+  font-size: 18px; /* 设置字体大小为18px */
+  text-align: center; /* 文字居中显示 */
+  color: #333; /* 设置字体颜色，可根据需要修改 */
+}
+
+.el-message-box__header.show-close {
+    height:20px;
+}
+
+.el-message-box__container {
+    align-items: center;
+    display: flex;
+    gap: 12px;
+    justify-content: center; /* 水平居中 */
+    align-items: center; /* 垂直居中 */
+    height:50px;
+
+}
+
+.follow-container {
+  background-color: white;
+  border-radius: 20px;
+  padding: 32px;
+  max-width: 800px;
+  margin: auto;
+  margin-top: 100px;
+  position: relative;
+}
+
+.custom-danger-button {
+  background-color: #DE124A !important; /* 自定义背景颜色 */
+  color: white !important; /* 自定义文字颜色 */
+  border-color: #DE124A !important; /* 自定义边框颜色，确保一致性 */
+}
+
+.custom-danger-button:hover {
+  background-color: #de1248d1 !important; /* 悬停时的背景颜色，更浅的蓝色 */
+  border-color: #de1248d1 !important; /* 悬停时的边框颜色 */
+}
+
+
+.follow-container {
+  background-color: white;
+  border-radius: 20px;
+  padding: 32px;
+  max-width: 800px;
+  margin: auto;
+  margin-top: 100px;
+  position: relative;
+}
 
 // .uoloadSty .el-upload--picture-card{
 //             width:200px;
@@ -844,9 +995,9 @@ const goBack = () => {
       0 8px 64px 0 rgba(0, 0, 0, 0.04),
       0 1px 4px 0 rgba(0, 0, 0, 0.02);
     border-radius: 20px;
-    background: #895454;
+    background: #fcfcfc;
     transform-origin: left top;
-
+    border:#fcfcfc 3px solid;
     .media-container {
       width: 68%;
       height: auto;
@@ -863,6 +1014,26 @@ const goBack = () => {
       height: 100%;
       object-fit: contain;
       min-width: 440px;
+
+        .pic_tab{
+            position: fixed; 
+            z-index: 1000; 
+            top:10px; 
+            right:10px; 
+            height:30px;
+            width:60px;
+            background-color: rgb(169, 0, 34);
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: bolder;
+            color: whitesmoke;
+            //文字水平垂直居中
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+        }
+
     }
 
     .interaction-container {

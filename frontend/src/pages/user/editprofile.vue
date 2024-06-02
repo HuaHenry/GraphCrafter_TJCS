@@ -39,8 +39,8 @@
               maxlength="20"
             ></el-input>
             <div class="profile-actions">
-              <el-button type="primary" @click="saveProfile('username')">保存</el-button>
-              <el-button @click="cancelEdit('username')">取消</el-button>
+               <el-button class="custom-save-button" type="primary" @click="saveProfile('username')">保  存</el-button>
+               <el-button class="custom-cancel-button" @click="cancelEdit('username')">取  消</el-button>
             </div>
           </div>
           <!-- 横线 -->
@@ -60,8 +60,8 @@
               <el-radio label="女">女</el-radio>
             </el-radio-group>
             <div class="profile-actions">
-              <el-button type="primary" @click="saveProfile('sex')">保存</el-button>
-              <el-button @click="cancelEdit('sex')">取消</el-button>
+              <el-button class="custom-save-button" type="primary" @click="saveProfile('sex')">保  存</el-button>
+              <el-button class="custom-cancel-button" @click="cancelEdit('sex')">取  消</el-button>
             </div>
           </div>
           <!-- 横线 -->
@@ -85,8 +85,8 @@
               controls-position="right">
             </el-input-number>
             <div class="profile-actions">
-              <el-button type="primary" @click="saveProfile('age')">保存</el-button>
-              <el-button @click="cancelEdit('age')">取消</el-button>
+              <el-button class="custom-save-button" type="primary" @click="saveProfile('age')">保  存</el-button>
+              <el-button class="custom-cancel-button" @click="cancelEdit('age')">取  消</el-button>
             </div>
           </div>
           <!-- 横线 -->
@@ -109,8 +109,8 @@
               maxlength="50"
             ></el-input>
             <div class="profile-actions">
-              <el-button type="primary" @click="saveProfile('email')">保存</el-button>
-              <el-button @click="cancelEdit('email')">取消</el-button>
+              <el-button class="custom-save-button" type="primary" @click="saveProfile('email')">保  存</el-button>
+              <el-button class="custom-cancel-button" @click="cancelEdit('email')">取  消</el-button>
             </div>
           </div>
           <!-- 横线 -->
@@ -135,8 +135,8 @@
               :rows="2" 
             ></el-input>
             <div class="profile-actions">
-              <el-button type="primary" @click="saveProfile('bio')">保存</el-button>
-              <el-button @click="cancelEdit('bio')">取消</el-button>
+              <el-button class="custom-save-button" type="primary" @click="saveProfile('bio')">保  存</el-button>
+              <el-button class="custom-cancel-button" @click="cancelEdit('bio')">取  消</el-button>
             </div>
           </div>
           <!-- 横线 -->
@@ -150,8 +150,8 @@
         <div class="avatar-editor">
           <img :src="uploadedAvatar || avatar" class="avatar-preview" alt="预览头像" />
           <div class="avatar-actions">
-            <el-button type="primary" @click="saveAvatar">保存</el-button>
-            <el-button @click="cancelAvatarEdit">取消</el-button>
+            <el-button type="primary" @click="saveAvatar">保  存</el-button>
+            <el-button @click="cancelAvatarEdit">取  消</el-button>
           </div>
         </div>
     </el-dialog>
@@ -164,7 +164,9 @@
   import { ref, onMounted } from 'vue';
   import axios from 'axios';
   import { ElMessage } from 'element-plus';
+
   import { Close, Camera, Edit } from '@element-plus/icons-vue';
+  
   import { useRouter } from 'vue-router';
   import store from "../../store/index";
 
@@ -408,6 +410,29 @@ const checkUsernameUnique = async (newUsername) => {
 
 <style scoped>
 
+.custom-save-button {
+  width: 120px; /* 设置按钮宽度 */
+  height: 30px; /* 设置按钮高度 */
+  border-radius: 8px; /* 设置圆角半径 */
+  background-color: #000C42; /* 自定义背景颜色 */
+  border-color: #000C42; /* 自定义边框颜色 */
+  color: white; /* 设置文字颜色 */
+  font-size: 14px; /* 设置文字大小 */
+}
+
+.custom-cancel-button {
+  width: 120px; /* 设置按钮宽度 */
+  height: 30px; /* 设置按钮高度 */
+  border-radius: 8px; /* 设置圆角半径 */
+  background-color: #DE124A; /* 自定义背景颜色 */
+  border-color: #DE124A; /* 自定义边框颜色 */
+  color: white; /* 设置文字颜色 */
+  font-size: 14px; /* 设置文字大小 */
+}
+
+.custom-save-button:hover, .custom-cancel-button:hover {
+  opacity: 0.8; /* 悬停时稍微改变透明度 */
+}
 
 .left-column {
   width: 180px;
@@ -502,6 +527,7 @@ const checkUsernameUnique = async (newUsername) => {
   flex-direction: column;
   align-items: center;
   gap: 20px;
+  align-items: center;
   border-radius: 20px; /* 添加圆角 */
   background-color: #fff; /* 确保弹窗背景为白色 */
   padding: 20px; /* 添加一些内边距以提供空间 */
