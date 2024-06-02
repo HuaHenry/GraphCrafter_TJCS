@@ -19,7 +19,7 @@
               <div class="user-name">{{ user.name }}</div>
               <div class="user-stats">{{ user.followers }} 粉丝 · {{ user.posts }} 发帖</div>
             </div>
-            <el-button :type="user.is_followed ? 'danger' : 'primary'" size="large" round @click="handleUserClick(user.id)">
+            <el-button :class="user.is_followed ? 'custom-danger' : 'custom-primary'" size="large" round @click="handleUserClick(user.id)">
               {{ user.buttonText }}
             </el-button>
 
@@ -232,6 +232,27 @@ const handleUserClick = async (userId) => {
 </script>
 
 <style lang="less" scoped>
+
+.custom-primary {
+  background-color: #000B42 !important; /* 自定义背景颜色 */
+  color: white !important; /* 自定义文字颜色 */
+  border-color: #000B42 !important; /* 自定义边框颜色，确保一致性 */
+}
+.custom-primary:hover {
+  background-color: #000B82 !important; /* 悬停时的背景颜色，更浅的蓝色 */
+  border-color: #000B82 !important; /* 悬停时的边框颜色 */
+}
+.custom-danger {
+  background-color: #DE124A !important; /* 自定义背景颜色 */
+  color: white !important; /* 自定义文字颜色 */
+  border-color: #DE124A !important; /* 自定义边框颜色，确保一致性 */
+}
+
+.custom-danger:hover {
+  background-color: #de1248d1 !important; /* 悬停时的背景颜色，更浅的蓝色 */
+  border-color: #de1248d1 !important; /* 悬停时的边框颜色 */
+}
+
 .user-list {
   list-style: none;
   padding: 0;
