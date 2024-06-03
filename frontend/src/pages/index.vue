@@ -216,12 +216,15 @@ const toggleMoreInfoState = () => {
 function Logout(){
   store.commit("setLoginState",false);
   store.commit("setCurUserID",null);
+  store.commit('setAdminState', false);
   localStorage.removeItem("user");
+  localStorage.removeItem("is_admin");
   router.push("/");
 }
 // 保存到本地，这样不需要每次刷新都得登录
 store.commit("setLoginState",localStorage.getItem("user")?true:false);
 store.commit("setCurUserID",localStorage.getItem("user")?localStorage.getItem("user"):null);
+store.commit("setAdminState",localStorage.getItem("is_admin")?localStorage.getItem("is_admin"):null);
 </script>
 
 <style lang="less" scoped>

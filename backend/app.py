@@ -237,7 +237,7 @@ def login():
     if user and bcrypt.check_password_hash(user.password, password):
         if user_type == 'admin' and not user.is_admin:
             return jsonify({'status': 'error', 'message': 'Unauthorized access for admin'}), 402
-        return jsonify({'status': 'success', 'message': 'Login successful', "user_id": user.id}), 200
+        return jsonify({'status': 'success', 'message': 'Login successful', "user_id": user.id, "isAdmin": user.is_admin}), 200
     else:
         return jsonify({'status': 'error', 'message': 'Invalid username or password'}), 401
 
