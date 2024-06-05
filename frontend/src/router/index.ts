@@ -9,6 +9,7 @@ import Demo from "@/views/Demo.vue";
 import Login from "@/components/Login.vue";
 import Register from "@/components/Register.vue";
 import SearchBoard from '@/pages/dashboard/searchboard.vue';
+import store from '@/store'; // 确保正确引入 Vuex store
 export const routes = [
  
   {
@@ -34,12 +35,14 @@ export const routes = [
     name: "manager",
     path: "/manager",
     component: Manage,
+    meta: { requiresAuth: true,requiresAdmin: true},
   },
   {
     name: "index",
     path: "/index",
     component: () => import("@/pages/index.vue"),
     redirect: "/dashboard",
+    meta: { requiresAuth: true},
     children: [
       {
         name: "conversation",
@@ -159,11 +162,13 @@ export const routes = [
     name: "main",
     path: "/main",
     component: () => import("@/pages/main.vue"),
+    meta: { requiresAuth: true},
   },
   {
     name: "del_draft",
     path: "/del_draft",
     component: () => import("@/pages/del_draft.vue"),
+    meta: { requiresAuth: true},
   },
 ];
 const router = createRouter({
@@ -172,7 +177,23 @@ const router = createRouter({
   routes,
 });
 // router.beforeEach((to, from, next) => {
-router.beforeEach((next) => {
-  next;
+// router.beforeEach((next) => {
+//   next;
+// });
+// 路由设置
+router.beforeEach((to, from, next) => {
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+  const requiresAdmin = to.matched.some(record => record.meta.requiresAdmin);
+
+  if (requiresAdmin && !store.getters.isAdmin) {
+    // 如果路由需要管理员权限，但用户不是管理员
+    next('/Demo'); // 或者重定向到一个“未授权”页面
+  } else if (requiresAuth && !store.getters.isLoggedIn) {
+    // 如果路由需要登录但用户未登录
+    next('/Demo');
+  } else {
+    next(); // 确保一定要调用 next()
+  }
 });
+
 export default router;

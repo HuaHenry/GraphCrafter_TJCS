@@ -52,11 +52,17 @@ export default {
                 headers: {'Content-Type':'application/x-www-form-urlencoded'}
             }
 			).then(res => {
+        console.log(res.status);
+        console.log(res.data.status);
+        console.log(res.data.user_id);
+        console.log(res.data.isAdmin);
         if (res.status === 200 && res.data.status === "success") {
-          this.login();
+          this.login({user_id: res.data.user_id,isAdmin:res.data.isAdmin});
           console.log("登录成功");
           store.commit("setCurUserID",res.data.user_id);
+          store.commit("setAdminState",res.data.isAdmin);
           localStorage.setItem("user",res.data.user_id);
+          localStorage.setItem('is_admin', res.data.isAdmin);
           ElMessage.success({
             message: "登录成功",
             duration: 1500
@@ -98,7 +104,7 @@ export default {
           }
           else {
             ElMessage.error({
-              message: "登录失败：请检查后端是否开启；端口/IP是否正确",
+              message: error,
               duration: 1500
             });
           }
