@@ -948,8 +948,8 @@ const goBack = () => {
 }
 
 .el-upload-list--picture-card .el-upload-list__item {
-  width: 500px !important;
-  height: 500px !important;
+//   width: 500px !important;
+//   height: 500px !important;
 }
 
 // .el-upload .el-upload--picture-card{
@@ -958,8 +958,8 @@ const goBack = () => {
 // }
 
 .el-upload-list--picture-card .el-upload-list__item {
-  width: 500px !important;
-  height: 500px !important;
+//   width: 500px !important;
+//   height: 500px !important;
 }
 
 .note-detail-mask {
