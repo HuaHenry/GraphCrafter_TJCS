@@ -410,7 +410,7 @@ export default {
 .message-container {
   border-top: 1px solid #e9eaec;
   border-bottom: 1px solid #e9eaec;
-  height: 600px;
+  height: 540px;
   overflow-y: scroll;
   background-color: #f4f5f7;
   /*border-radius: 8px;*/

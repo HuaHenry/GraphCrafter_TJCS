@@ -1,76 +1,72 @@
 <template>
-  <div>
-    <!-- Header -->
-    <header class="bg-white header root-demo">
-      <div>
-        <router-link to="/"
-          ><img src="../assets/img/logo/LOGO2.gif" alt="图匠" class="logo" style="width:100%;position: relative; top:20px; left:-50px; z-index: -1;"
-        /></router-link>
-      </div>
-
-      <div class="text-right purchase-button"> 
-        <router-link
-          :to="isLoggedIn ? '/' : '/login'"
-          @click.native="handleAuth"
-        >
-          {{ buttonText }}
-        </router-link>
-      </div>
-    </header>
-    <!--// Header -->
-
-    <!-- Banner -->
-    <div class="banner-wrapper">
-      <div class="container">
-        <div class="banner-inner">
-          <div class="banner-content">
-            <h1>
-              图匠 —— 对话式图像创意室<br/>
-              edit your pictures
-            </h1>
-          </div>
-          <div class="row">
-            <div class="col-lg-4 col-md-4 col-sm-6 col-12" v-for="(item, i) in menuContent" :key="i">
-              <div class="demo-item" @click="handleLinkClick(item, $event)">
-                  <img :src="item.src" alt="Main Demo" class="image-shadow"/>
-                  <span class="title-style">{{ item.title }}</span>
-              </div>
+    <div>
+        <!-- Header -->
+        <header class="bg-white header root-demo">
+            <div>
+                <router-link to="/"><img src="../assets/img/logo/LOGO2.gif" alt="图匠" class="logo"
+                        style="width:100%;position: relative; top:20px; left:-50px; z-index: -1;" /></router-link>
             </div>
-          </div>
+
+            <div class="text-right purchase-button">
+                <router-link :to="isLoggedIn ? '/' : '/login'" @click.native="handleAuth">
+                    {{ buttonText }}
+                </router-link>
+            </div>
+        </header>
+        <!--// Header -->
+
+        <!-- Banner -->
+        <div class="banner-wrapper">
+            <div class="container">
+                <div class="banner-inner">
+                    <div class="banner-content">
+                        <h1>
+                            图匠 —— 对话式图像创意室<br />
+                            edit your pictures
+                        </h1>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-4 col-md-4 col-sm-6 col-12" v-for="(item, i) in menuContent" :key="i">
+                            <div class="demo-item" @click="handleLinkClick(item, $event)">
+                                <img :src="item.src" alt="Main Demo" class="image-shadow" />
+                                <span class="title-style">{{ item.title }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
+        <!-- End Banner -->
+
+        <!-- Demos -->
+        <div class="demo-wrapper bg_color--1">
+            <div class="container-fluid">
+                <div class="row-title" style="">
+                    <div class="col-md-12 text-center">
+                        <div class="title-wrapper">
+                            <h1 class="text-center">Picture Edit Demos</h1>
+                            <p>
+                                Choose one of demo or cutomize easily your picture following your
+                                ideas
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-4 col-md-6 col-sm-12" v-for="(item, i) in demoContent" :key="i">
+                        <div class="demo-item">
+                            <!--              <a :href="item.href" target="_blank">-->
+                            <img :src="item.src" alt="Main Demo" class="image-shadow" />
+                            <span class="title-style">{{ item.title }}</span>
+                            <!--              </a>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Demos -->
+
     </div>
-    <!-- End Banner -->
-
-    <!-- Demos -->
-    <div class="demo-wrapper bg_color--1">
-      <div class="container-fluid">
-        <div class="row-title" style="" >
-          <div class="col-md-12 text-center" >
-            <div class="title-wrapper" >
-              <h1 class="text-center">Picture Edit Demos</h1>
-              <p>
-                Choose one of demo or cutomize easily your picture following your
-                ideas
-              </p>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-lg-4 col-md-6 col-sm-12" v-for="(item, i) in demoContent" :key="i">
-            <div class="demo-item">
-<!--              <a :href="item.href" target="_blank">-->
-                <img :src="item.src" alt="Main Demo" class="image-shadow"/>
-                <span class="title-style">{{ item.title }}</span>
-<!--              </a>-->
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- End Demos -->
-
-  </div>
 </template>
 
 <script>
@@ -286,6 +282,59 @@
     },
   };
 </script>
+
+<style media="screen" type="text/css">
+#app-cockpit-loading {
+    width: 120px;
+    height: 40px;
+    position: absolute;
+    font-size: 50px;
+    line-height: 50px;
+    top: 50%;
+    left: 50%;
+    transform: translateY(-50%) translateX(-50%);
+}
+
+#app-cockpit-loading span {
+    display: inline-block;
+    width: 8px;
+    height: 100%;
+    border-radius: 4px;
+    background: #1890ff;
+    -webkit-animation: load 1s ease infinite;
+}
+
+@-webkit-keyframes load {
+
+    0%,
+    100% {
+        height: 40px;
+        background: #1890ff;
+    }
+
+    50% {
+        height: 70px;
+        margin: -15px 0;
+        background: lightblue;
+    }
+}
+
+#app-cockpit-loading span:nth-child(2) {
+    -webkit-animation-delay: 0.2s;
+}
+
+#app-cockpit-loading span:nth-child(3) {
+    -webkit-animation-delay: 0.4s;
+}
+
+#app-cockpit-loading span:nth-child(4) {
+    -webkit-animation-delay: 0.6s;
+}
+
+#app-cockpit-loading span:nth-child(5) {
+    -webkit-animation-delay: 0.8s;
+}
+</style>
 
 <style lang="scss" scoped>
 .container {

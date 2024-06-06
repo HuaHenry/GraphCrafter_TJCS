@@ -212,7 +212,7 @@ export default {
       axios.post('/api/post_draft/',{
         img:this.messages[index].picture,
         user_id:store.state.user_id,
-        label:0
+        label:"0"
       }).then(function (response) {
         console.log(response.data['img']);
       }).catch(function (error) {
@@ -226,7 +226,7 @@ export default {
       axios.post('/api/post_draft/',{
         img:this.messages[index].picture,
         user_id:store.state.user_id,
-        label:2
+        label:"3"
       }).then(function (response) {
         console.log(response.data['img']);
       }).catch(function (error) {
@@ -503,7 +503,7 @@ export default {
   position:relative;
   border-top: 1px solid #e9eaec;
   border-bottom: 1px solid #e9eaec;
-  height: 600px;
+  height: 540px;
   overflow-y: scroll;
   background-color: #f4f5f7;
   /*border-radius: 8px;*/

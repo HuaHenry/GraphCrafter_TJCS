@@ -427,7 +427,7 @@ const confirmImage = async () => {
     await axios.post('/api/post_draft/', {
       img:processedImageUrl.value,
       user_id:userId,
-      label:'指令修图'
+      label:"3"
       // date: date.toLocaleString()
     });
     ElMessage.success('图片已保存至草稿箱！');

@@ -214,7 +214,8 @@ async function saveProcessedImage()
   const picInfo = {
     img: processedImg.value,
     user_id: userId,
-    label: channels[activeChannel.value].name,
+      // label: channels[activeChannel.value].name,
+    label: "2"
   };
   await axios.post('/api/post_draft/', picInfo);
 }
