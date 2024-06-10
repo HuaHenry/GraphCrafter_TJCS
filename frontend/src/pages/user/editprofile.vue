@@ -350,6 +350,13 @@ const checkUsernameUnique = async (newUsername) => {
     }
   }
 
+  if (field === 'email' && email.value !== originalEmail.value) {
+    if (!validateEmail(email.value)) {
+      ElMessage({ message: '请输入有效的电子邮件地址', type: 'error' });
+      return; // 停止保存操作
+    }
+  }
+
   // 如果用户名是唯一的或者字段不是用户名，继续保存操作
   try {
     const updatedData = {
@@ -377,8 +384,14 @@ const checkUsernameUnique = async (newUsername) => {
   if (field === 'age') editingAge.value = false;
 };
 
-  
-  
+
+function validateEmail(email) {
+  const regex = /^[a-zA-Z0-9._-]+@(?![.-])([a-zA-Z0-9-]+\.)*[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/;
+  return regex.test(email);
+}
+
+
+
   
   
   // 取消编辑并恢复到原始值
