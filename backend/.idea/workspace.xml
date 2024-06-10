@@ -6,9 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="4c7999de-ae79-4be5-b717-b55d957eea13" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data.db" beforeDir="false" afterPath="$PROJECT_DIR$/data.db" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/img_tmp/tmp.png" beforeDir="false" afterPath="$PROJECT_DIR$/img_tmp/tmp.png" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,7 +32,7 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;WYF-profile&quot;,
-    &quot;last_opened_file_path&quot;: &quot;F:/Web_Project/TuJiang/web-0507/backend&quot;,
+    &quot;last_opened_file_path&quot;: &quot;F:/Web_Project/RedTideGuard/flask-red_tide_guard&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
   }
 }</component>

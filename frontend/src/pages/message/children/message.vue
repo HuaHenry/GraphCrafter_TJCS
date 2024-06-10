@@ -51,7 +51,8 @@ export default{
 
   data() {
     return {
-      server_url: 'localhost:8080',
+      // server_url: 'localhost:8080',
+      server_url: 'http://123.60.90.34:3306',
       ready: false,
       login: false,
       user: {id: 1, name: '加完班打麻药', avatar: ''},
