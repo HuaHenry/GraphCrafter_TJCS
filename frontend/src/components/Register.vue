@@ -9,6 +9,7 @@
       <div class="form-group">
         <label for="email">Email</label>
         <input type="email" id="email" v-model="email" required />
+        <!-- <span v-if="error" style="color: red;">{{ error }}</span> -->
       </div>
       <div class="form-group">
         <label for="password">Password</label>
@@ -45,24 +46,44 @@ export default {
       email: '',
       password: '',
       userType: 'normal', // Default user type is normal
-      inviteCode: ''
+      inviteCode: '',
+      error: ''
     };
   },
   methods: {
     ...mapActions(['login']),
+    validateEmail() {
+      const invalidChars = /[!#$%^&*()+|~=`{}[\]:";'<>?,\/]/;
+      if (invalidChars.test(this.email)) {
+        this.error = '邮箱包含非法字符';
+      } else {
+        this.error = '';
+      }
+    },
     validatePassword(password) {
       const minLength = 6;
       const hasUpperCase = /[A-Z]/.test(password);
       const hasLowerCase = /[a-z]/.test(password);
       const hasNumber = /[0-9]/.test(password);
+      const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
 
       return password.length >= minLength &&
-        ((hasUpperCase && hasLowerCase) ||
-         (hasUpperCase && hasNumber) ||
-         (hasLowerCase && hasNumber));
+            !hasSpecialChar && // Ensure no special characters
+            ((hasUpperCase && hasLowerCase) ||
+              (hasUpperCase && hasNumber) ||
+              (hasLowerCase && hasNumber));
     },
 
     handleRegister() {
+            this.validateEmail();
+            console.log(this.error);
+            if (this.error==="邮箱包含非法字符") {
+              ElMessage.error({
+                message: "邮箱包含非法字符",
+                duration: 1500
+              });
+              return;
+            }
             if (!this.validatePassword(this.password)) {
               ElMessage.error({
                 message: "密码长度必须至少为6位，且包含大小写字母和数字中的至少两种",
@@ -120,6 +141,21 @@ export default {
 </script>
 
 <style scoped>
+.error-message {
+  position: absolute;
+  bottom: -1.5em; /* Adjust based on your needs */
+  left: 0;
+  color: red;
+  visibility: hidden; /* Hide by default */
+}
+
+.error-message:empty {
+  visibility: hidden; /* Hide if empty */
+}
+
+.error-message:not(:empty) {
+  visibility: visible; /* Show if not empty */
+}
 .register-container {
   display: flex;
   flex-direction: column;

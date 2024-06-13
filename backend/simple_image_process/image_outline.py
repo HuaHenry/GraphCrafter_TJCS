@@ -7,6 +7,7 @@ from simple_image_process.utils import plt_save
 def show_outline(src,type,size):
     width = size[0]
     height = size[1]
+    print("process outline")
     if type == 'Canny Contours':
         contours = cv2.Canny(image=src, threshold1=125, threshold2=350)
         plt_save(255 - contours, title='Canny Contours',width_pixels=width,height_pixels=height)
