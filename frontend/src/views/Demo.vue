@@ -1,4 +1,25 @@
 <template>
+<<<<<<< HEAD
+  <div>
+    <!-- Header -->
+    <header class="bg-white header root-demo">
+      <div>
+        <router-link to="/"
+          ><img src="../assets/img/logo/LOGO2.gif" alt="图匠" class="logo" style="width:100%;position: relative; top:20px; left:-50px; z-index: -1;"
+        /></router-link>
+      </div>
+
+      <div class="text-right purchase-button"> 
+        <router-link
+          :to="isLoggedIn ? '/' : '/login'"
+          @click.native="handleAuth"
+        >
+          {{ buttonText }}
+        </router-link>
+      </div>
+    </header>
+    <!--// Header -->
+=======
     <div>
         <!-- Header -->
         <header class="bg-white header root-demo">
@@ -14,59 +35,117 @@
             </div>
         </header>
         <!--// Header -->
+>>>>>>> 6ad38512973b92ccbc6d4ffc726913a78d723db7
 
-        <!-- Banner -->
-        <div class="banner-wrapper">
-            <div class="container">
-                <div class="banner-inner">
-                    <div class="banner-content">
-                        <h1>
-                            图匠 —— 对话式图像创意室<br />
-                            edit your pictures
-                        </h1>
-                    </div>
-                    <div class="row">
-                        <div class="col-lg-4 col-md-4 col-sm-6 col-12" v-for="(item, i) in menuContent" :key="i">
-                            <div class="demo-item" @click="handleLinkClick(item, $event)">
-                                <img :src="item.src" alt="Main Demo" class="image-shadow" />
-                                <span class="title-style">{{ item.title }}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    <!-- Banner -->
+    <div class="banner-wrapper">
+      <div class="container">
+        <div class="banner-inner">
+          <div class="banner-content">
+            <h1>
+              图匠 —— 对话式图像创意室<br/>
+              edit your pictures
+            </h1>
+          </div>
+          <div class="row">
+            <div class="col-lg-4 col-md-4 col-sm-6 col-12" v-for="(item, i) in menuContent" :key="i">
+              <div class="demo-item" @click="handleLinkClick(item, $event)">
+                  <img :src="item.src" alt="Main Demo" class="image-shadow"/>
+                  <span class="title-style">{{ item.title }}</span>
+              </div>
             </div>
+          </div>
         </div>
-        <!-- End Banner -->
-
-        <!-- Demos -->
-        <div class="demo-wrapper bg_color--1">
-            <div class="container-fluid">
-                <div class="row-title" style="">
-                    <div class="col-md-12 text-center">
-                        <div class="title-wrapper">
-                            <h1 class="text-center">Picture Edit Demos</h1>
-                            <p>
-                                Choose one of demo or cutomize easily your picture following your
-                                ideas
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-4 col-md-6 col-sm-12" v-for="(item, i) in demoContent" :key="i">
-                        <div class="demo-item">
-                            <!--              <a :href="item.href" target="_blank">-->
-                            <img :src="item.src" alt="Main Demo" class="image-shadow" />
-                            <span class="title-style">{{ item.title }}</span>
-                            <!--              </a>-->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- End Demos -->
-
+      </div>
     </div>
+    <!-- End Banner -->
+
+    <!-- Demos -->
+    <div class="demo-wrapper bg_color--1">
+      <div class="container-fluid">
+        <div class="row-title" style="" >
+          <div class="col-md-12 text-center" >
+            <div class="title-wrapper" >
+              <h1 class="text-center">Picture Edit Demos</h1>
+              <p>
+                Choose one of demo or cutomize easily your picture following your
+                ideas
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-lg-4 col-md-6 col-sm-12" v-for="(item, i) in demoContent" :key="i">
+            <div class="demo-item">
+<!--              <a :href="item.href" target="_blank">-->
+                <img :src="item.src" alt="Main Demo" class="image-shadow"/>
+                <span class="title-style">{{ item.title }}</span>
+<!--              </a>-->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- End Demos -->
+
+    <!-- User Agreement and Feature Introduction Buttons -->
+    <div class="button-container text-center mt-4">
+      <button @click="showUserAgreement" class="btn btn-primary mx-2">用户协议</button>
+       <a href="../../public/Introduction.html">
+        <button class="btn btn-primary mx-2">功能介绍</button>
+      </a>
+    </div>
+
+    <!-- User Agreement Modal -->
+    <el-dialog v-model="isUserAgreementVisible" >
+      <div>
+        <h2>用户协议</h2>
+        <p>欢迎使用我们的服务。在使用前，请仔细阅读以下用户协议：</p>
+
+        <h4>1. 接受条款</h4>
+        <p>通过访问和使用本服务，您表示同意遵守这些条款和条件。</p>
+
+        <h4>2. 服务内容</h4>
+        <p>我们提供图片编辑和创意设计功能。</p>
+
+        <h4>3. 用户账户</h4>
+        <p>您需要注册一个账户才能使用某些功能。请确保提供真实、准确的信息。</p>
+
+        <h4>4. 用户责任</h4>
+        <p>您对使用本服务的行为负全部责任。请勿进行任何违法或侵权行为。</p>
+
+        <h4>5. 知识产权</h4>
+        <p>所有内容（包括图片、文本、软件、代码）归我们所有，受法律保护。</p>
+
+        <h4>6. 隐私政策</h4>
+        <p>我们重视您的隐私。请参阅我们的隐私政策了解详情。</p>
+
+        <h4>7. 免责声明</h4>
+        <p>本服务按“现状”提供，我们不保证其准确性、完整性或可靠性。</p>
+
+        <h4>8. 终止</h4>
+        <p>我们有权随时终止或暂停您的服务访问。</p>
+
+        <h4>9. 修改条款</h4>
+        <p>我们保留随时修改这些条款的权利，修改后的条款将在本页面公布。</p>
+
+        <h4>10. 联系我们</h4>
+        <p>如有疑问，暂时联系不到我们。</p>
+      </div>
+      <template #footer>
+        <el-button @click="isUserAgreementVisible = false">关闭</el-button>
+      </template>
+    </el-dialog>
+
+    <!-- Feature Introduction Modal -->
+<!--    <el-dialog v-model="isFeatureIntroductionVisible" title="功能介绍">-->
+<!--      <p>这里是功能介绍的内容...</p>-->
+<!--      <template #footer>-->
+<!--        <el-button @click="isFeatureIntroductionVisible = false">关闭</el-button>-->
+<!--      </template>-->
+<!--    </el-dialog>-->
+
+  </div>
 </template>
 
 <script>
@@ -249,6 +328,8 @@
           },
         ],
         panel: 0,
+        isUserAgreementVisible: false,
+        isFeatureIntroductionVisible: false,
       };
     },
     computed: {
@@ -278,65 +359,38 @@
         } else {
           this.$router.push(item.href); // 手动执行路由跳转
         }
-      }
+      },
+      showUserAgreement() {
+        this.isUserAgreementVisible = true;
+      },
+
+    },
+    mounted() {
+      feather.replace();
     },
   };
 </script>
 
-<style media="screen" type="text/css">
-#app-cockpit-loading {
-    width: 120px;
-    height: 40px;
-    position: absolute;
-    font-size: 50px;
-    line-height: 50px;
-    top: 50%;
-    left: 50%;
-    transform: translateY(-50%) translateX(-50%);
-}
-
-#app-cockpit-loading span {
-    display: inline-block;
-    width: 8px;
-    height: 100%;
-    border-radius: 4px;
-    background: #1890ff;
-    -webkit-animation: load 1s ease infinite;
-}
-
-@-webkit-keyframes load {
-
-    0%,
-    100% {
-        height: 40px;
-        background: #1890ff;
-    }
-
-    50% {
-        height: 70px;
-        margin: -15px 0;
-        background: lightblue;
-    }
-}
-
-#app-cockpit-loading span:nth-child(2) {
-    -webkit-animation-delay: 0.2s;
-}
-
-#app-cockpit-loading span:nth-child(3) {
-    -webkit-animation-delay: 0.4s;
-}
-
-#app-cockpit-loading span:nth-child(4) {
-    -webkit-animation-delay: 0.6s;
-}
-
-#app-cockpit-loading span:nth-child(5) {
-    -webkit-animation-delay: 0.8s;
-}
-</style>
-
 <style lang="scss" scoped>
+.button-container {
+  margin-top: 20px;
+}
+
+.btn {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.mx-2 {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.mt-4 {
+  margin-top: 20px;
+}
+
 .container {
   max-width: 100%;
   margin-right: auto;
