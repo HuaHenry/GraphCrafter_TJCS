@@ -174,13 +174,20 @@ const PreviewImg = (event) => {
     console.log(file,current_category,current_description);
     const userId = store.state.user_id;
 
+    console.log("[data] ", userId, current_category, current_description, file)
+
     const formData = new FormData();
-    formData.append('user_id', userId);
-    formData.append('process_category', current_category);
-    formData.append('process_type', current_description);
-    formData.append('file', file);
+      formData.append('user_id', userId);
+    console.log("user_id", formData);
+      formData.append('process_category', current_category);
+    console.log("process_category", formData);
+      formData.append('process_type', current_description);
+    console.log("process_type", formData);
+      formData.append('file', file);
+    console.log("file", formData);
 
     try {
+        console.log(formData)
       const response = await axios.post('/api/simple-image-process', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
@@ -191,8 +198,7 @@ const PreviewImg = (event) => {
         alert('Error: ' + data.error);
         return;
       }
-      const newImageUrl = data.imgUrl;
-
+        const newImageUrl = data.imgUrl;
       processedImg.value = newImageUrl;
       isAvatarEditorOpen.value = false;
       isProcessedImgOpen.value = true;
@@ -217,7 +223,13 @@ async function saveProcessedImage()
       // label: channels[activeChannel.value].name,
     label: "2"
   };
-  await axios.post('/api/post_draft/', picInfo);
+    await axios.post('/api/post_draft/', picInfo);
+    //传到picture表
+    axios.post('/api/upload_Picture',{
+                img:processedImg.value,
+                prompt:null,
+                Ptype:1
+            })
 }
 
 // 处理方法的名称最多只显示20个字

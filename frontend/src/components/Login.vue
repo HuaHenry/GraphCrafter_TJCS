@@ -1,27 +1,29 @@
 <template>
-  <div class="login-container">
-    <h2>Login</h2>
-    <form @submit.prevent="handleLogin">
-      <div class="form-group">
-        <label for="username">Username</label>
-        <input type="text" id="username" v-model="username" required />
-      </div>
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" id="password" v-model="password" required />
-      </div>
-      <div class="form-group user-type">
-        <el-radio-group v-model="userType" class="ml-4">
-          <el-radio value="user" size="large">User</el-radio>
-          <el-radio value="admin" size="large">Admin</el-radio>
-        </el-radio-group>
-      </div>
-      <button type="submit">Log In</button>
-    </form>
-    <div class="register-link">
-      <router-link to="/register">Don't have an account? Click to register</router-link>
+    <div id="building">
+        <div class="login-container">
+            <h2>Login</h2>
+            <form @submit.prevent="handleLogin">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" v-model="username" required />
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" v-model="password" required />
+            </div>
+            <div class="form-group user-type">
+                <el-radio-group v-model="userType" class="ml-4">
+                <el-radio value="user" size="large">User</el-radio>
+                <el-radio value="admin" size="large">Admin</el-radio>
+                </el-radio-group>
+            </div>
+            <button type="submit">Log In</button>
+            </form>
+            <div class="register-link">
+            <router-link to="/register">Don't have an account? Click to register</router-link>
+            </div>
+        </div>
     </div>
-  </div>
 </template>
 
 <script>
@@ -115,6 +117,15 @@ export default {
 </script>
 
 <style scoped>
+
+#building{
+    /* background:url("https://bpic.588ku.com/back_our/20210902/bg/3eae21e778dae.png"); */
+    background:url("https://bpic.588ku.com/video_listen/588ku_pic/21/06/07/8cf50ff21b08565c17c19ae00cf70805.jpg");
+    width:100%;
+    height:100%;
+    position:fixed;
+    background-size:100% 100%;
+}
 
 .login-container {
   display: flex;

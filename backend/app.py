@@ -4200,7 +4200,6 @@ def get_collection(user_id):
 
 # 获取个人笔记
 
-
 @cross_origin()
 @app.route('/api/note/<int:user_id>', methods=['GET'])
 def get_note(user_id):

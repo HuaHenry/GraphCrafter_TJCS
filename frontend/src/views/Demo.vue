@@ -2,12 +2,12 @@
     <div>
         <!-- Header -->
         <header class="bg-white header root-demo">
-            <div>
-                <router-link to="/"><img src="../assets/img/logo/LOGO2.gif" alt="图匠" class="logo"
-                        style="width:100%;position: relative; top:20px; left:-50px; z-index: -1;" /></router-link>
-            </div>
+            <!-- <div> -->
+                <router-link to="/"><img src="https://graphcrafter.oss-cn-beijing.aliyuncs.com/LOGO.gif" alt="图匠" 
+                        style="width:300px;position: relative; top:20px; left:-50px; z-index: -1;" /></router-link>
+            <!-- </div> -->
 
-            <div class="text-right purchase-button">
+            <div class="text-right purchase-button" style="position: relative;top:20px;">
                 <router-link :to="isLoggedIn ? '/' : '/login'" @click.native="handleAuth">
                     {{ buttonText }}
                 </router-link>
@@ -687,8 +687,9 @@ img.image-shadow {
     }
   }
 
-  .logo {
-  width: 500px; /* 调整宽度 */
-//   height: 300px; /* 保持宽高比 */
-}
+//   /deep/ logo {
+//   width: 700px; /* 调整宽度 */
+// //   height: 300px; /* 保持宽高比 */
+//     }
+
 </style>

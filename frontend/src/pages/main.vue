@@ -357,6 +357,7 @@ const handleCarouselChange = (index) => {
     console.log('当前显示的图片是：', ImageList.value[index]);
     // TODO:图片切换角标内容切换
     const tmp_id = picurl_PtabList.value[index];
+    console.log('当前显示的角标id是：', tmp_id)
     if (tmp_id == -1) {
         Ptab.value = '原 图';
     }
@@ -488,7 +489,8 @@ const fetchPost = async () => {
     console.log("WTFFFFFF",items.value.author_id)
       current_pic.value = ImageList.value[0];
     // 初始化图片角标
-    const tmp_id = picurl_PtabList.value[0];
+      const tmp_id = picurl_PtabList.value[0];
+    console.log('当前显示的角标id是：', tmp_id)
     if (tmp_id == -1) {
         Ptab.value = '原 图';
     }

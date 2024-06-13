@@ -8,10 +8,10 @@
     <!--对话框-->
     <div ref="content" class="message-container" >
       <div class="load"  v-loading="isLoading"
-      element-loading-text="Loading..."
-      element-loading-svg-view-box="-10, -10, 50, 50"
-      element-loading-background="rgba(122, 122, 122, 0)"
-      style="width: 100%"> </div>
+        element-loading-text="生成中..."
+        element-loading-background="rgba(122, 122, 122, 0)"
+        style="width: 100%"> 
+      </div>
       <!-- <el-loading lock text="正在加载..." spinner="el-icon-loading" background="rgba(255, 0, 0, 0.7)" v-model="isLoading" style="z-index:10"></el-loading> -->
       <template v-for="(message, index) in messages" :key="index">
         <!--时间-->
@@ -511,9 +511,9 @@ export default {
 
 }
 .load{
-  position: absolute;
+  position: fixed;
   top: 50%;
-  left: 50%;
+  left: 58%;
   transform: translate(-50%, -50%);
 }
 
