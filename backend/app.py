@@ -4015,6 +4015,8 @@ def get_images():
     types = []
 
     for opencv_img in opencv_imgs:
+        if opencv_img.description == "Origin":
+            continue
         ids.append(opencv_img.id)
         pictures.append(opencv_img.image)
         descriptions.append(opencv_img.description)
@@ -5470,7 +5472,7 @@ def process_image_simple():
         show_transformation(origin, process_type, img_size)
     elif process_category == "filter":
         show_filtering(origin, process_type, img_size)
-    elif process_category == "outline":
+    elif process_category == "contour":
         show_outline(origin, process_type, img_size)
     elif process_category == "enhance":
         show_enhancement(origin, process_type, img_size)
@@ -5780,7 +5782,7 @@ CREATE TABLE history (
 if __name__ == '__main__':
     config = dict(
         host='0.0.0.0',
-        port=3306,
+        port=8080,
         debug=True,
         allow_unsafe_werkzeug=True
     )
