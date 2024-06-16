@@ -160,11 +160,15 @@ const submitForm =()=>
   }
   ElMessage.success({
     message: "发布成功",
-    duration: 1500
+    duration: 1000,
   });
+    // 清空表单
+    ruleForm.value.name = "";
+    ruleForm.value.summary = "";
+
   // 使用setTimeout延迟1秒后执行页面跳转
   setTimeout(() => {
-    // location.href = "/dashboard";
+    location.href = "/dashboard";
   }, 800);  // 延时800毫秒
 
 }

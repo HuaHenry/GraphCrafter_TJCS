@@ -1,25 +1,4 @@
 <template>
-<<<<<<< HEAD
-  <div>
-    <!-- Header -->
-    <header class="bg-white header root-demo">
-      <div>
-        <router-link to="/"
-          ><img src="../assets/img/logo/LOGO2.gif" alt="图匠" class="logo" style="width:100%;position: relative; top:20px; left:-50px; z-index: -1;"
-        /></router-link>
-      </div>
-
-      <div class="text-right purchase-button"> 
-        <router-link
-          :to="isLoggedIn ? '/' : '/login'"
-          @click.native="handleAuth"
-        >
-          {{ buttonText }}
-        </router-link>
-      </div>
-    </header>
-    <!--// Header -->
-=======
     <div>
         <!-- Header -->
         <header class="bg-white header root-demo">
@@ -35,7 +14,6 @@
             </div>
         </header>
         <!--// Header -->
->>>>>>> 6ad38512973b92ccbc6d4ffc726913a78d723db7
 
     <!-- Banner -->
     <div class="banner-wrapper">

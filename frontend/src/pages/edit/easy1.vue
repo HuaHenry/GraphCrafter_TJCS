@@ -84,7 +84,7 @@ const channels = [
   { name: '图像色彩', backendName: 'color' },
   { name: '图像变换', backendName: 'transform'  },
   { name: '图像过滤',  backendName: 'filter' },
-  { name: '提取轮廓', backendName: 'contour' },
+//  { name: '提取轮廓', backendName: 'contour' },
   { name: '图像增强', backendName: 'enhance' },
 ];
 
