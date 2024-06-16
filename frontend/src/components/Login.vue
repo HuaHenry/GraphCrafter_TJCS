@@ -97,9 +97,15 @@ export default {
                 duration: 1500
               });
             }
+            else if (error.response.status === 403){
+              ElMessage.error({
+                message: "用户被封禁，请注册新账号",
+                duration: 1500
+              });
+            }
             else {
               ElMessage.error({
-                message: "登录失败：未知错误",
+                message: "登录失败：系统后端网络问题",
                 duration: 1500
               });
             }
