@@ -1,6 +1,6 @@
 # 图匠 - 对话式图像创意室
 
-> **项目名称**：<img src="http://henry-typora.oss-cn-beijing.aliyuncs.com/img/image-20240605213243508.png" alt="image-20240605213243508" style="zoom:20%;" /> 图匠 —— 对话式图像创意室
+> **项目名称**： 图匠 —— 对话式图像创意室
 >
 > **开发团队**：同济大学 锟斤拷
 
