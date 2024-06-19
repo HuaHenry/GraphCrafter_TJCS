@@ -1,0 +1,182 @@
+.v-application,
+body {
+    font-family: $body-font;
+    color: $body-color;
+    font-weight: 400;
+    p {
+        color: $body-color;
+        font-size: 18px;
+        line-height: 30px;
+        &.large {
+            font-size: 24px;
+            color: #c6c9d8;
+        }
+    }
+    ul,
+    ol {
+        padding: 0;
+    }
+    a {
+        text-decoration: none;
+        color: #222;
+        &:hover {
+            text-decoration: none;
+        }
+    }
+    .w-100 {
+        width: 100%!important;
+    }
+    img {
+        max-width: 100%;
+    }
+    .thumbnail img {
+        display: block;
+    }
+    .cool-lightbox__inner {
+        padding-bottom: 60px !important;
+    }
+}
+
+.v-toolbar.v-toolbar--absolute {
+    z-index: 99;
+}
+
+.v-navigation-drawer--absolute {
+    z-index: 999;
+}
+
+.image {
+    cursor: pointer;
+}
+
+@media only screen and (max-width: 575px) {
+    .container {
+        width: 450px;
+    }
+}
+
+@media only screen and (max-width: 479px) {
+    .container {
+        width: 320px;
+    }
+}
+
+@media (min-width: 576px) {
+    .container {
+        max-width: 540px;
+    }
+}
+
+@media (min-width: 768px) {
+    .container {
+        max-width: 720px;
+    }
+}
+
+@media (min-width: 992px) {
+    .container {
+        max-width: 960px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .container {
+        max-width: 1260px;
+    }
+}
+
+.col-xl,
+.col-xl-auto,
+.col-xl-12,
+.col-xl-11,
+.col-xl-10,
+.col-xl-9,
+.col-xl-8,
+.col-xl-7,
+.col-xl-6,
+.col-xl-5,
+.col-xl-4,
+.col-xl-3,
+.col-xl-2,
+.col-xl-1,
+.col-lg,
+.col-lg-auto,
+.col-lg-12,
+.col-lg-11,
+.col-lg-10,
+.col-lg-9,
+.col-lg-8,
+.col-lg-7,
+.col-lg-6,
+.col-lg-5,
+.col-lg-4,
+.col-lg-3,
+.col-lg-2,
+.col-lg-1,
+.col-md,
+.col-md-auto,
+.col-md-12,
+.col-md-11,
+.col-md-10,
+.col-md-9,
+.col-md-8,
+.col-md-7,
+.col-md-6,
+.col-md-5,
+.col-md-4,
+.col-md-3,
+.col-md-2,
+.col-md-1,
+.col-sm,
+.col-sm-auto,
+.col-sm-12,
+.col-sm-11,
+.col-sm-10,
+.col-sm-9,
+.col-sm-8,
+.col-sm-7,
+.col-sm-6,
+.col-sm-5,
+.col-sm-4,
+.col-sm-3,
+.col-sm-2,
+.col-sm-1,
+.col,
+.col-auto,
+.col-12,
+.col-11,
+.col-10,
+.col-9,
+.col-8,
+.col-7,
+.col-6,
+.col-5,
+.col-4,
+.col-3,
+.col-2,
+.col-1 {
+    padding: 0 15px;
+    position: relative;
+}
+
+.container--fluid {
+    max-width: 100%;
+}
+
+.container {
+    width: 100%;
+    padding: 0 15px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.row {
+    margin-top: 0;
+    margin-bottom: 0;
+    margin-right: -15px;
+    margin-left: -15px;
+}
+
+  .v-window-x-reverse-transition-enter-active, .v-window-x-reverse-transition-leave-active, .v-window-x-transition-enter-active, .v-window-x-transition-leave-active, .v-window-y-reverse-transition-enter-active, .v-window-y-reverse-transition-leave-active, .v-window-y-transition-enter-active, .v-window-y-transition-leave-active {
+    transition: .5s cubic-bezier(.25, .8, .5, 1);
+  }

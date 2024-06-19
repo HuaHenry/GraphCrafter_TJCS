@@ -1,0 +1,549 @@
+/*===================
+ * Header
+=======================*/
+
+.rn-header {
+    padding: 0 90px;
+    position: relative;
+    z-index: 999;
+    transition: 0.5s;
+    &.header-transparent {
+        width: 100%;
+        top: 70px;
+        z-index: 9999;
+    }
+    &.rn-header--withmenu {
+        &.header-transparent {
+            width: 100%;
+            top: 30px;
+            z-index: 9999;
+        }
+    }
+}
+
+.text-white .mainmenu-wrap .menu-horizontal li a {
+    color: #ffffff;
+}
+
+.text-white .menu-horizontal li a::after {
+    background: #ffffff;
+}
+
+.text-white .mainmenu-wrap .purchase-btn button,
+.text-white .mainmenu-wrap .purchase-btn a {
+    border: 1px solid #ffffff;
+    color: #ffffff;
+}
+
+
+/*.menu-section{
+    opacity: 0;
+}*/
+
+.menu-section {
+    background-color: #000;
+    height: 100vh;
+    padding-top: 120px;
+    position: absolute;
+    top: -70px;
+    width: 50%;
+    pointer-events: all;
+    right: 0;
+    z-index: 99;
+}
+
+
+nav ul.menu {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    margin: 2em auto;
+    text-transform: uppercase;
+    font-size: 12px;
+    font-weight: 200;
+    text-align: left;
+    padding: 0 146px;
+}
+
+nav ul.menu a {
+    -moz-transition-duration: 0.5s;
+    -o-transition-duration: 0.5s;
+    -webkit-transition-duration: 0.5s;
+    transition-duration: 0.5s;
+    text-decoration: none;
+    color: #fff !important;
+    line-height: 44px;
+    width: 100%;
+    font-weight: 300;
+    font-size: 27px;
+}
+
+nav ul.menu li {
+    margin: 0;
+    display: block;
+}
+
+nav {
+    .menu {
+        li {
+            a {
+                position: relative;
+                -webkit-transition: color 0ms ease .35s;
+                transition: color 0ms ease .35s;
+                line-height: 70px;
+                font-size: 30px;
+                .menu-text {
+                    color: rgba(255, 255, 255, 0.8);
+                    font-size: 30px;
+                    line-height: 70px;
+                    font-weight: 500;
+                    display: flex;
+                    align-items: center;
+                    justify-content: flex-start;
+                    transition: 0.3s;
+                }
+                &:hover .menu-text {
+                    color: rgba(255, 255, 255, 1);
+                }
+                .menu-arrow {
+                    display: flex;
+                    position: relative;
+                    overflow: hidden;
+                    width: 60px;
+                    align-items: center;
+                    height: 25px;
+                    line-height: 0;
+                    transition: width .5s cubic-bezier(.50, 0, .20, 1.00);
+                    margin-left: 15px;
+                }
+                .menu-arrow-icon {
+                    position: absolute;
+                    right: 0;
+                    width: 0;
+                    transition: width .5s cubic-bezier(.50, 0, .20, 1.00);
+                    svg {
+                        transition: width .5s cubic-bezier(.50, 0, .20, 1.00);
+                        width: 100% !important;
+                    }
+                }
+                &:hover .menu-arrow-icon {
+                    right: auto;
+                    left: 0;
+                    width: 100%;
+                }
+            }
+        }
+    }
+}
+
+.menu-toggle a span.open {
+    margin-top: 1px;
+    position: relative;
+    display: inline-block;
+}
+
+.menu-toggle.on span.close_menu i {
+    padding-left: 17px;
+    margin-top: 5px;
+    display: inline-block;
+}
+
+
+/* =======================
+    menu-horizontal 
+===========================*/
+
+.rn-header--5 {
+    padding: 70px 80px;
+}
+
+.mainmenu-wrap {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    .menu-horizontal {
+        display: flex;
+        justify-content: flex-end;
+        margin: 0 -17px;
+        li {
+            margin: 0 17px;
+            a {
+                color: #000000;
+                font-size: 14px;
+                line-height: 24px;
+                text-transform: uppercase;
+                font-weight: 500;
+            }
+        }
+    }
+    .purchase-btn {
+        padding-left: 23px;
+        button,
+        a {
+            display: inline-block;
+            padding: 0 26px;
+            height: 40px;
+            line-height: 39px;
+            border: 1px solid #000000;
+            border-radius: 3px;
+            color: #000000;
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            transition: 0.4s ease-in-out;
+            &:hover {
+                color: #ffffff;
+                background: #000000;
+                border: 1px solid #000000;
+            }
+        }
+    }
+}
+
+
+/* ======================
+Hesder Static With Menu 
+===========================*/
+
+.rn-header--withmenu {
+    padding: 35px 80px;
+    position: relative;
+}
+
+.menu-horizontal {
+    li {
+        a {
+            display: inline-block;
+            position: relative;
+            &::after {
+                width: 0;
+                height: 1px;
+                bottom: 0;
+                position: absolute;
+                left: auto;
+                right: 0;
+                z-index: 1;
+                -webkit-transition: width 0.6s cubic-bezier(0.25, 0.8, 0.25, 1) 0s;
+                transition: width 0.6s cubic-bezier(0.25, 0.8, 0.25, 1) 0s;
+                background: #000000;
+                content: "";
+            }
+        }
+        &:hover {
+            a {
+                &::after {
+                    width: 100%;
+                    left: 0;
+                    right: auto;
+                }
+            }
+        }
+    }
+}
+
+.bm-header.rn-header {
+    padding-left: 7.5px;
+    padding-right: 7.5px;
+}
+
+div#menu-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.menu-toggle-inner {
+    align-items: center;
+    display: flex;
+    cursor: pointer;
+}
+
+.menu-toggle span.menu-text {
+    color: #2e2e2d;
+    font-size: 18px;
+    font-weight: 500;
+    text-transform: uppercase;
+    -webkit-transition: all 0.8s cubic-bezier(0.645, 0.045, 0.355, 1);
+    transition: all 0.8s cubic-bezier(0.645, 0.045, 0.355, 1);
+    @media (max-width: 767px) {
+        font-size: 16px;
+    }
+}
+
+.menu-text-wrap {
+    position: relative;
+    overflow: hidden;
+    width: 60px;
+    height: 30px;
+    text-align: center;
+    @media (max-width: 767px) {
+        width: 50px;
+       height: 23px;
+    }
+
+}
+
+span.menu-text.close-text,
+span.menu-text.open-text,
+.v-navigation-drawer--open span.menu-text.close-text {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    height: 100%;
+}
+
+span.menu-text.open-text {
+    transform: translateY(-100%);
+}
+
+.open span.menu-text.open-text {
+    transform: translateY(-200%);
+}
+
+.v-navigation-drawer--open .open span.menu-text.close-text {
+    transform: translateY(-100%);
+}
+
+.hamburger-wrap {
+    display: inline-block;
+    padding-left: 15px;
+}
+
+.hamburger-wrap span {
+    width: 30px;
+    height: 2px;
+    top: 0;
+    left: 0;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 4px;
+    margin-bottom: 4px;
+    display: block;
+    background: #000;
+}
+
+#menu-toggle .hamburger-wrap #hamburger span {
+    transition: .5s;
+}
+
+#menu-toggle .hamburger-wrap #hamburger {
+    width: 30px;
+}
+
+.v-navigation-drawer--open .menu-toggle.open span.menu-text {
+    color: #fff;
+}
+
+.v-navigation-drawer--open #menu-toggle.open .hamburger-wrap #hamburger span {
+    background: #fff;
+}
+
+.menu-toggle-inner:hover .hamburger-wrap #hamburger span:nth-child(2) {
+    width: 70%;
+}
+
+#menu-toggle.open .hamburger-wrap #hamburger span:nth-child(1),
+#menu-toggle.open .hamburger-wrap #hamburger span:nth-child(3) {
+    width: 0%;
+}
+
+#menu-toggle.open .hamburger-wrap #hamburger span:nth-child(2) {
+    width: 70%;
+}
+
+.color-white .menu-toggle span.menu-text {
+    color: #fff;
+}
+
+.color-white .hamburger-wrap span {
+    background: #fff;
+}
+
+header.header.rn-header.header-padding-sm {
+    padding-left: 45px;
+    padding-right: 45px;
+    top: 45px;
+}
+
+
+/* ------------------------
+    Custom Animation 01 
+----------------------------*/
+
+@-webkit-keyframes headerSlideDown {
+    0% {
+        margin-top: -100px
+    }
+    to {
+        margin-top: 0
+    }
+}
+
+// vuetify js
+.v-toolbar:not(.tab-toolbar) {
+    .v-btn.v-btn.v-size--default:not(.v-btn--icon) {
+        padding: 0;
+        min-width: 0;
+        margin: 0 17px;
+        border: none;
+    }
+    .v-btn--text {
+        text-transform: uppercase;
+        letter-spacing: 0;
+        text-indent: 0;
+        transition: 0.3s;
+    }
+    .v-toolbar__items {
+        align-items: center;
+    }
+    .v-btn:not(.v-btn--icon) {
+        &::before {
+            display: none;
+        }
+    }
+    .v-btn.v-btn--icon {
+        border: none;
+    }
+}
+
+.theme--light.v-app-bar.v-toolbar.v-sheet.header-flat {
+    background: #fff;
+    @media #{$sm-layout} {
+       height: 80px!important;
+    }
+}
+
+header.header.header-flat {
+    padding: 0 85px;
+    @media #{$lg-layout} {
+        padding: 0;
+    }
+    @media #{$md-layout} {
+        padding: 0;
+    }
+    @media #{$sm-layout} {
+        padding: 0;
+    }
+}
+.v-toolbar:not(.tab-toolbar) .v-btn.v-btn.v-size--default:not(.btn-move) {
+    @media #{$sm-layout} {
+        margin: 0;
+    }
+}
+.theme--dark.v-navigation-drawer {
+    background-color: #000;
+}
+
+.header-one-page-nav {
+    transition: 0.5s;
+    .v-toolbar__content {
+        height: 100%!important;
+        padding: 0 15px;
+        @media #{$sm-layout} {
+            padding: 0 0;
+        }
+    }
+    .theme--dark.v-app-bar.v-toolbar.v-sheet {
+        background-color: transparent;
+    }
+    .v-btn {
+        &::after {
+            position: absolute;
+            content: "";
+            left: auto;
+            right: 0;
+            width: 0;
+            height: 1px;
+            background: #fff;
+            -webkit-transition: 0.3s;
+            -o-transition: 0.3s;
+            transition: 0.3s;
+            bottom: 0;
+        }
+        &.v-btn--active,
+        &:hover {
+            &::after {
+                width: 100%;
+                left: 0;
+                right: auto;
+            }
+        }
+    }
+    .logo {
+        img {
+            transition: 0.5s;
+        }
+    }
+    &.v-app-bar--is-scrolled {
+        background: #fff!important;
+        -webkit-animation: headerSlideDown .95s ease forwards;
+        animation: headerSlideDown .95s ease forwards;
+        box-shadow: 0 8px 20px 0 rgba(0, 0, 0, 0.1)!important;
+        height: 70px!important;
+        top: 0!important;
+        &.v-toolbar:not(.tab-toolbar) .theme--dark.v-btn {
+            color: $heading-color;
+            &::after {
+                background: #000;
+            }
+        }
+        .logo-light {
+            display: none;
+        }
+        .logo-dark {
+            display: block;
+        }
+        .feather-menu {
+            color: $heading-color;
+        }
+        &.text-white .mainmenu-wrap .purchase-btn a {
+            border: 1px solid #000;
+            color: #000;
+            &:hover {
+                color: #fff;
+            }
+        }
+    }
+    &.header-one-page-nav-two {
+        &.transparent.v-toolbar:not(.tab-toolbar) .theme--dark.v-btn {
+            color: $body-color;
+        }
+    }
+    &.v-toolbar:not(.tab-toolbar) .v-btn.v-btn.v-size--default:not(.btn-move) {
+        @media only screen and (min-width: 960px) and (max-width: 1200px) {
+            font-size: 14px;
+            margin: 0 10px;
+        }
+    }
+    .logo img {
+        @media #{$lg-layout} {
+            max-width: 80%;
+        }
+    }
+    .logo-dark {
+        display: none;
+        height: 50px;
+        max-width: 100%!important;
+    }
+}
+
+.menu-toggle.open {
+    position: absolute;
+    top: 65px;
+    right: 85px;
+}
+
+.rn-header.rn-header--withmenu.header-transparent.v-app-bar--is-scrolled {
+    top: 0;
+}
+
+.v-toolbar__content,
+.v-toolbar__extension {
+  height: 100% !important;
+}
+
+.v-app-bar__nav-icon.v-btn--icon.v-size--default .v-icon  {
+    font-size: 29px;
+}

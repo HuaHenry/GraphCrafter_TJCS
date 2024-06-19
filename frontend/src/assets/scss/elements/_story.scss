@@ -1,0 +1,75 @@
+/* =======================
+    Story Area 
+===========================*/
+
+
+.story-content{
+    .story-btn{
+        a{
+            display: inline-block;
+            color: #000000;
+            font-weight: 500;
+            position: relative;
+            height: 37px;
+            padding: 0 17px;
+            line-height: 37px;
+            z-index: 1;
+            margin-top: 25px;
+            @media #{$sm-layout} {
+                margin-top: 20px;
+            }
+            &::before {
+                position: absolute;
+                content: "";
+                background: #e0e0e0;
+                left: 0;
+                top: 0;
+                width: 50%;
+                height: 100%;
+                z-index: -1;
+                transition: width 1s cubic-bezier(.63,.05,.43,1.7);
+            }
+            &:hover::before{
+                width: 100%;
+            }
+
+        }
+    }
+}
+
+.story-content .content p {
+    color: #222;
+    font-size: 18px;
+    line-height: 30px;
+    letter-spacing: 1px;
+}
+
+.about-page{
+    @media #{$md-layout} {
+        .rn-story-area {
+            flex-wrap: wrap;
+        }
+        .w-50{
+            width: 100%;
+        }
+        .rn-story-left {
+            height: 375px;
+        }
+    }
+    @media #{$sm-layout} {
+        .rn-story-left.rn-story-bg-wrapper {
+            height: 335px!important;
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+

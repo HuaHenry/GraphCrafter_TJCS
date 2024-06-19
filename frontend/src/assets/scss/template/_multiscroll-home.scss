@@ -1,0 +1,38 @@
+
+    .hooper .hooper-pagination.is-vertical {
+        right: 56px;
+        @media only screen and (max-width: 575px){
+            right: 0;
+        }
+    }
+    .hooper-pagination.is-vertical .hooper-indicator {
+        position: relative;
+        cursor: pointer;
+        height: 20px;
+        width: 20px;
+        border: 1px solid transparent;
+        border-radius: 50%;
+        transition: all .1s ease-in-out;
+        &::after {
+            content: "";
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.15);
+            left: 7px;
+            top: 7px;
+            transition: all 0.5s;
+        }
+        &:hover {
+            &::after {
+                background: #000;
+            }
+        }
+    }
+    .hooper-pagination.is-vertical .hooper-indicator.is-active {
+        border-color: #000;
+        &::after {
+            background: #000;
+        }
+    }

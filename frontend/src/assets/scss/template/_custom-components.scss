@@ -1,0 +1,94 @@
+
+.masonry-wrapper,.rn-portfolio-area {
+    .v-tab {
+        font-size: 18px;
+        font-weight: 400;
+        letter-spacing: 0;
+        min-width: auto;
+        padding: 0;
+        text-transform: capitalize;
+        margin: 0 17px!important;
+        @media #{$sm-layout} {
+            margin: 8px 12px!important;
+        }
+        &::before {
+            display: none;
+        }
+        &:after {
+            width: 0;
+            height: 1px;
+            bottom: 0;
+            position: absolute;
+            left: 0;
+            right: 0;
+            z-index: 1;
+            -webkit-transition: width 0.6s cubic-bezier(0.25, 0.8, 0.25, 1) 0s;
+            transition: width 0.6s cubic-bezier(0.25, 0.8, 0.25, 1) 0s;
+            background: #000000;
+            content: "";
+        }
+        &.v-tab--active {
+            color: #000;
+            &::after {
+                width: 100%;
+            }
+        }
+    }
+    .theme--light.v-tabs > .v-tabs-bar {
+        background-color: transparent;
+    }
+    .theme--light.v-tabs>.v-tabs-bar .v-tab:not(.v-tab--active) {
+        color: #2e2e2d;
+    }
+}
+
+
+.v-tabs-bar {
+    height: 30px;
+}
+
+.v-tabs:not(.v-tabs--vertical):not(.v-tabs--right)>.v-slide-group--is-overflowing.v-tabs-bar--is-mobile:not(.v-slide-group--has-affixes) .v-slide-group__prev {
+    display: none;
+}
+
+.v-slide-group__wrapper .v-slide-group__content {
+    justify-content: center;
+    flex-wrap: wrap;
+    transform: none!important;
+}
+
+.masonry-tabs {
+    .v-slide-group__wrapper .v-slide-group__content {
+        justify-content: start !important;
+    }
+}
+
+@media #{$sm-layout} {
+    .v-slide-group__wrapper .v-slide-group__content {
+        flex: initial;
+    }
+    .theme--light.v-tabs>.v-tabs-bar {
+        height: auto;
+    }
+    .v-tab {
+        margin: 0 10px!important;
+    }
+}
+
+.parallax-header {
+    .hamburger-wrap span {
+        background: #fff;
+    }
+    .menu-toggle span.menu-text {
+        color: #fff;
+    }
+}
+
+.fade-transition-enter-active,
+.fade-transition-leave-active {
+    transition: 1s cubic-bezier(.25, .8, .5, 1)!important
+}
+.content {
+    position: relative;
+    z-index: 1;
+}

@@ -1,0 +1,212 @@
+/* =========================
+Progress Bar Css 
+===========================*/
+
+/* Progress Position */
+.progress {
+    &.progress-label-top {
+        span {
+            &.percent-label {
+                position: absolute;
+                right: 0;
+                top: -39px;
+            }
+        }
+    }
+    &.progress-label-bottom {
+        span {
+            &.percent-label {
+                position: absolute;
+                right: 0;
+                bottom: -29px;
+                z-index: 3;
+                top: auto;
+            }
+        }
+    }
+    &.progress-label-center-right {
+        span {
+            &.percent-label {
+                position: absolute;
+                right: 50px;
+            }
+        }
+    }
+}
+
+.progress-radious-0 {
+    border-radius: 0;
+    .progress-bar {
+        border-radius: 0;
+    }
+}
+
+.progress-radious-3 {
+    border-radius: 3px;
+    .progress-bar {
+        border-radius: 3px;
+    }
+}
+
+.progress-radious-5 {
+    border-radius: 5px;
+    .progress-bar {
+        border-radius: 5px;
+    }
+}
+
+
+
+/* ================
+Main Css 
+==================*/
+
+.progress {
+    &.progress-label-top {
+        span {
+            &.percent-label {
+                position: absolute;
+                right: 0;
+                top: -39px;
+            }
+        }
+    }
+    &.progress-label-bottom {
+        span {
+            &.percent-label {
+                position: absolute;
+                right: 0;
+                bottom: -29px;
+                z-index: 3;
+                top: auto;
+            }
+        }
+    }
+    &.progress-label-center-right {
+        span {
+            &.percent-label {
+                position: absolute;
+                right: 50px;
+            }
+        }
+    }
+}
+/*------------------------------------------------
+    // Progress Indicator Style
+ ----------------------------------------------*/
+
+ .progress {
+    // Indicator Style 01
+    &.progress-indicator-1 {
+        .progress-bar {
+            position: relative;
+            &::after {
+                position: absolute;
+                content: "";
+                border: 4px solid $theme-color;
+                width: 24px;
+                height: 24px;
+                right: -1px;
+                border-radius: 100%;
+                background: #fff;
+            }
+            &.progress-bar-bg--7 {
+                &::after {
+                    border: 4px solid #f13f4b;
+                }
+            }
+        }
+    } 
+    // Indicator Style 01
+    &.progress-indicator-2 {
+        .progress-bar {
+            position: relative;
+            &::after {
+                position: absolute;
+                content: "";
+                width: 14px;
+                height: 14px;
+                right: -1px;
+                border-radius: 100%;
+            }
+            &.progress-bar-bg--1 {
+                &::after {
+                    background: $theme-color;
+                }
+            }
+        }
+    }
+}
+
+
+.progress-height-4 {
+    height: 4px;
+    .progress-bar {
+        height: 4px;
+    }
+}
+
+.progress-height-5 {
+    height: 5px;
+    .progress-bar {
+        height: 5px;
+    }
+}
+
+.progress-height-6 {
+    height: 6px;
+    .progress-bar {
+        height: 6px;
+    }
+}
+
+
+
+
+/*------------------------------------------------
+    // Progress label Style
+ ----------------------------------------------*/
+.single-skill {
+    overflow: hidden;
+    border-radius: 0;
+    width: 500px;
+    margin-top: 36px;
+    p {
+        font-family: $heading-font;
+        color: #666666;
+        font-weight: 300;
+        font-size: 16px;
+        margin-bottom: 17px;
+        text-align: left;
+    }
+    .progress {
+        overflow: visible;
+        border-radius: 0;
+        background: #e9ecef;
+        .progress-bar {
+            position: relative;
+            background: #000000;
+        }
+    }
+}
+.progress {
+    span {
+        &.percent-label {
+            color: #000;
+        }
+    }
+    &.font-medium {
+        span {
+            &.percent-label {
+                color: #ffffff;
+                font-weight: 300;
+                font-family: $heading-font;
+                font-size: 16px;
+            }
+        }
+    } 
+    
+}
+
+
+
